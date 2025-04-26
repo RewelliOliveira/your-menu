@@ -3,8 +3,8 @@ import { InputLogin } from "../components/ui/input-login";
 
 export function Cadastro() {
     return (
-        <div>
-            <header>
+        <div className="flex flex-col text-center justify-center gap-10">
+            <header className="flex flex-col gap-5">
                 <div>
                     logo aqui
                 </div>
