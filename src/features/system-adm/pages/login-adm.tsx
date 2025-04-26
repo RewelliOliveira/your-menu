@@ -2,7 +2,7 @@ import { InputLogin } from "../components/ui/input-login";
 
 export function LoginAdm() {
   return (
-    <div>
+    <div className="loginContainer">
       <h1>Login</h1>
       <form>
         <InputLogin placeholder="Digite seu email" label="Email" />
