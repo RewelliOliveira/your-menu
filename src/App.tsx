@@ -1,10 +1,11 @@
 import './App.css'
+import { Cadastro } from './features/system-adm/pages/cadastro-adm'
 
 function App() {
 
   return (
     <div className=''>
-      <h1>Hello, world!!</h1>
+      <Cadastro/>
     </div>
   )
 }
