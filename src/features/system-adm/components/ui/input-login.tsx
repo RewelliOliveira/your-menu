@@ -14,8 +14,8 @@ export function InputLogin({
   onChange,
 }: InputLoginProps) {
   return (
-    <div className="flex flex-col mb-5 pl-15">
-      <label htmlFor="" className="text-black font-bold text-left block mb">
+    <div className="flex flex-col">
+      <label htmlFor="" className="text-black font-bold block mb-1">
         {label}
       </label>
       <input
