@@ -26,7 +26,7 @@ export function LoginAdm() {
       <div className="sm:mx-auto sm:w-full sm:max-w-md">
         <header className="flex flex-col gap-5 items-center">
           <div className="rounded-full bg-gray-300 w-20 h-20 flex items-center justify-center text-gray-600">
-            LOGO
+            <img src="/logo.svg" alt="Logo YourMenu" />
           </div>
           <h3 className="text-xl font-medium text-gray-900">Your menu</h3>
         </header>
