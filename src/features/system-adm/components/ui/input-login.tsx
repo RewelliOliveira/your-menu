@@ -1,5 +1,3 @@
-import "./input-login.css";
-
 interface InputLoginProps {
   placeholder: string;
   label: string;
@@ -16,9 +14,12 @@ export function InputLogin({
   onChange,
 }: InputLoginProps) {
   return (
-    <div className="input-container">
-      <label htmlFor="">{label}</label>
+    <div className="flex flex-col mb-5 pl-15">
+      <label htmlFor="" className="text-black font-bold text-left block mb">
+        {label}
+      </label>
       <input
+        className="w-80 border border-gray-400 rounded-md p-2 focus:outline-none focus:border-orange-600"
         placeholder={placeholder}
         type={type}
         value={value}

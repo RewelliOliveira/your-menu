@@ -10,13 +10,13 @@ export function Cadastro() {
       </header>
       <main>
         <div>
-          <InputLogin label="Email" />
+          <InputLogin label="Email" placeholder="Digite seu email" />
         </div>
         <div>
-          <InputLogin label="Digite sua senha" />
+          <InputLogin label="Senha" placeholder="Digite uma senha forte" />
         </div>
         <div>
-          <InputLogin label="Repita sua senha" />
+          <InputLogin label="Repita sua senha" placeholder="Digite novamente" />
         </div>
         <p>Esqueceu sua senha?</p>
       </main>
