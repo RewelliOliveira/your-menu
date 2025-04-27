@@ -14,13 +14,13 @@ export function InputLogin({
   onChange,
 }: InputLoginProps) {
   return (
-    <div className="flex flex-col items-center justify-center mb-5">
-      <div className="w-80 flex flex-col">
+    <div className="flex flex-col items-center justify-center mb-5 w-full sm:w-80">
+      <div className="w-full flex flex-col">
         <label className="text-black font-bold text-left block mb-2">
           {label}
         </label>
         <input
-          className="border border-gray-400 rounded-md p-2 focus:outline-none focus:border-orange-600"
+          className="border border-gray-400 rounded-md p-2 focus:outline-none focus:border-orange-600 w-full"
           placeholder={placeholder}
           type={type}
           value={value}
