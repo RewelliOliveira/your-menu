@@ -1,13 +1,12 @@
-import './App.css'
-import { Cadastro } from './features/system-adm/pages/cadastro-adm'
+import "./App.css";
+import { LoginAdm } from "./features/system-adm/pages/login-adm";
 
 function App() {
-
   return (
-    <div className=''>
-      <Cadastro/>
+    <div className="">
+      <LoginAdm />
     </div>
-  )
+  );
 }
 
-export default App
+export default App;

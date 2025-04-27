@@ -1,7 +1,7 @@
 interface ButtonLoginProps {
-    children: React.ReactNode,
-    onClick?: () => void,
-    type?: "button" | "submit" | "reset"
+  children: React.ReactNode;
+  onClick?: () => void;
+  type?: "button" | "submit" | "reset";
 }
 
 export function ButtonLogin({ children, onClick, type = "button" }: ButtonLoginProps) {
@@ -11,4 +11,3 @@ export function ButtonLogin({ children, onClick, type = "button" }: ButtonLoginP
         </button>
     );
 }
-
