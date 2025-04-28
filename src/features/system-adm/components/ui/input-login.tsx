@@ -14,17 +14,19 @@ export function InputLogin({
   onChange,
 }: InputLoginProps) {
   return (
-    <div className="flex flex-col">
-      <label htmlFor="" className="text-black font-bold block mb-1">
-        {label}
-      </label>
-      <input
-        className="w-80 border border-gray-400 rounded-md p-2 focus:outline-none focus:border-orange-600"
-        placeholder={placeholder}
-        type={type}
-        value={value}
-        onChange={onChange}
-      />
+    <div className="flex flex-col items-center justify-center mb-5 w-full sm:w-80">
+      <div className="w-full flex flex-col">
+        <label className="text-black font-bold text-left block mb-2">
+          {label}
+        </label>
+        <input
+          className="border border-gray-400 rounded-md p-2 focus:outline-none focus:border-orange-600 w-full"
+          placeholder={placeholder}
+          type={type}
+          value={value}
+          onChange={onChange}
+        />
+      </div>
     </div>
   );
 }
