@@ -1,10 +1,10 @@
 import "./App.css";
-import { Cadastro } from "./features/system-adm/pages/cadastro-adm";
+import { Router } from "./router";
 
 function App() {
   return (
     <div className="">
-      <Cadastro />
+      <Router/>
     </div>
   );
 }
