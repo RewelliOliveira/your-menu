@@ -1,10 +1,10 @@
 import "./App.css";
-import { Router } from "./router";
+import { PerfilRestaurante } from "./features/system-adm/pages/perfil-restaurante";
 
 function App() {
   return (
     <div className="">
-      <Router/>
+      <PerfilRestaurante/>
     </div>
   );
 }
