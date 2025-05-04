@@ -1,11 +1,9 @@
 import "./App.css";
-import { PerfilRestaurante } from "./features/system-adm/pages/perfil-restaurante";
+import { Router } from "./router";
 
 function App() {
   return (
-    <div className="">
-      <PerfilRestaurante/>
-    </div>
+    <Router />
   );
 }
 
