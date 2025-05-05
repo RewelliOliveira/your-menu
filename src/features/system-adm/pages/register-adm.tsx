@@ -4,8 +4,7 @@ import { InputLogin } from "../components/ui/input-login";
 import { useState } from "react";
 import { createAccount } from "@/services/account-service";
 
-
-export function Cadastro() {
+export function Register() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
@@ -15,9 +14,10 @@ export function Cadastro() {
       alert('Preencha os campos obrigatorios.')
       return;
     }
-    if (password !== confirmPassword) (
-      alert('As senhas nao coincidem!')
-    )
+    if (password !== confirmPassword) {
+      alert('As senhas nao coincidem!');
+      return;
+    }
     try {
       const data = {
         email,

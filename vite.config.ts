@@ -13,5 +13,8 @@ export default defineConfig({
   },
   server: {
     host: true,
+    proxy: {
+      '/auth': 'http://localhost:8080',
+    }
   },
 });

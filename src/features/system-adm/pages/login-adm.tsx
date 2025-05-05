@@ -27,7 +27,7 @@ export function LoginAdm() {
         <div className="text-lg text-black">
           <p>
             Não tem uma conta?
-            <Link to="/cadastro">
+            <Link to="/register">
               <span className="text-orange-600 font-bold ml-1">Crie agora</span>
             </Link>
           </p>
