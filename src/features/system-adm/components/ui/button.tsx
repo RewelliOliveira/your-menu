@@ -1,14 +1,14 @@
-interface ButtonLoginProps {
+interface ButtonProps {
   children: React.ReactNode;
   onClick?: () => void;
   type?: "button" | "submit" | "reset";
 }
 
-export function ButtonLogin({
+export function Button({
   children,
   onClick,
   type = "button",
-}: ButtonLoginProps) {
+}: ButtonProps) {
   return (
     <button
       onClick={onClick}

@@ -10,6 +10,7 @@ body {
 @layer base {
   :root {
     --LaranjaYourMenu: #fe3e00;
+    --LaranjaYourMenu-50: rgba(254, 62, 0, 0.5);
     --VerdeYourMenu: #00b37e;
     --AzulEscuroYourMenu: #0a0f24;
     --BrancoYourMenu: #f5f5f5;
@@ -20,6 +21,9 @@ body {
 }
 .bg-LaranjaYourMenu {
   background-color: var(--LaranjaYourMenu);
+}
+.bg-LaranjaYourMenu-50 {
+  background-color: var(--LaranjaYourMenu-50);
 }
 
 .text-LaranjaYourMenu {
