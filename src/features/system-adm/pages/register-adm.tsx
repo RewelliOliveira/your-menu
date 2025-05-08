@@ -1,5 +1,5 @@
 import { Link } from "react-router-dom";
-import { ButtonLogin } from "../components/ui/button-login";
+import { ButtonLogin } from "../components/ui/button";
 import { InputLogin } from "../components/ui/input-login";
 import { useState } from "react";
 import { createAccount } from "@/services/account-service";

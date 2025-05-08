@@ -17,7 +17,7 @@ export function UploadLogo() {
   }
 
   return (
-    <div className="flex flex-col items-center justify-center gap-2">
+    <div className="flex flex-col items-center justify-center gap-2 mt-10">
       <div
         className="w-24 h-24 rounded-full bg-gray-200 flex items-center justify-center overflow-hidden cursor-pointer"
         onClick={triggerFileInput}
