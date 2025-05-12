@@ -5,7 +5,7 @@ import { TimerPicker } from "@/features/system-adm/components/ui/timer-picker";
 import { UploadLogo } from "@/features/system-adm/components/ui/upload-logo";
 import { SelectDay } from "../components/ui/select-day";
 
-export function PerfilRestaurante() {
+export function ProfileRestaurant() {
   return (
     <div className="min-h-screen flex flex-col items-center bg-gray-50">
       <header className="w-full flex items-center justify-center py-4 bg-orange-600 text-white fixed top-0 z-10">

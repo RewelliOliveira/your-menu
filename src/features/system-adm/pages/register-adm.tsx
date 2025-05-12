@@ -1,13 +1,15 @@
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { Button } from "../components/ui/button";
 import { InputLogin } from "../components/ui/input-login";
 import { useState } from "react";
-import { createAccount } from "@/services/account-service";
+import { createAccount } from "@/services/create-Account";
 
 export function RegisterAdm() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
+  const navigate = useNavigate();
+
 
   const handleSubmit = async () => {
     if (!email || !password || !confirmPassword) {
@@ -27,6 +29,7 @@ export function RegisterAdm() {
 
       await createAccount(data);
       alert("Cadastro realizado com sucesso!");
+      navigate("/")
     } catch (error) {
       console.error("Erro ao cadastrar:", error);
       alert("Erro no cadastro.");
