@@ -1,10 +1,10 @@
 import { Link } from "react-router-dom";
-import { ButtonLogin } from "../components/ui/button";
+import { Button } from "../components/ui/button";
 import { InputLogin } from "../components/ui/input-login";
 import { useState } from "react";
 import { createAccount } from "@/services/account-service";
 
-export function Register() {
+export function RegisterAdm() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
@@ -50,7 +50,7 @@ export function Register() {
       </div>
 
       <footer className="flex flex-col items-center gap-4 mt-6">
-        <ButtonLogin type="submit" onClick={handleSubmit}>Cadastrar</ButtonLogin>
+        <Button type="submit" onClick={handleSubmit}>Cadastrar</Button>
         <div className="text-lg text-black">
           <p>
             Ja tem uma conta?

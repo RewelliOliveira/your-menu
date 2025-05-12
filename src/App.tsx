@@ -1,9 +1,11 @@
 import "./App.css";
-import { PerfilRestaurante } from "./features/system-adm/pages/profile-restaurant";
+import { Router } from "./router/index";
 
 
 function App() {
-  return <PerfilRestaurante />;
+  return (
+    <Router/>
+  )
 }
 
 export default App;

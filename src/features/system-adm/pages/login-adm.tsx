@@ -1,5 +1,5 @@
 import "tailwindcss";
-import { ButtonLogin } from "../components/ui/button";
+import { Button } from "../components/ui/button";
 import { InputLogin } from "../components/ui/input-login";
 import { Link } from "react-router-dom";
 
@@ -23,7 +23,7 @@ export function LoginAdm() {
       </div>
 
       <footer className="flex flex-col grid-rows-2 items-center gap-4 mt-6">
-        <ButtonLogin type="submit">Entrar</ButtonLogin>
+        <Button type="submit">Entrar</Button>
         <div className="text-lg text-black">
           <p>
             Não tem uma conta?
