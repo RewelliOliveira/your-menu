@@ -2,7 +2,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { Button } from "../components/ui/button";
 import { InputLogin } from "../components/ui/input-login";
 import { useState } from "react";
-import { createAccount } from "@/services/create-Account";
+import { createAccount } from "@/services/create-account";
 
 export function RegisterAdm() {
   const [email, setEmail] = useState("");
@@ -37,14 +37,14 @@ export function RegisterAdm() {
   }
 
   return (
-    <div className="min-h-screen flex flex-col text-center justify-start gap-5 mx-auto max-w-md px-4 mt-20">
+    <div className="min-h-screen flex flex-col text-center justify-start gap-5 mx-auto max-w-md px-4 mt-20 lg:border-1 lg:min-h-0 lg:p-6 lg:gap-0 lg:rounded-[10px] lg:shadow">
       <header className="flex flex-col gap-5 ">
-        <div className="justify-center w-70 sm:w-50 md:w-100 mx-auto">
+        <div className="justify-center items-center w-70 mx-auto">
           <img src="/logo.svg" alt="Logo YourMenu" />
         </div>
       </header>
 
-      <div className="mt-8 bg-white py-6 sm:py-6 rounded-lg px-4 sm:px-4 md:px-8 lg:px-12">
+      <div className="mt-8 bg-white py-6 sm:py-6 rounded-lg px-4 lg:mt-0">
         <main>
           <InputLogin label="Email" placeholder="email@dominio.com" value={email} onChange={(e) => setEmail(e.target.value)} />
           <InputLogin label="Senha" placeholder="Digite uma senha forte" value={password} onChange={(e) => setPassword(e.target.value)} />
@@ -52,7 +52,7 @@ export function RegisterAdm() {
         </main>
       </div>
 
-      <footer className="flex flex-col items-center gap-4 mt-6">
+      <footer className="flex flex-col items-center gap-4 mt-6 lg:mt-3">
         <Button type="submit" onClick={handleSubmit}>Cadastrar</Button>
         <div className="text-lg text-black">
           <p>
