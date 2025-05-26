@@ -1,10 +1,11 @@
 import "./App.css";
-import { Router } from "./router/index";
+import { ProfileRestaurant } from "./features/system-adm/pages/profile-restaurant";
+
 
 
 function App() {
   return (
-    <Router/>
+    <ProfileRestaurant/>
   )
 }
 

@@ -1,18 +1,14 @@
-import { ArrowLeft } from "@/assets/icons-adm";
 import { Input } from "@/components/ui/input";
 import { LongButton } from "../components/ui/button-long";
 import { TimerPicker } from "@/features/system-adm/components/ui/timer-picker";
 import { UploadLogo } from "@/features/system-adm/components/ui/upload-logo";
 import { SelectDay } from "../components/ui/select-day";
+import { Header } from "../components/header";
 
 export function ProfileRestaurant() {
   return (
     <div className="min-h-screen flex flex-col items-center bg-gray-50">
-      <header className="w-full flex items-center justify-center py-4 bg-orange-600 text-white fixed top-0 z-10">
-        <ArrowLeft className="absolute left-4 text-white" />
-        <h1 className="text-xl font-semibold">Perfil</h1>
-      </header>
-
+      <Header />
       <main className="w-full max-w-md mt-16 mb-24 px-4 space-y-6">
         <UploadLogo />
 
