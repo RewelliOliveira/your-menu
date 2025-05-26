@@ -13,7 +13,7 @@ export function Button({
     <button
       onClick={onClick}
       type={type}
-      className="bg-orange-600 text-white w-4/5 sm:w-1/2 h-14 rounded-[10px] font-medium font-sans text-lg"
+      className="bg-orange-600 text-white w-4/5 sm:w-1/2 h-14 rounded-[10px] font-medium font-sans text-lg lg:h-11 lg:w-3/5"
     >
       {children}
     </button>

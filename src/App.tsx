@@ -1,9 +1,12 @@
 import "./App.css";
-import { PerfilRestaurante } from "./features/system-adm/pages/profile-restaurant";
+import { ProfileRestaurant } from "./features/system-adm/pages/profile-restaurant";
+
 
 
 function App() {
-  return <PerfilRestaurante />;
+  return (
+    <ProfileRestaurant/>
+  )
 }
 
 export default App;

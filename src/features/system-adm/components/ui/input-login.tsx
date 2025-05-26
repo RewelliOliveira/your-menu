@@ -14,7 +14,7 @@ export function InputLogin({
   onChange,
 }: InputLoginProps) {
   return (
-    <div className="flex flex-col items-center justify-center mb-5 w-full sm:w-80">
+    <div className="flex flex-col items-center justify-center mb-5 w-full">
       <div className="w-full flex flex-col">
         <label className="text-black font-bold text-left block mb-2">
           {label}
