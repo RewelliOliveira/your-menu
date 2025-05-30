@@ -1,12 +1,8 @@
 import "./App.css";
-import { ProfileRestaurant } from "./features/system-adm/pages/profile-restaurant";
-
-
+import { EditOrders } from "./features/system-adm/pages/edit-orders";
 
 function App() {
-  return (
-    <ProfileRestaurant/>
-  )
+  return <EditOrders />;
 }
 
 export default App;
