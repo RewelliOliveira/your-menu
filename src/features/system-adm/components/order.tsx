@@ -26,7 +26,7 @@ export function Order() {
   }, []);
 
   return (
-    <div className="flex flex-col bg-white w-55 h-60 m-10 rounded-sm shadow-xl/10">
+    <div className="flex flex-col bg-white w-55 h-60 m-4 rounded-sm shadow-xl/10 transition-all duration-300 hover:shadow-xl hover:scale-[1.02]">
       <img
         src={data.foodImg || "placeholder.svg"}
         alt="Imagem da comida"
