@@ -1,5 +1,6 @@
 import { Header } from "../components/header";
 import { Order, OrderProps } from "../components/order";
+import { OrderAdd } from "../components/order-add";
 import { Banner } from "../components/ui/banner";
 
 export const fakeOrders: OrderProps[] = [
@@ -42,10 +43,10 @@ export const fakeOrders: OrderProps[] = [
 
 export function EditOrders() {
   return (
-    <div>
+    <div className="bg-[#f5f5f5]">
       <Header />
       <Banner />
-      <div className="grid grid-cols-1 m-10 justify-items-center justify-between sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 p-4">
+      <div className="grid grid-cols-1 w-3/4 mx-auto justify-items-center justify-between sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 p-4">
         {fakeOrders.map((order) => (
           <Order
             key={order.name}
@@ -55,6 +56,7 @@ export function EditOrders() {
             foodImg={order.foodImg}
           />
         ))}
+        <OrderAdd />
       </div>
     </div>
   );

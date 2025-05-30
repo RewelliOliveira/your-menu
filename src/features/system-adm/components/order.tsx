@@ -9,7 +9,7 @@ export type OrderProps = {
 
 export function Order(order: OrderProps) {
   return (
-    <div className="flex flex-col bg-white w-55 h-60 m-4 rounded-xl shadow-xl/15 transition-all duration-300 hover:shadow-xl hover:scale-[1.02]">
+    <div className="flex flex-col bg-white w-55 h-60 m-4 rounded-xl shadow-lg transition-all duration-300 hover:shadow-xl hover:scale-[1.02]">
       <img
         src={order.foodImg || "placeholder.svg"}
         alt=""
@@ -26,11 +26,11 @@ export function Order(order: OrderProps) {
             onClick={() => console.log("Abrir modal")}
             type="button"
             aria-label="Editar prato"
-            className="group bg-white shadow-xl/15 w-8 h-8 flex items-center justify-center transition-all duration-300 rounded"
+            className="group bg-white shadow-lg w-8 h-8 flex items-center justify-center transition-all duration-300 rounded hover:w-16 hover:bg-[#fe0000]/80"
           >
             <Icon
               icon="solar:pen-2-outline"
-              className="w-5 h-5 text-gray-500 transition-colors duration-300 group-hover:text-orange-600"
+              className="w-5 h-5 text-gray-500 transition-colors duration-300 group-hover:text-white"
             />
           </button>
         </div>
