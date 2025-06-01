@@ -1,47 +1,85 @@
 import { Input } from "@/components/ui/input";
-import { LongButton } from "../components/ui/button-long";
-import { TimerPicker } from "@/features/system-adm/components/ui/timer-picker";
-import { UploadLogo } from "@/features/system-adm/components/ui/upload-logo";
-import { SelectDay } from "../components/ui/select-day";
 import { Header } from "../components/header";
+import { SelectDay } from "../components/ui/select-day";
+import { TimerPicker } from "../components/ui/timer-picker";
+import { Banner } from "../components/ui/banner";
 
 export function ProfileRestaurant() {
   return (
-    <div className="min-h-screen flex flex-col items-center bg-gray-50">
+    <div className="min-h-screen flex flex-col bg-gray-50">
       <Header />
-      <main className="w-full max-w-md mt-16 mb-24 px-4 space-y-6">
-        <UploadLogo />
+      <Banner />
 
-        <div>
-          <h2 className="text-black font-bold text-left mb-2">Nome do restaurante</h2>
-          <Input type="text" placeholder="Nome do restaurante" />
-        </div>
+      <main className="flex-grow flex justify-center items-start py-8">
+        <div className="w-full max-w-[75%] space-y-12 px-4">
+          <Section title="Informações gerais">
+            <div className="flex flex-col gap-8">
+              <Input label="Nome do restaurante*" type="text" className="w-2xl" />
+              <Input label="Descrição" type="text" />
+            </div>
+          </Section>
 
-        <div>
-          <h2 className="text-black font-bold text-left mb-2">Período de funcionamento</h2>
-          <div className="flex items-center justify-between">
-            <SelectDay />
-            <span className="text-black px-2">-</span>
-            <SelectDay />
-          </div>
-        </div>
+          <Section title="Funcionamento">
+            <div className="w-100">
+              <div className="flex">
+                <SelectDay/>
+                <SelectDay/>
+              </div>
+              <div className="flex flex-col gap-8 mt-4">
+                <TimerPicker label="Horário de funcionamento*" />
+                <TimerPicker label="Tempo de entrega estimado*" />
+              </div>
+            </div>
+          </Section>
 
-        <div>
-          <h2 className="text-black font-bold text-left mb-2">Horário de funcionamento</h2>
-          <TimerPicker />
-        </div>
+          <Section title="Endereço">
+            <div className="flex gap-8">
+              <Input label="CEP*" type="text" />
+              <Input label="Estado*" type="text" />
+            </div>
+            <div className="flex gap-8 mt-4">
+              <Input label="Cidade*" type="text"/>
+              <Input label="Bairro*" type="text" />
+            </div>
+            <div className="flex gap-8 mt-4">
+              <Input label="Rua*" type="text" />
+              <Input label="Numero" type="text" />
+            </div>
+          </Section>
 
-        <div>
-          <h2 className="text-black font-bold text-left mb-2">Tempo estimado de entrega</h2>
-          <Input type="text" placeholder="entre 1hr - 2hr" />
+          <Section title="Taxa de entrega">
+            <div className="space-y-4">
+              <p className="text-sm text-gray-600">
+                <strong>Atenção:</strong> para que clientes consigam selecionar um local de entrega, é necessário que o responsável pelo estabelecimento tenha cadastrado as zonas de entrega com seus valores. Indicamos que sejam cadastrados os diferentes bairros de entrega disponíveis.
+              </p>
+
+              <table className="w-full border border-gray-300 text-sm">
+                <thead className="bg-gray-100">
+                  <tr>
+                    <th className="px-4 py-2 border-b text-left">Local</th>
+                    <th className="px-4 py-2 border-b text-left">Valor R$</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr className="hover:bg-gray-50">
+                    <td className="px-4 py-2 border-b">Centro</td>
+                    <td className="px-4 py-2 border-b">Ocara</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </Section>
         </div>
       </main>
-
-      <footer className="w-full bg-white border-t border-gray-200 fixed bottom-0 py-4">
-        <div className="max-w-md w-full px-4 mx-auto">
-          <LongButton type="submit">Salvar informações</LongButton>
-        </div>
-      </footer>
     </div>
+  );
+}
+
+function Section({ title, children }: { title: string; children: React.ReactNode }) {
+  return (
+    <section className="space-y-4">
+      <h3 className="text-lg font-semibold text-gray-700">{title}</h3>
+      {children}
+    </section>
   );
 }

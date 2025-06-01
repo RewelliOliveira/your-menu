@@ -18,7 +18,7 @@ export function DropdownMenuDemo() {
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
-        <button><DropMenu className="w-10"/></button>
+        <button><DropMenu className="w-8 "/></button>
       </DropdownMenuTrigger>
       <DropdownMenuContent className="w-56">
         <DropdownMenuLabel>Opçoes</DropdownMenuLabel>

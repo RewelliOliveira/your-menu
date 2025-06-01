@@ -7,11 +7,15 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select"
+type InputProps = React.ComponentProps<"input"> & {
+  label?: string
+}
 
-export function SelectDay() {
+export function SelectDay({label}: InputProps) {
   return (
     <Select>
-      <SelectTrigger className="w-[180px]">
+      <label>{label}</label>
+      <SelectTrigger>
         <SelectValue placeholder="Selecione o dia" />
       </SelectTrigger>
       <SelectContent>
