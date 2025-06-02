@@ -1,12 +1,5 @@
-import "./App.css";
-import { ProfileRestaurant } from "./features/system-adm/pages/profile-restaurant";
+import { Router } from './router/router';
 
-
-
-function App() {
-  return (
-    <ProfileRestaurant/>
-  )
+export function App() {
+  return <Router />;
 }
-
-export default App;
