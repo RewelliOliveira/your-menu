@@ -5,6 +5,7 @@ export type OrderProps = {
   description: string;
   price: string;
   foodImg: string;
+  status: string;
 };
 
 export function MenuItem(order: OrderProps) {
