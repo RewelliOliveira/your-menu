@@ -1,5 +1,5 @@
-import type { Order } from "./card-order";
 import { Button } from "./button"; // Importe o componente Button
+import type { Order } from "./card-order";
 
 type OrderFooterProps = {
   orders: Order[];
@@ -20,16 +20,15 @@ export function OrderFooter({ orders, onVerMais }: OrderFooterProps) {
             / {entregues.length} pedidos
           </span>
         </p>
-          </div>
-          
-          <Button
-              onClick={onVerMais}
-              type="button"
-              className="!px-4 !py-2 !h-auto !w-auto !text-base"
-          >
-            Ver mais
-        </Button>
+      </div>
 
+      <Button
+        onClick={onVerMais}
+        type="button"
+        className="!px-4 !py-2 !h-auto !w-1/5 !text-base"
+      >
+        Ver mais
+      </Button>
     </div>
   );
 }

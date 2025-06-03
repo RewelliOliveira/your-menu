@@ -1,5 +1,5 @@
-import { Router } from './router/router';
+import { Orders } from "./features/system-adm/pages/orders";
 
 export function App() {
-  return <Router />;
+  return <Orders />;
 }
