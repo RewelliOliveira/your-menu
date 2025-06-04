@@ -3,11 +3,13 @@ import { InputLogin } from "../components/ui/input-login";
 import { Link, useNavigate } from "react-router-dom";
 import { useState } from "react";
 import { loginAccount } from "@/services/login-account";
+import { useAuth } from "@/contexts/auth-context";
 
 export function LoginAdm() {
   const [email, setEmail] = useState("")
   const [password, setPassword] = useState("");
   const navigate = useNavigate();
+  const { login } = useAuth();
 
   const handleSubmit = async () => {
     if (!email || !password) {
@@ -16,16 +18,12 @@ export function LoginAdm() {
     }
 
     try {
-      const data = {
-        email,
-        password,
-      };
-
+      const data = { email, password };
       const response = await loginAccount(data);
       const token = response.token;
 
       if (token) {
-        localStorage.setItem("token", token);
+        login(token);
         alert("Login realizado com sucesso!");
         navigate("/profile-restaurante");
       } else {

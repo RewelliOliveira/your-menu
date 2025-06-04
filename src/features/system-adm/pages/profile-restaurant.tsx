@@ -2,54 +2,9 @@ import { Input } from "@/components/ui/input";
 import { Header } from "../components/header";
 import { SelectDay } from "../components/ui/select-day";
 import { TimerPicker } from "../components/ui/timer-picker";
-import { useState } from "react";
 import { BannerAdm } from "../components/ui/banner-adm";
-import { restaurantAdress } from "@/services/adress-account";
-import { useAuth } from "@/contexts/auth-context";
 
 export function ProfileRestaurant() {
-  const [cep, setCep] = useState("");
-  const [state, setState] = useState("");
-  const [city, setCity] = useState("");
-  const [street, setStreet] = useState("");
-  const [number, setNumber] = useState("");
-  const [district, setDistrict] = useState("");
-  const [complement, setComplement] = useState("");
-  const [reference, setReference] = useState("");
-  const { token } = useAuth();
-
-  const handleSubmit = async () => {
-    if (!cep || !state || !city || !street || !number || !district) {
-      alert("Preencha todos os campos obrigatórios.");
-      return;
-    }
-
-    try {
-      const data = {
-        restaurantId: "123456", 
-        cep: parseInt(cep),
-        state,
-        city,
-        street,
-        number: parseInt(number),
-        district,
-        complement: complement || null,
-        reference: reference || null,
-      };
-
-      if (!token) {
-        alert("Usuário não autenticado.");
-        return;
-      }
-
-      await restaurantAdress(data, token);
-      alert("Endereço salvo com sucesso!");
-    } catch (error) {
-      console.error("Erro ao salvar endereço:", error);
-      alert("Erro ao salvar endereço.");
-    }
-  };
-
 
   return (
     <div className="min-h-screen flex flex-col bg-gray-50">
@@ -76,31 +31,6 @@ export function ProfileRestaurant() {
                 <TimerPicker label="Tempo de entrega estimado*" />
               </div>
             </div>
-          </Section>
-          <Section title="Endereço">
-            <div className="flex gap-8">
-              <Input label="CEP*" type="text" value={cep} onChange={(e) => setCep(e.target.value)} />
-              <Input label="Estado*" type="text" value={state} onChange={(e) => setState(e.target.value)} />
-            </div>
-            <div className="flex gap-8 mt-4">
-              <Input label="Cidade*" type="text" value={city} onChange={(e) => setCity(e.target.value)} />
-              <Input label="Bairro*" type="text" value={district} onChange={(e) => setDistrict(e.target.value)} />
-            </div>
-            <div className="flex gap-8 mt-4">
-              <Input label="Rua*" type="text" value={street} onChange={(e) => setStreet(e.target.value)} />
-              <Input label="Número*" type="text" value={number} onChange={(e) => setNumber(e.target.value)} />
-            </div>
-            <div className="flex gap-8 mt-4">
-              <Input label="Complemento" type="text" value={complement} onChange={(e) => setComplement(e.target.value)} />
-              <Input label="Referência" type="text" value={reference} onChange={(e) => setReference(e.target.value)} />
-            </div>
-
-            <button
-              className="mt-6 bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700"
-              onClick={handleSubmit}
-            >
-              Salvar endereço
-            </button>
           </Section>
 
           <Section title="Taxa de entrega">

@@ -1,6 +1,5 @@
-import {
-  LogOut,
-} from "lucide-react"
+import { useNavigate } from "react-router-dom";
+import { LogOut } from "lucide-react";
 
 import {
   DropdownMenu,
@@ -9,45 +8,53 @@ import {
   DropdownMenuItem,
   DropdownMenuLabel,
   DropdownMenuSeparator,
-  DropdownMenuShortcut,
   DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu"
-import { DropMenu } from "@/assets/icons-adm"
+} from "@/components/ui/dropdown-menu";
+
+import { DropMenu } from "@/assets/icons-adm";
 
 export function DropdownMenuDemo() {
+  const navigate = useNavigate();
+
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
-        <button><DropMenu className="w-8 "/></button>
+        <button><DropMenu className="w-8" /></button>
       </DropdownMenuTrigger>
       <DropdownMenuContent className="w-56">
-        <DropdownMenuLabel>Opçoes</DropdownMenuLabel>
+        <DropdownMenuLabel>Opções</DropdownMenuLabel>
         <DropdownMenuSeparator />
         <DropdownMenuGroup>
-          <DropdownMenuItem>
-            <span>Cardapio</span>
-            <DropdownMenuShortcut>⇧⌘P</DropdownMenuShortcut>
+          <DropdownMenuItem onClick={() => navigate("/cardapio")}>
+            Cardápio
           </DropdownMenuItem>
-          <DropdownMenuItem>
-            <span>Pedidos</span>
-            <DropdownMenuShortcut>⌘B</DropdownMenuShortcut>
+          <DropdownMenuItem onClick={() => navigate("/orders")}>
+            Pedidos
           </DropdownMenuItem>
-          <DropdownMenuItem>
-            <span>Configurar perfil</span>
-            <DropdownMenuShortcut>⌘S</DropdownMenuShortcut>
+          <DropdownMenuItem onClick={() => navigate("/profile-restaurante")}>
+            Configurar perfil
           </DropdownMenuItem>
-          <DropdownMenuItem>
-            <span>Historico de pedidos</span>
-            <DropdownMenuShortcut>⌘S</DropdownMenuShortcut>
+          <DropdownMenuItem onClick={() => navigate("/endereco")}>
+            Configurações de endereço
+          </DropdownMenuItem>
+          <DropdownMenuItem onClick={() => navigate("/entrega")}>
+            Configurações de entrega
+          </DropdownMenuItem>
+          <DropdownMenuItem onClick={() => navigate("/historico")}>
+            Histórico de pedidos
           </DropdownMenuItem>
         </DropdownMenuGroup>
         <DropdownMenuSeparator />
-        <DropdownMenuItem>
-          <LogOut />
+        <DropdownMenuItem
+          onClick={() => {
+            localStorage.removeItem("token");
+            navigate("/");
+          }}
+        >
+          <LogOut className="mr-2 h-4 w-4" />
           <span>Log out</span>
-          <DropdownMenuShortcut>⇧⌘Q</DropdownMenuShortcut>
         </DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>
-  )
+  );
 }

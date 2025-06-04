@@ -1,6 +1,6 @@
 import { api } from "./api";
 
-interface RestaurantAdress {
+interface RestaurantAdressApiProps {
   restaurantId: string;
   cep: number;
   state: string;
@@ -12,7 +12,7 @@ interface RestaurantAdress {
   reference: string | null;
 }
 
-export async function restaurantAdress(data: RestaurantAdress, token: string) {
+export async function restaurantAdressApi(data: RestaurantAdressApiProps, token: string) {
   try {
     const response = await api.post("/restaurantAdress", data, {
       headers: {
