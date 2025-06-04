@@ -12,14 +12,8 @@ interface RestaurantAdress {
   reference: string | null;
 }
 
-export async function restaurantAdress(data: RestaurantAdress) {
+export async function restaurantAdress(data: RestaurantAdress, token: string) {
   try {
-    const token = localStorage.getItem("token");
-
-    if (!token) {
-      throw new Error("Token de autenticação não encontrado.");
-    }
-
     const response = await api.post("/restaurantAdress", data, {
       headers: {
         Authorization: `Bearer ${token}`,

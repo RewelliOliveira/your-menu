@@ -1,7 +1,7 @@
 import "./App.css";
-import { Router } from "./router";
+import { Router } from "./router/router";
 
-function App() {
+export function App() {
   return (
     <Router/>
   )

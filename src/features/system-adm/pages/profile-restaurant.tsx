@@ -3,8 +3,9 @@ import { Header } from "../components/header";
 import { SelectDay } from "../components/ui/select-day";
 import { TimerPicker } from "../components/ui/timer-picker";
 import { useState } from "react";
-import { restaurantAdress } from "@/services/adress-account";
 import { BannerAdm } from "../components/ui/banner-adm";
+import { restaurantAdress } from "@/services/adress-account";
+import { useAuth } from "@/contexts/auth-context";
 
 export function ProfileRestaurant() {
   const [cep, setCep] = useState("");
@@ -15,7 +16,7 @@ export function ProfileRestaurant() {
   const [district, setDistrict] = useState("");
   const [complement, setComplement] = useState("");
   const [reference, setReference] = useState("");
-
+  const { token } = useAuth();
 
   const handleSubmit = async () => {
     if (!cep || !state || !city || !street || !number || !district) {
@@ -25,7 +26,7 @@ export function ProfileRestaurant() {
 
     try {
       const data = {
-        restaurantId: "123456", // substitua com ID real, ou use estado/contexto
+        restaurantId: "123456", 
         cep: parseInt(cep),
         state,
         city,
@@ -36,13 +37,19 @@ export function ProfileRestaurant() {
         reference: reference || null,
       };
 
-      await restaurantAdress(data);
+      if (!token) {
+        alert("Usuário não autenticado.");
+        return;
+      }
+
+      await restaurantAdress(data, token);
       alert("Endereço salvo com sucesso!");
     } catch (error) {
       console.error("Erro ao salvar endereço:", error);
       alert("Erro ao salvar endereço.");
     }
   };
+
 
   return (
     <div className="min-h-screen flex flex-col bg-gray-50">
