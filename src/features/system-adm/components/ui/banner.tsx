@@ -1,9 +1,7 @@
 import React, { useState, useEffect } from 'react';
+import { ConfirmModal } from './confirm-modal';
 
 export const Banner: React.FC = () => {
-
-  //APENAS FALTA A INTEGRAÇÃO
-
   const [data, setData] = useState({
     title: '',
     logoUrl: '',
@@ -11,6 +9,9 @@ export const Banner: React.FC = () => {
     estimatedTime: '',
     isOpen: false,
   });
+
+  const [showModal, setShowModal] = useState(false);
+  const [pendingStatus, setPendingStatus] = useState(false);
 
   useEffect(() => {
     setData({
@@ -22,8 +23,18 @@ export const Banner: React.FC = () => {
     });
   }, []);
 
-  const toggleOpen = () => {
-    setData((prev) => ({ ...prev, isOpen: !prev.isOpen }));
+  const handleToggleRequest = () => {
+    setPendingStatus(!data.isOpen);
+    setShowModal(true);
+  };
+
+  const confirmToggle = () => {
+    setData((prev) => ({ ...prev, isOpen: pendingStatus }));
+    setShowModal(false);
+  };
+
+  const cancelToggle = () => {
+    setShowModal(false);
   };
 
   return (
@@ -36,7 +47,7 @@ export const Banner: React.FC = () => {
 
       <div className="absolute top-2 right-2 z-20 flex items-center gap-2">
         <button
-          onClick={toggleOpen}
+          onClick={handleToggleRequest}
           className={`w-12 h-6 flex items-center rounded-full p-1 duration-300 ${
             data.isOpen ? 'bg-green-500' : 'bg-gray-400'
           }`}
@@ -61,11 +72,11 @@ export const Banner: React.FC = () => {
 
         <div className="flex gap-6 items-center text-sm mt-2">
           <div className="flex items-center gap-1 min-w-[90px]">
-          <img
-            src={data.isOpen ? '/aberto.svg' : '/fechado.svg'}
-            alt={data.isOpen ? 'Aberto' : 'Fechado'}
-            className="w-5 h-5"
-          />
+            <img
+              src={data.isOpen ? '/aberto.svg' : '/fechado.svg'}
+              alt={data.isOpen ? 'Aberto' : 'Fechado'}
+              className="w-5 h-5"
+            />
             <span className="inline-block min-w-[60px]">
               {data.isOpen ? 'Aberto' : 'Fechado'}
             </span>
@@ -77,6 +88,15 @@ export const Banner: React.FC = () => {
           </div>
         </div>
       </div>
+
+      {/* Modal de confirmação */}
+      <ConfirmModal
+        isOpen={showModal}
+        message={`Tem certeza que deseja ${pendingStatus ? 'abrir' : 'fechar'} o restaurante?`}
+        buttonmsg='Sim, tenho certeza'
+        onConfirm={confirmToggle}
+        onCancel={cancelToggle}
+      />
     </div>
   );
 };
