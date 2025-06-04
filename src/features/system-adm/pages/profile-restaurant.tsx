@@ -2,9 +2,9 @@ import { Input } from "@/components/ui/input";
 import { Header } from "../components/header";
 import { SelectDay } from "../components/ui/select-day";
 import { TimerPicker } from "../components/ui/timer-picker";
-import { Banner } from "../components/ui/banner";
 import { useState } from "react";
 import { restaurantAdress } from "@/services/adress-account";
+import { BannerAdm } from "../components/ui/banner-adm";
 
 export function ProfileRestaurant() {
   const [cep, setCep] = useState("");
@@ -47,7 +47,7 @@ export function ProfileRestaurant() {
   return (
     <div className="min-h-screen flex flex-col bg-gray-50">
       <Header />
-      <Banner />
+      <BannerAdm />
 
       <main className="flex-grow flex justify-center items-start py-8">
         <div className="w-full max-w-[75%] space-y-12 px-4">
