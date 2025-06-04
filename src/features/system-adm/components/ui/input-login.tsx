@@ -1,5 +1,5 @@
 interface InputLoginProps {
-  placeholder: string;
+  placeholder?: string;
   label: string;
   type?: string;
   value?: string;
