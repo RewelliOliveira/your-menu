@@ -1,29 +1,30 @@
-import { useState, useRef, useEffect } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 
-// Define os tipos de propriedades aceitas pelo componente
-type TabbedSectionsProps<T, D> = {
-  title: string; // Título exibido acima das abas
-  categories: readonly T[]; // Lista de categorias/abas
-  data: D[]; // Lista completa dos dados a serem exibidos
-  renderItem: (item: D) => React.ReactNode; // Função que renderiza um item da lista
-  filterByCategory?: (item: D, category: T) => boolean; // Função de filtro personalizada (opcional)
+type TabbedSectionsProps<T extends string, D> = {
+  title: string;
+  data: D[];
+  renderItem: (item: D) => React.ReactNode;
+  getCategory: (item: D) => T; // função que retorna a categoria de um item
+  renderAfterItems?: () => React.ReactNode; // opcional, para adicionar conteúdo após os itens
 };
 
-// Componente principal
 export function TabbedSections<T extends string, D>({
   title,
-  categories,
   data,
   renderItem,
-  filterByCategory,
+  getCategory,
+  renderAfterItems,
 }: TabbedSectionsProps<T, D>) {
-  // Estado da aba atualmente selecionada
-  const [selectedTab, setSelectedTab] = useState<T>(categories[0]);
+  // Categorias extraídas dinamicamente
+  const categories = useMemo(() => {
+    const unique = new Set<T>();
+    data.forEach((item) => unique.add(getCategory(item)));
+    return Array.from(unique);
+  }, [data, getCategory]);
 
-  // Estado para ativar classe sticky quando a barra de abas colar no topo
+  const [selectedTab, setSelectedTab] = useState<T>(categories[0] ?? ("" as T));
   const [isSticky, setIsSticky] = useState(false);
 
-  // Referências para cada seção de categoria (usado para scroll automático)
   const sectionRefs = useRef<Record<T, HTMLDivElement | null>>(
     categories.reduce((acc, cat) => {
       acc[cat] = null;
@@ -36,12 +37,9 @@ export function TabbedSections<T extends string, D>({
 
   // Função chamada ao clicar em uma aba
   function handleTabClick(tab: T) {
-    setSelectedTab(tab); // Atualiza a aba ativa
-
-    const el = sectionRefs.current[tab]; // Elemento da seção da aba clicada
-    const tabsHeight = tabsRef.current?.offsetHeight || 0; // Altura da barra de abas
-
-    // Faz scroll suave até a seção correspondente
+    setSelectedTab(tab);
+    const el = sectionRefs.current[tab];
+    const tabsHeight = tabsRef.current?.offsetHeight || 0;
     if (el) {
       window.scrollTo({
         top: el.offsetTop - tabsHeight,
@@ -55,26 +53,22 @@ export function TabbedSections<T extends string, D>({
     function handleScroll() {
       if (!tabsRef.current) return;
       const top = tabsRef.current.getBoundingClientRect().top;
-      setIsSticky(top <= 0); // Se a barra encostou no topo, ativa sticky
+      setIsSticky(top <= 0);
     }
 
     window.addEventListener("scroll", handleScroll);
-    handleScroll(); // Executa imediatamente ao montar
-    return () => window.removeEventListener("scroll", handleScroll); // Limpeza do listener
+    handleScroll();
+    return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
-  // Filtro padrão (caso o usuário não tenha fornecido um personalizado)
-  const defaultFilter = (item: D, category: T) =>
-    (item as any).status === category;
-
   return (
-    <div className="w-full bg-[#EDE4CF] py-6">
+    <div className="w-full bg-[#f5f5f5] py-6">
       <div className="max-w-[75%] mx-auto px-4">
-        {/* Título principal */}
-        <h1 className="text-xl font-semibold text-center text-gray-800 mb-4">{title}</h1>
+        <h1 className="text-xl font-semibold text-center text-gray-800 mb-4">
+          {title}
+        </h1>
 
-        {/* Barra de Abas (Tabs) */}
-        <div ref={tabsRef} className="sticky top-0 bg-[#EDE4CF] z-10 mb-6">
+        <div ref={tabsRef} className="sticky top-0 bg-[#f5f5f5] z-10 mb-6">
           <div className="flex justify-between">
             {categories.map((tab) => {
               const isSelected = selectedTab === tab;
@@ -86,11 +80,11 @@ export function TabbedSections<T extends string, D>({
                     ${
                       isSticky
                         ? isSelected
-                          ? "border-b-4 border-orange-500" // Aba ativa com borda inferior (modo sticky)
-                          : "border-b-2 border-black" // Aba inativa com borda inferior (modo sticky)
+                          ? "border-b-4 border-orange-500"
+                          : "border-b-2 border-black"
                         : isSelected
-                        ? "border-t-4 border-orange-500" // Aba ativa com borda superior (modo normal)
-                        : "border-t-2 border-black" // Aba inativa com borda superior (modo normal)
+                        ? "border-t-4 border-orange-500"
+                        : "border-t-2 border-black"
                     }
                   `}
                 >
@@ -101,35 +95,32 @@ export function TabbedSections<T extends string, D>({
           </div>
         </div>
 
-        {/* Renderização de cada seção de categoria */}
         {categories.map((tab) => {
-          // Aplica filtro por categoria (personalizado ou padrão)
-          const filteredItems = data.filter((item) =>
-            filterByCategory ? filterByCategory(item, tab) : defaultFilter(item, tab)
+          const filteredItems = data.filter(
+            (item) => getCategory(item) === tab
           );
 
           return (
             <div
               key={tab}
               ref={(el) => {
-                sectionRefs.current[tab] = el; // Salva referência da seção
+                sectionRefs.current[tab] = el;
               }}
               className="mb-12"
             >
-              {/* Título da seção */}
               <h2 className="text-lg font-semibold mb-4">{tab}</h2>
-
-              {/* Renderiza os itens filtrados ou mensagem vazia */}
               {filteredItems.length > 0 ? (
                 <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-                  {filteredItems.map((item) => (
-                    <div key={(item as any).id}>
-                      {renderItem(item)}
-                    </div>
+                  {filteredItems.map((item, index) => (
+                    <div key={index}>{renderItem(item)}</div>
                   ))}
+                  {renderAfterItems && <div>{renderAfterItems()}</div>}
                 </div>
               ) : (
-                <p className="text-black-600">Nenhum item nesta seção.</p>
+                <div className="grid grid-cols-1">
+                  {renderAfterItems && <div>{renderAfterItems()}</div>}
+                  <p className="text-black-600">Nenhum item nesta seção.</p>
+                </div>
               )}
             </div>
           );
