@@ -1,9 +1,13 @@
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+interface TimerPickerProps {
+  label?: string;
+}
 
-export function TimerPicker() {
+export function TimerPicker({ label }: TimerPickerProps) {
   return (
     <div className="flex flex-col gap-4">
+      <label>{label}</label>
       <div className="flex items-center justify-between">
         <div className="flex flex-col gap-2 w-full">
           <Label htmlFor="abertura">Abertura</Label>

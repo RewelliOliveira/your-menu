@@ -51,9 +51,11 @@ export function LoginAdm() {
             label="Email"
             placeholder="email@dominio.com"
             value={email}
+            type="email"
             onChange={(e) => setEmail(e.target.value)} />
           <InputLogin
             label="Senha"
+            type="password"
             placeholder="********"
             value={password}
             onChange={(e) => setPassword(e.target.value)}

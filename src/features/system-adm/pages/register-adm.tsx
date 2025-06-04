@@ -5,14 +5,14 @@ import { useState } from "react";
 import { createAccount } from "@/services/create-account";
 
 export function RegisterAdm() {
+  const [fullName, setFullName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const navigate = useNavigate();
 
-
   const handleSubmit = async () => {
-    if (!email || !password || !confirmPassword) {
+    if (!fullName || !email || !password || !confirmPassword) {
       alert('Preencha os campos obrigatorios.')
       return;
     }
@@ -24,7 +24,7 @@ export function RegisterAdm() {
       const data = {
         email,
         password,
-        fullName: "Maria do Carmo da Silva"
+        fullName
       };
 
       await createAccount(data);
@@ -46,9 +46,10 @@ export function RegisterAdm() {
 
       <div className="mt-8 bg-white py-6 sm:py-6 rounded-lg px-4 lg:mt-0">
         <main>
-          <InputLogin label="Email" placeholder="email@dominio.com" value={email} onChange={(e) => setEmail(e.target.value)} />
-          <InputLogin label="Senha" placeholder="Digite uma senha forte" value={password} onChange={(e) => setPassword(e.target.value)} />
-          <InputLogin label="Repita sua senha" placeholder="Digite novamente" value={confirmPassword} onChange={(e) => setConfirmPassword(e.target.value)} />
+          <InputLogin label="Nome" type="text" value={fullName} onChange={(e) => setFullName(e.target.value)} />
+          <InputLogin label="Email" placeholder="email@dominio.com" type="email" value={email} onChange={(e) => setEmail(e.target.value)} />
+          <InputLogin label="Senha" placeholder="Digite uma senha forte" type="password" value={password} onChange={(e) => setPassword(e.target.value)} />
+          <InputLogin label="Repita sua senha" placeholder="Digite novamente" type="password" value={confirmPassword} onChange={(e) => setConfirmPassword(e.target.value)} />
         </main>
       </div>
 
