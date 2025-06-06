@@ -5,6 +5,8 @@ import { RegisterAdm } from '../features/system-adm/pages/register-adm';
 import { ProfileRestaurant } from '@/features/system-adm/pages/profile-restaurant';
 import { Orders } from '@/features/system-adm/pages/orders';
 import { PrivateRoute } from './private-router';
+import { RestaurantAdress } from '@/features/system-adm/pages/restaurant-adress';
+import { EditMenu } from '@/features/system-adm/pages/edit-menu';
 
 
 export function Router() {
@@ -15,10 +17,10 @@ export function Router() {
         <Route path="/register" element={<RegisterAdm />} />
 
         <Route
-          path="/profile-restaurante"
+          path="/edit-menu"
           element={
             <PrivateRoute>
-              <ProfileRestaurant />
+              <EditMenu />
             </PrivateRoute>
           }
         />
@@ -27,6 +29,22 @@ export function Router() {
           element={
             <PrivateRoute>
               <Orders />
+            </PrivateRoute>
+          }
+        />
+        <Route
+          path="/profile-restaurant"
+          element={
+            <PrivateRoute>
+              <ProfileRestaurant />
+            </PrivateRoute>
+          }
+        />
+        <Route
+          path="/restaurant-adress"
+          element={
+            <PrivateRoute>
+              <RestaurantAdress />
             </PrivateRoute>
           }
         />

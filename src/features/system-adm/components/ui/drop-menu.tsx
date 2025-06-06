@@ -25,16 +25,16 @@ export function DropdownMenuDemo() {
         <DropdownMenuLabel>Opções</DropdownMenuLabel>
         <DropdownMenuSeparator />
         <DropdownMenuGroup>
-          <DropdownMenuItem onClick={() => navigate("/cardapio")}>
+          <DropdownMenuItem onClick={() => navigate("/edit-menu")}>
             Cardápio
           </DropdownMenuItem>
           <DropdownMenuItem onClick={() => navigate("/orders")}>
             Pedidos
           </DropdownMenuItem>
-          <DropdownMenuItem onClick={() => navigate("/profile-restaurante")}>
+          <DropdownMenuItem onClick={() => navigate("/profile-restaurant")}>
             Configurar perfil
           </DropdownMenuItem>
-          <DropdownMenuItem onClick={() => navigate("/endereco")}>
+          <DropdownMenuItem onClick={() => navigate("/restaurant-adress")}>
             Configurações de endereço
           </DropdownMenuItem>
           <DropdownMenuItem onClick={() => navigate("/entrega")}>

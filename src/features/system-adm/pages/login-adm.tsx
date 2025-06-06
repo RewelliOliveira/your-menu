@@ -25,7 +25,7 @@ export function LoginAdm() {
       if (token) {
         login(token);
         alert("Login realizado com sucesso!");
-        navigate("/profile-restaurante");
+        navigate("/profile-restaurant");
       } else {
         alert("Token não retornado pelo servidor.");
       }
