@@ -3,18 +3,67 @@ import { Header } from "../components/header";
 import { SelectDay } from "../components/ui/select-day";
 import { TimerPicker } from "../components/ui/timer-picker";
 import { BannerAdm } from "../components/ui/banner-adm";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { restaurantProfileApi } from "@/services/restaurant-profile";
 import { useAuth } from "@/contexts/auth-context";
 import { DeliveryInput } from "../components/ui/delivey-input";
-import { WeekDays } from "@/constants/week-days"
+import { WeekDays } from "@/constants/week-days";
 import { Button } from "../components/ui/button";
+import { AddZoneModal } from "../components/ui/add-zone-modal";
+import { getDeliveryZones, saveDeliveryZone } from "@/services/delivery-zone";
 
 export function ProfileRestaurant() {
   const [name, setName] = useState('');
   const [deliveryTimeMin, setDeliveryTimeMin] = useState("");
   const [deliveryTimeMax, setDeliveryTimeMax] = useState("");
   const { token } = useAuth();
+
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [zones, setZones] = useState<{ local: string; valor: string }[]>([]);
+
+  const restaurantSlug = "delicias-do-rancho";
+
+  useEffect(() => {
+    async function fetchZones() {
+      if (!token) return;
+
+      try {
+        const data = await getDeliveryZones(restaurantSlug, token);
+        setZones(data.map((item: any) => ({
+          local: item.zone,
+          valor: item.deliveryFee.toFixed(2).replace('.', ',')
+        })));
+      } catch (error) {
+        console.error("Erro ao buscar zonas:", error);
+        alert("Erro ao carregar zonas de entrega.");
+      }
+    }
+
+    fetchZones();
+  }, [token]);
+
+  const handleAddZone = async (zone: string, valor: string) => {
+    if (!token) {
+      alert("Usuário não autenticado.");
+      return;
+    }
+
+    try {
+      const payload = {
+        zone,
+        deliveryFee: parseFloat(valor.replace(',', '.')),
+        restaurantSlug,
+      };
+
+      await saveDeliveryZone(payload, token);
+
+      setZones(prev => [...prev, { local: zone, valor }]);
+      alert("Zona adicionada com sucesso!");
+    } catch (error) {
+      console.error("Erro ao adicionar zona:", error);
+      alert("Erro ao adicionar zona.");
+    }
+  };
 
   const handleSubmit = async () => {
     if (!name || !deliveryTimeMin || !deliveryTimeMax) {
@@ -95,22 +144,38 @@ export function ProfileRestaurant() {
                   </tr>
                 </thead>
                 <tbody>
-                  <tr className="hover:bg-gray-50">
-                    <td className="px-4 py-2 border-b">Centro</td>
-                    <td className="px-4 py-2 border-b">Ocara</td>
-                  </tr>
+                  {zones.map((zone, index) => (
+                    <tr key={index} className="hover:bg-gray-50">
+                      <td className="px-4 py-2 border-b">{zone.local}</td>
+                      <td className="px-4 py-2 border-b">{zone.valor}</td>
+                    </tr>
+                  ))}
                 </tbody>
               </table>
+
+              <Button
+                className="max-w-40 !bg-[#00B37E] hover:!bg-[#00875F] text-white"
+                onClick={() => setIsModalOpen(true)}
+              >
+                Adicionar zona
+              </Button>
             </div>
           </Section>
         </div>
       </main>
+
       <footer className="flex justify-center bg-black/5">
         <div className="flex justify-between w-full max-w-[75%] py-5">
           <Button className="max-w-40 bg-transparent text-black border border-black hover:text-white hover:border-white">Copiar Link</Button>
           <Button className="max-w-40" onClick={handleSubmit}>Salvar</Button>
         </div>
       </footer>
+
+      <AddZoneModal
+        isOpen={isModalOpen}
+        onClose={() => setIsModalOpen(false)}
+        onAdd={handleAddZone}
+      />
     </div>
   );
 }
