@@ -4,7 +4,7 @@ import { SelectDay } from "../components/ui/select-day";
 import { TimerPicker } from "../components/ui/timer-picker";
 import { BannerAdm } from "../components/ui/banner-adm";
 import { useState } from "react";
-import { restaurantProfileApi } from "@/services/restaurant-profile";
+import { restaurantProfileApi } from "@/services/restaurant-profile-api";
 import { useAuth } from "@/contexts/auth-context";
 import { DeliveryInput } from "../components/ui/delivey-input";
 import { WeekDays } from "@/constants/week-days"
@@ -14,6 +14,9 @@ export function ProfileRestaurant() {
   const [name, setName] = useState('');
   const [deliveryTimeMin, setDeliveryTimeMin] = useState("");
   const [deliveryTimeMax, setDeliveryTimeMax] = useState("");
+  const [profilePicFile, setProfilePicFile] = useState<File | null>(null);
+  const [bannerPicFile, setBannerPicFile] = useState<File | null>(null);
+
   const { token } = useAuth();
 
   const handleSubmit = async () => {
@@ -31,21 +34,40 @@ export function ProfileRestaurant() {
       const data = {
         name,
         deliveryTimeMin: parseInt(deliveryTimeMin),
-        deliveryTimeMax: parseInt(deliveryTimeMax)
+        deliveryTimeMax: parseInt(deliveryTimeMax),
+        profilePicFile,
+        bannerPicFile,
       };
 
-      await restaurantProfileApi(data, token);
+      console.log("🔍 Dados preparados para envio:");
+      console.log("Nome:", data.name);
+      console.log("Tempo de entrega:", data.deliveryTimeMin, "-", data.deliveryTimeMax);
+      console.log("Arquivo de perfil:", data.profilePicFile);
+      console.log("Arquivo de banner:", data.bannerPicFile);
+
+      const response = await restaurantProfileApi(data, token);
+
+      console.log("✅ Resposta da API:", response);
+      console.log("ID do restaurante cadastrado:", response.id);
+
       alert("Restaurante cadastrado!");
     } catch (error) {
-      console.error("Erro ao salvar restaurante:", error);
+      console.error("❌ Erro ao salvar restaurante:", error);
       alert("Erro ao salvar restaurante.");
     }
   };
 
+
   return (
     <div className="min-h-screen flex flex-col bg-gray-50">
       <Header />
-      <BannerAdm />
+      <BannerAdm
+        profilePicFile={profilePicFile}
+        bannerPicFile={bannerPicFile}
+        setProfilePicFile={setProfilePicFile}
+        setBannerPicFile={setBannerPicFile}
+      />
+
 
       <main className="flex-grow flex justify-center items-start py-8">
         <div className="w-full max-w-[75%] space-y-12 px-4">
@@ -80,31 +102,9 @@ export function ProfileRestaurant() {
               </div>
             </div>
           </Section>
-
-          <Section title="Taxa de entrega">
-            <div className="space-y-4">
-              <p className="text-sm text-gray-600">
-                <strong>Atenção:</strong> para que clientes consigam selecionar um local de entrega, é necessário que o responsável pelo estabelecimento tenha cadastrado as zonas de entrega com seus valores. Indicamos que sejam cadastrados os diferentes bairros de entrega disponíveis.
-              </p>
-
-              <table className="w-full border border-gray-300 text-sm">
-                <thead className="bg-gray-100">
-                  <tr>
-                    <th className="px-4 py-2 border-b text-left">Local</th>
-                    <th className="px-4 py-2 border-b text-left">Valor R$</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <tr className="hover:bg-gray-50">
-                    <td className="px-4 py-2 border-b">Centro</td>
-                    <td className="px-4 py-2 border-b">Ocara</td>
-                  </tr>
-                </tbody>
-              </table>
-            </div>
-          </Section>
         </div>
       </main>
+
       <footer className="flex justify-center bg-black/5">
         <div className="flex justify-between w-full max-w-[75%] py-5">
           <Button className="max-w-40 bg-transparent text-black border border-black hover:text-white hover:border-white">Copiar Link</Button>
