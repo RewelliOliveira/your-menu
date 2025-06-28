@@ -1,6 +1,8 @@
+import { ReactNode } from "react";
+
 interface InputLoginProps {
   placeholder?: string;
-  label: string;
+  label: ReactNode;
   type?: string;
   value?: string;
   onChange?: (e: React.ChangeEvent<HTMLInputElement>) => void;
