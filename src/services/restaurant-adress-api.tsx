@@ -1,6 +1,6 @@
 import { api } from "./api";
 
-interface RestaurantAdress {
+interface RestaurantAdressApiProps {
   restaurantId: string;
   cep: number;
   state: string;
@@ -12,14 +12,8 @@ interface RestaurantAdress {
   reference: string | null;
 }
 
-export async function restaurantAdress(data: RestaurantAdress) {
+export async function restaurantAdressApi(data: RestaurantAdressApiProps, token: string) {
   try {
-    const token = localStorage.getItem("token");
-
-    if (!token) {
-      throw new Error("Token de autenticação não encontrado.");
-    }
-
     const response = await api.post("/restaurantAdress", data, {
       headers: {
         Authorization: `Bearer ${token}`,

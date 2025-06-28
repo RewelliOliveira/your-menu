@@ -2,124 +2,135 @@ import { Input } from "@/components/ui/input";
 import { Header } from "../components/header";
 import { SelectDay } from "../components/ui/select-day";
 import { TimerPicker } from "../components/ui/timer-picker";
-import { useState } from "react";
-import { restaurantAdress } from "@/services/adress-account";
 import { BannerAdm } from "../components/ui/banner-adm";
+import { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { restaurantProfileApi } from "@/services/restaurant-profile-api";
+import { useAuth } from "@/contexts/auth-context";
+import { DeliveryInput } from "../components/ui/delivey-input";
+import { WeekDays } from "@/constants/week-days"
+import { Button } from "../components/ui/button";
+import { restaurantHoursApi } from "@/services/restaurant-hours-api";
 
 export function ProfileRestaurant() {
-  const [cep, setCep] = useState("");
-  const [state, setState] = useState("");
-  const [city, setCity] = useState("");
-  const [street, setStreet] = useState("");
-  const [number, setNumber] = useState("");
-  const [district, setDistrict] = useState("");
-  const [complement, setComplement] = useState("");
-  const [reference, setReference] = useState("");
-
+  const [name, setName] = useState('');
+  const [weekdayStart, setWeekdayStart] = useState("");
+  const [weekdayEnd, setWeekdayEnd] = useState("");
+  const [openingTime, setOpeningTime] = useState("");
+  const [closingTime, setClosingTime] = useState("");
+  const [deliveryTimeMin, setDeliveryTimeMin] = useState("");
+  const [deliveryTimeMax, setDeliveryTimeMax] = useState("");
+  const [profilePicFile, setProfilePicFile] = useState<File | null>(null);
+  const [bannerPicFile, setBannerPicFile] = useState<File | null>(null);
+  const navigate = useNavigate();
+  const { token } = useAuth();
 
   const handleSubmit = async () => {
-    if (!cep || !state || !city || !street || !number || !district) {
+    if (!weekdayStart || !weekdayEnd) {
+      alert("Selecione os dias de funcionamento.");
+      return;
+    }
+    if (!name || !deliveryTimeMin || !deliveryTimeMax || !openingTime || !closingTime) {
       alert("Preencha todos os campos obrigatórios.");
+      return;
+    }
+
+    if (!token) {
+      alert("Usuário não autenticado.");
       return;
     }
 
     try {
       const data = {
-        restaurantId: "123456", // substitua com ID real, ou use estado/contexto
-        cep: parseInt(cep),
-        state,
-        city,
-        street,
-        number: parseInt(number),
-        district,
-        complement: complement || null,
-        reference: reference || null,
+        name,
+        deliveryTimeMin: parseInt(deliveryTimeMin),
+        deliveryTimeMax: parseInt(deliveryTimeMax),
+        profilePicFile,
+        bannerPicFile,
       };
 
-      await restaurantAdress(data);
-      alert("Endereço salvo com sucesso!");
-    } catch (error) {
-      console.error("Erro ao salvar endereço:", error);
-      alert("Erro ao salvar endereço.");
+      const response = await restaurantProfileApi(data, token);
+      const restaurantId = response.id;
+
+      const horarioFixo = {
+        weekday_start: weekdayStart,
+        weekday_end: weekdayEnd,
+        openingTime,
+        closingTime,
+      };
+
+      await restaurantHoursApi(restaurantId, horarioFixo, token);
+      alert("Restaurante cadastrado com horários!");
+      navigate("/edit-menu")
+    } catch (error: any) {
+      if (error.response) {
+        console.error("❌ Erro detalhado da API:", error.response.data);
+      } else {
+        console.error("❌ Erro ao salvar restaurante ou horários:", error.message);
+      }
+      alert("Erro ao salvar restaurante ou horários.");
     }
   };
 
   return (
     <div className="min-h-screen flex flex-col bg-gray-50">
       <Header />
-      <BannerAdm />
+      <BannerAdm
+        profilePicFile={profilePicFile}
+        bannerPicFile={bannerPicFile}
+        setProfilePicFile={setProfilePicFile}
+        setBannerPicFile={setBannerPicFile}
+      />
 
       <main className="flex-grow flex justify-center items-start py-8">
         <div className="w-full max-w-[75%] space-y-12 px-4">
           <Section title="Informações gerais">
             <div className="flex flex-col gap-8">
-              <Input label="Nome do restaurante*" type="text" className="w-2xl" />
-              <Input label="Descrição" type="text" />
+              <Input label="Nome do restaurante*" type="text" className="w-2xl" value={name} onChange={(e) => setName(e.target.value)} />
             </div>
           </Section>
 
           <Section title="Funcionamento">
             <div className="w-100">
-              <div className="flex">
-                <SelectDay />
-                <SelectDay />
+              <div className="w-full mb-1.5">
+                <label htmlFor="Periodo de funcionamento">Dias de funcionamento*:</label>
               </div>
-              <div className="flex flex-col gap-8 mt-4">
-                <TimerPicker label="Horário de funcionamento*" />
-                <TimerPicker label="Tempo de entrega estimado*" />
+              <div className="flex items-center justify-between gap-5">
+                <div className="w-full">
+                  <SelectDay options={WeekDays} value={weekdayStart} onChange={setWeekdayStart} />
+                </div>
+                <div className="w-full">
+                  <SelectDay options={WeekDays} value={weekdayEnd} onChange={setWeekdayEnd} />
+                </div>
               </div>
-            </div>
-          </Section>
-          <Section title="Endereço">
-            <div className="flex gap-8">
-              <Input label="CEP*" type="text" value={cep} onChange={(e) => setCep(e.target.value)} />
-              <Input label="Estado*" type="text" value={state} onChange={(e) => setState(e.target.value)} />
-            </div>
-            <div className="flex gap-8 mt-4">
-              <Input label="Cidade*" type="text" value={city} onChange={(e) => setCity(e.target.value)} />
-              <Input label="Bairro*" type="text" value={district} onChange={(e) => setDistrict(e.target.value)} />
-            </div>
-            <div className="flex gap-8 mt-4">
-              <Input label="Rua*" type="text" value={street} onChange={(e) => setStreet(e.target.value)} />
-              <Input label="Número*" type="text" value={number} onChange={(e) => setNumber(e.target.value)} />
-            </div>
-            <div className="flex gap-8 mt-4">
-              <Input label="Complemento" type="text" value={complement} onChange={(e) => setComplement(e.target.value)} />
-              <Input label="Referência" type="text" value={reference} onChange={(e) => setReference(e.target.value)} />
-            </div>
+              <div className="flex flex-col gap-8 mt-8">
+                <TimerPicker
+                  label="Horário de funcionamento*"
+                  valueStart={openingTime}
+                  valueEnd={closingTime}
+                  onChangeStart={setOpeningTime}
+                  onChangeEnd={setClosingTime}
+                />
 
-            <button
-              className="mt-6 bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700"
-              onClick={handleSubmit}
-            >
-              Salvar endereço
-            </button>
-          </Section>
-
-          <Section title="Taxa de entrega">
-            <div className="space-y-4">
-              <p className="text-sm text-gray-600">
-                <strong>Atenção:</strong> para que clientes consigam selecionar um local de entrega, é necessário que o responsável pelo estabelecimento tenha cadastrado as zonas de entrega com seus valores. Indicamos que sejam cadastrados os diferentes bairros de entrega disponíveis.
-              </p>
-
-              <table className="w-full border border-gray-300 text-sm">
-                <thead className="bg-gray-100">
-                  <tr>
-                    <th className="px-4 py-2 border-b text-left">Local</th>
-                    <th className="px-4 py-2 border-b text-left">Valor R$</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <tr className="hover:bg-gray-50">
-                    <td className="px-4 py-2 border-b">Centro</td>
-                    <td className="px-4 py-2 border-b">Ocara</td>
-                  </tr>
-                </tbody>
-              </table>
+                <DeliveryInput
+                  label="Intervalo de entrega*"
+                  deliveryTimeMin={deliveryTimeMin}
+                  deliveryTimeMax={deliveryTimeMax}
+                  onChangeMin={setDeliveryTimeMin}
+                  onChangeMax={setDeliveryTimeMax}
+                />
+              </div>
             </div>
           </Section>
         </div>
       </main>
+
+      <footer className="flex justify-center bg-black/5">
+        <div className="flex justify-between w-full max-w-[75%] py-5">
+          <Button className="max-w-40 bg-transparent text-black border border-black hover:text-white hover:border-white">Copiar Link</Button>
+          <Button className="max-w-40" onClick={handleSubmit}>Salvar</Button>
+        </div>
+      </footer>
     </div>
   );
 }
@@ -127,7 +138,7 @@ export function ProfileRestaurant() {
 function Section({ title, children }: { title: string; children: React.ReactNode }) {
   return (
     <section className="space-y-4">
-      <h3 className="text-lg font-semibold text-gray-700">{title}</h3>
+      <h3 className="text-2xl font-semibold text-gray-700">{title}</h3>
       {children}
     </section>
   );

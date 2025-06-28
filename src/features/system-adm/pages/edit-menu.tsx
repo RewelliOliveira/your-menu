@@ -77,7 +77,7 @@ export const fakeOrders: OrderProps[] = [
   },
 ];
 
-export function EditOrders() {
+export function EditMenu() {
   return (
     <div className="bg-[#f5f5f5]">
       <Header />
@@ -85,7 +85,7 @@ export function EditOrders() {
       <TabbedSections
         title="Editar Cardápio"
         data={fakeOrders}
-        getCategory={(item) => item.status} // ou item.categoria
+        getCategory={(item) => item.status}
         renderItem={(item) => (
           <MenuItem
             name={item.name}
