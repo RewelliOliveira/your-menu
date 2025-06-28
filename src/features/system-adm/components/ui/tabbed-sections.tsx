@@ -1,24 +1,27 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 
-type TabbedSectionsProps<T extends string, D> = {
+// Adiciona a prop onlyTitle
+export type TabbedSectionsProps<T extends string = string, D = unknown> = {
   title: string;
+  onlyTitle?: boolean;
   data: D[];
   renderItem: (item: D) => React.ReactNode;
-  getCategory: (item: D) => T; // função que retorna a categoria de um item
-  renderAfterItems?: () => React.ReactNode; // opcional, para adicionar conteúdo após os itens
+  getCategory: (item: D) => T;
+  renderAfterItems?: () => React.ReactNode;
 };
 
-export function TabbedSections<T extends string, D>({
+export function TabbedSections<T extends string = string, D = unknown>({
   title,
   data,
   renderItem,
   getCategory,
   renderAfterItems,
+  onlyTitle = false,
 }: TabbedSectionsProps<T, D>) {
   // Categorias extraídas dinamicamente
   const categories = useMemo(() => {
     const unique = new Set<T>();
-    data.forEach((item) => unique.add(getCategory(item)));
+    data.forEach((item: D) => unique.add(getCategory(item)));
     return Array.from(unique);
   }, [data, getCategory]);
 
@@ -32,10 +35,8 @@ export function TabbedSections<T extends string, D>({
     }, {} as Record<T, HTMLDivElement | null>)
   );
 
-  // Referência à barra de abas (tabs)
   const tabsRef = useRef<HTMLDivElement>(null);
 
-  // Função chamada ao clicar em uma aba
   function handleTabClick(tab: T) {
     setSelectedTab(tab);
     const el = sectionRefs.current[tab];
@@ -48,18 +49,30 @@ export function TabbedSections<T extends string, D>({
     }
   }
 
-  // Efeito para monitorar o scroll e aplicar comportamento sticky na barra de abas
   useEffect(() => {
     function handleScroll() {
       if (!tabsRef.current) return;
       const top = tabsRef.current.getBoundingClientRect().top;
       setIsSticky(top <= 0);
     }
-
     window.addEventListener("scroll", handleScroll);
     handleScroll();
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
+
+  // Se onlyTitle, renderiza só o título e a linha colorida
+  if (onlyTitle) {
+    return (
+      <div className="w-full bg-[#f5f5f5] py-6">
+        <div className="max-w-[75%] mx-auto px-4">
+          <h1 className="text-xl font-semibold text-center text-gray-800 mb-4">
+            {title}
+          </h1>
+          <div className="w-full h-1 bg-orange-500 rounded-full mb-6" />
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="w-full bg-[#f5f5f5] py-6">
@@ -67,7 +80,6 @@ export function TabbedSections<T extends string, D>({
         <h1 className="text-xl font-semibold text-center text-gray-800 mb-4">
           {title}
         </h1>
-
         <div ref={tabsRef} className="sticky top-0 bg-[#f5f5f5] z-10 mb-6">
           <div className="flex justify-between">
             {categories.map((tab) => {
@@ -94,12 +106,10 @@ export function TabbedSections<T extends string, D>({
             })}
           </div>
         </div>
-
         {categories.map((tab) => {
           const filteredItems = data.filter(
-            (item) => getCategory(item) === tab
+            (item: D) => getCategory(item) === tab
           );
-
           return (
             <div
               key={tab}
@@ -111,7 +121,7 @@ export function TabbedSections<T extends string, D>({
               <h2 className="text-lg font-semibold mb-4">{tab}</h2>
               {filteredItems.length > 0 ? (
                 <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-                  {filteredItems.map((item, index) => (
+                  {filteredItems.map((item: D, index: number) => (
                     <div key={index}>{renderItem(item)}</div>
                   ))}
                   {renderAfterItems && <div>{renderAfterItems()}</div>}
