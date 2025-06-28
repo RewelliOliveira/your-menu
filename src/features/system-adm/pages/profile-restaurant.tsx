@@ -4,23 +4,33 @@ import { SelectDay } from "../components/ui/select-day";
 import { TimerPicker } from "../components/ui/timer-picker";
 import { BannerAdm } from "../components/ui/banner-adm";
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { restaurantProfileApi } from "@/services/restaurant-profile-api";
 import { useAuth } from "@/contexts/auth-context";
 import { DeliveryInput } from "../components/ui/delivey-input";
 import { WeekDays } from "@/constants/week-days"
 import { Button } from "../components/ui/button";
+import { restaurantHoursApi } from "@/services/restaurant-hours-api";
 
 export function ProfileRestaurant() {
   const [name, setName] = useState('');
+  const [weekdayStart, setWeekdayStart] = useState("");
+  const [weekdayEnd, setWeekdayEnd] = useState("");
+  const [openingTime, setOpeningTime] = useState("");
+  const [closingTime, setClosingTime] = useState("");
   const [deliveryTimeMin, setDeliveryTimeMin] = useState("");
   const [deliveryTimeMax, setDeliveryTimeMax] = useState("");
   const [profilePicFile, setProfilePicFile] = useState<File | null>(null);
   const [bannerPicFile, setBannerPicFile] = useState<File | null>(null);
-
+  const navigate = useNavigate();
   const { token } = useAuth();
 
   const handleSubmit = async () => {
-    if (!name || !deliveryTimeMin || !deliveryTimeMax) {
+    if (!weekdayStart || !weekdayEnd) {
+      alert("Selecione os dias de funcionamento.");
+      return;
+    }
+    if (!name || !deliveryTimeMin || !deliveryTimeMax || !openingTime || !closingTime) {
       alert("Preencha todos os campos obrigatórios.");
       return;
     }
@@ -39,24 +49,28 @@ export function ProfileRestaurant() {
         bannerPicFile,
       };
 
-      console.log("🔍 Dados preparados para envio:");
-      console.log("Nome:", data.name);
-      console.log("Tempo de entrega:", data.deliveryTimeMin, "-", data.deliveryTimeMax);
-      console.log("Arquivo de perfil:", data.profilePicFile);
-      console.log("Arquivo de banner:", data.bannerPicFile);
-
       const response = await restaurantProfileApi(data, token);
+      const restaurantId = response.id;
 
-      console.log("✅ Resposta da API:", response);
-      console.log("ID do restaurante cadastrado:", response.id);
+      const horarioFixo = {
+        weekday_start: weekdayStart,
+        weekday_end: weekdayEnd,
+        openingTime,
+        closingTime,
+      };
 
-      alert("Restaurante cadastrado!");
-    } catch (error) {
-      console.error("❌ Erro ao salvar restaurante:", error);
-      alert("Erro ao salvar restaurante.");
+      await restaurantHoursApi(restaurantId, horarioFixo, token);
+      alert("Restaurante cadastrado com horários!");
+      navigate("/edit-menu")
+    } catch (error: any) {
+      if (error.response) {
+        console.error("❌ Erro detalhado da API:", error.response.data);
+      } else {
+        console.error("❌ Erro ao salvar restaurante ou horários:", error.message);
+      }
+      alert("Erro ao salvar restaurante ou horários.");
     }
   };
-
 
   return (
     <div className="min-h-screen flex flex-col bg-gray-50">
@@ -67,7 +81,6 @@ export function ProfileRestaurant() {
         setProfilePicFile={setProfilePicFile}
         setBannerPicFile={setBannerPicFile}
       />
-
 
       <main className="flex-grow flex justify-center items-start py-8">
         <div className="w-full max-w-[75%] space-y-12 px-4">
@@ -84,14 +97,21 @@ export function ProfileRestaurant() {
               </div>
               <div className="flex items-center justify-between gap-5">
                 <div className="w-full">
-                  <SelectDay options={WeekDays} />
+                  <SelectDay options={WeekDays} value={weekdayStart} onChange={setWeekdayStart} />
                 </div>
                 <div className="w-full">
-                  <SelectDay options={WeekDays} />
+                  <SelectDay options={WeekDays} value={weekdayEnd} onChange={setWeekdayEnd} />
                 </div>
               </div>
               <div className="flex flex-col gap-8 mt-8">
-                <TimerPicker label="Horário de funcionamento*" />
+                <TimerPicker
+                  label="Horário de funcionamento*"
+                  valueStart={openingTime}
+                  valueEnd={closingTime}
+                  onChangeStart={setOpeningTime}
+                  onChangeEnd={setClosingTime}
+                />
+
                 <DeliveryInput
                   label="Intervalo de entrega*"
                   deliveryTimeMin={deliveryTimeMin}

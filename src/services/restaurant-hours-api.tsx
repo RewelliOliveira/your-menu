@@ -9,7 +9,7 @@ interface RestaurantHoursApiProps {
 
 export async function restaurantHoursApi(restaurantId: string, data: RestaurantHoursApiProps, token: string) {
     try {
-        const response = await api.post(`/business-hours/${restaurantId}`, data, {
+        const response = await api.put(`/business-hours/${restaurantId}`, data, {
             headers: {
                 Authorization: `Bearer ${token}`,
             },

@@ -4,8 +4,8 @@ interface RestaurantProfileApiProps {
   name: string;
   deliveryTimeMin: number;
   deliveryTimeMax: number;
-  profilePicFile: File | null; 
-  bannerPicFile: File | null;  
+  profilePicFile: File | null;
+  bannerPicFile: File | null;
 }
 
 interface RestaurantApiResponse {
@@ -15,8 +15,8 @@ interface RestaurantApiResponse {
   deliveryTimeMin: number;
   deliveryTimeMax: number;
   isOpen: boolean;
-  profilePicUrl: string | null;  
-  BannerPicUrl: string | null;    
+  profilePicUrl: string | null;
+  BannerPicUrl: string | null;
 }
 
 export async function restaurantProfileApi(
