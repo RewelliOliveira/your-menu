@@ -3,72 +3,53 @@ import { Header } from "../components/header";
 import { SelectDay } from "../components/ui/select-day";
 import { TimerPicker } from "../components/ui/timer-picker";
 import { BannerAdm } from "../components/ui/banner-adm";
-import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { restaurantProfileApi } from "@/services/restaurant-profile-api";
 import { useAuth } from "@/contexts/auth-context";
 import { DeliveryInput } from "../components/ui/delivey-input";
 import { WeekDays } from "@/constants/week-days"
 import { Button } from "../components/ui/button";
-import { restaurantHoursApi } from "@/services/restaurant-hours-api";
+import { useProfileForm } from "@/hooks/useProfileForm";
+import { submitRestaurantProfile } from "@/utils/submitRestaurantProfile";
 
 export function ProfileRestaurant() {
-  const [name, setName] = useState('');
-  const [weekdayStart, setWeekdayStart] = useState("");
-  const [weekdayEnd, setWeekdayEnd] = useState("");
-  const [openingTime, setOpeningTime] = useState("");
-  const [closingTime, setClosingTime] = useState("");
-  const [deliveryTimeMin, setDeliveryTimeMin] = useState("");
-  const [deliveryTimeMax, setDeliveryTimeMax] = useState("");
-  const [profilePicFile, setProfilePicFile] = useState<File | null>(null);
-  const [bannerPicFile, setBannerPicFile] = useState<File | null>(null);
   const navigate = useNavigate();
   const { token } = useAuth();
+  const {
+    name, setName,
+    weekdayStart, setWeekdayStart,
+    weekdayEnd, setWeekdayEnd,
+    openingTime, setOpeningTime,
+    closingTime, setClosingTime,
+    deliveryTimeMin, setDeliveryTimeMin,
+    deliveryTimeMax, setDeliveryTimeMax,
+    profilePicFile, setProfilePicFile,
+    bannerPicFile, setBannerPicFile,
+  } = useProfileForm();
 
   const handleSubmit = async () => {
-    if (!weekdayStart || !weekdayEnd) {
-      alert("Selecione os dias de funcionamento.");
-      return;
-    }
-    if (!name || !deliveryTimeMin || !deliveryTimeMax || !openingTime || !closingTime) {
-      alert("Preencha todos os campos obrigatórios.");
-      return;
-    }
-
-    if (!token) {
-      alert("Usuário não autenticado.");
-      return;
-    }
-
     try {
-      const data = {
+      if (!token) {
+        alert("Usuário não autenticado.");
+        return;
+      }
+
+      await submitRestaurantProfile({
         name,
-        deliveryTimeMin: parseInt(deliveryTimeMin),
-        deliveryTimeMax: parseInt(deliveryTimeMax),
+        deliveryTimeMin,
+        deliveryTimeMax,
         profilePicFile,
         bannerPicFile,
-      };
-
-      const response = await restaurantProfileApi(data, token);
-      const restaurantId = response.id;
-
-      const horarioFixo = {
-        weekday_start: weekdayStart,
-        weekday_end: weekdayEnd,
+        weekdayStart,
+        weekdayEnd,
         openingTime,
         closingTime,
-      };
+        token,
+      });
 
-      await restaurantHoursApi(restaurantId, horarioFixo, token);
       alert("Restaurante cadastrado com horários!");
-      navigate("/edit-menu")
+      navigate("/edit-menu");
     } catch (error: any) {
-      if (error.response) {
-        console.error("❌ Erro detalhado da API:", error.response.data);
-      } else {
-        console.error("❌ Erro ao salvar restaurante ou horários:", error.message);
-      }
-      alert("Erro ao salvar restaurante ou horários.");
+      alert(error.message || "Erro ao salvar restaurante ou horários.");
     }
   };
 
