@@ -4,6 +4,8 @@ import { UploadLogo } from './upload-logo';
 interface BannerAdmProps {
   profilePicFile: File | null;
   bannerPicFile: File | null;
+  profilePicUrl: string | null;
+  bannerPicUrl: string | null;
   setProfilePicFile: React.Dispatch<React.SetStateAction<File | null>>;
   setBannerPicFile: React.Dispatch<React.SetStateAction<File | null>>;
 }
@@ -11,6 +13,8 @@ interface BannerAdmProps {
 export const BannerAdm: React.FC<BannerAdmProps> = ({
   profilePicFile,
   bannerPicFile,
+  profilePicUrl,
+  bannerPicUrl,
   setProfilePicFile,
   setBannerPicFile,
 }) => {
@@ -23,19 +27,27 @@ export const BannerAdm: React.FC<BannerAdmProps> = ({
   });
 
   useEffect(() => {
+    const logoUrl = profilePicFile
+      ? URL.createObjectURL(profilePicFile)
+      : profilePicUrl || 'placeholder.svg';
+
+    const backgroundUrl = bannerPicFile
+      ? URL.createObjectURL(bannerPicFile)
+      : bannerPicUrl || 'placeholder.svg';
+
     setData({
       title: 'Restaurante',
-      logoUrl: profilePicFile ? URL.createObjectURL(profilePicFile) : 'placeholder.svg',
-      backgroundUrl: bannerPicFile ? URL.createObjectURL(bannerPicFile) : 'placeholder.svg',
+      logoUrl,
+      backgroundUrl,
       estimatedTime: '30-45 min',
       isOpen: true,
     });
 
     return () => {
-      if (profilePicFile) URL.revokeObjectURL(data.logoUrl);
-      if (bannerPicFile) URL.revokeObjectURL(data.backgroundUrl);
+      if (profilePicFile) URL.revokeObjectURL(logoUrl);
+      if (bannerPicFile) URL.revokeObjectURL(backgroundUrl);
     };
-  }, [profilePicFile, bannerPicFile]);
+  }, [profilePicFile, bannerPicFile, profilePicUrl, bannerPicUrl]);
 
   return (
     <div className="relative w-full h-60 bg-black text-white flex items-center justify-center">

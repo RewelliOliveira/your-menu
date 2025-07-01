@@ -8,7 +8,9 @@ interface RestaurantProfileApiProps {
   bannerPicFile: File | null;
 }
 
-interface RestaurantApiResponse {
+export interface RestaurantApiResponse {
+  closingTime: any;
+  openingTime(openingTime: any): unknown;
   id: string;
   slug: string;
   name: string;
@@ -16,9 +18,10 @@ interface RestaurantApiResponse {
   deliveryTimeMax: number;
   isOpen: boolean;
   profilePicUrl: string | null;
-  BannerPicUrl: string | null;
+  bannerPicUrl: string | null;
 }
 
+// POST
 export async function restaurantProfileApi(
   data: RestaurantProfileApiProps,
   token: string
@@ -46,6 +49,22 @@ export async function restaurantProfileApi(
 
   } catch (error) {
     console.error("Erro ao cadastrar restaurante:", error);
+    throw error;
+  }
+}
+
+// GET
+export async function getRestaurantProfileApi(token: string): Promise<RestaurantApiResponse> {
+  try {
+    const response = await api.get("/restaurant", {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+
+    return response.data as RestaurantApiResponse;
+  } catch (error) {
+    console.error("Erro ao buscar perfil do restaurante:", error);
     throw error;
   }
 }
