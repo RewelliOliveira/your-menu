@@ -8,7 +8,7 @@ export interface RestaurantHour {
 }
 
 export type RestaurantHoursApiResponse = RestaurantHour[];
-// PUT 
+// POST
 interface RestaurantHoursApiProps {
   weekday_start: string;
   weekday_end: string;

@@ -68,3 +68,36 @@ export async function getRestaurantProfileApi(token: string): Promise<Restaurant
     throw error;
   }
 }
+
+// PUT
+export async function updateRestaurantProfileApi(
+  restaurantId: string,
+  data: RestaurantProfileApiProps,
+  token: string
+): Promise<RestaurantApiResponse> {
+  try {
+    const formData = new FormData();
+    formData.append("name", data.name);
+    formData.append("deliveryTimeMin", data.deliveryTimeMin.toString());
+    formData.append("deliveryTimeMax", data.deliveryTimeMax.toString());
+
+    if (data.profilePicFile) {
+      formData.append("profilePic", data.profilePicFile);
+    }
+    if (data.bannerPicFile) {
+      formData.append("bannerPic", data.bannerPicFile);
+    }
+
+    const response = await api.put(`/restaurant/${restaurantId}`, formData, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+
+    return response.data as RestaurantApiResponse;
+
+  } catch (error) {
+    console.error("Erro ao atualizar perfil do restaurante:", error);
+    throw error;
+  }
+}

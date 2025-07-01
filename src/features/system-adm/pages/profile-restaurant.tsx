@@ -9,10 +9,10 @@ import { DeliveryInput } from "../components/ui/delivey-input";
 import { WeekDays } from "@/constants/week-days";
 import { Button } from "../components/ui/button";
 import { useProfileForm } from "@/hooks/useProfileForm";
-import { submitRestaurantProfile } from "@/utils/submitRestaurantProfile";
 import { useEffect, useState } from "react";
-import { getRestaurantProfileApi } from "@/services/restaurant-profile-api";
-import { getRestaurantHoursApi } from "@/services/restaurant-hours-api";
+
+import { getRestaurantProfileApi, updateRestaurantProfileApi, restaurantProfileApi } from "@/services/restaurant-profile-api";
+import { getRestaurantHoursApi, restaurantHoursApi } from "@/services/restaurant-hours-api";
 
 export function ProfileRestaurant() {
   const navigate = useNavigate();
@@ -31,7 +31,7 @@ export function ProfileRestaurant() {
 
   const [profilePicUrl, setProfilePicUrl] = useState<string | null>(null);
   const [bannerPicUrl, setBannerPicUrl] = useState<string | null>(null);
-
+  const [restaurantId, setRestaurantId] = useState<string | null>(null);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -39,16 +39,15 @@ export function ProfileRestaurant() {
 
       try {
         const profileData = await getRestaurantProfileApi(token);
+        setRestaurantId(profileData.id);
         setName(profileData.name);
         setDeliveryTimeMin(String(profileData.deliveryTimeMin));
         setDeliveryTimeMax(String(profileData.deliveryTimeMax));
         setProfilePicUrl(profileData.profilePicUrl);
         setBannerPicUrl(profileData.bannerPicUrl);
 
-        const restaurantId = profileData.id;
-        if (restaurantId) {
-          const hoursData = await getRestaurantHoursApi(restaurantId, token);
-
+        if (profileData.id) {
+          const hoursData = await getRestaurantHoursApi(profileData.id, token);
           const openDays = hoursData.filter(
             (day) => day.openingTime !== null && day.closingTime !== null
           );
@@ -85,21 +84,54 @@ export function ProfileRestaurant() {
         return;
       }
 
-      await submitRestaurantProfile({
-        name,
-        deliveryTimeMin,
-        deliveryTimeMax,
-        profilePicFile,
-        bannerPicFile,
-        weekdayStart,
-        weekdayEnd,
-        openingTime,
-        closingTime,
-        token,
-      });
+      let currentRestaurantId = restaurantId;
 
-      alert("Restaurante cadastrado com horários!");
+      // Se não tem restaurante, cria
+      if (!currentRestaurantId) {
+        const created = await restaurantProfileApi(
+          {
+            name,
+            deliveryTimeMin: Number(deliveryTimeMin),
+            deliveryTimeMax: Number(deliveryTimeMax),
+            profilePicFile,
+            bannerPicFile,
+          },
+          token
+        );
+        currentRestaurantId = created.id;
+        setRestaurantId(currentRestaurantId);
+        alert("Restaurante criado com sucesso!");
+      } else {
+        // Atualiza restaurante
+        await updateRestaurantProfileApi(
+          currentRestaurantId,
+          {
+            name,
+            deliveryTimeMin: Number(deliveryTimeMin),
+            deliveryTimeMax: Number(deliveryTimeMax),
+            profilePicFile,
+            bannerPicFile,
+          },
+          token
+        );
+        alert("Perfil do restaurante atualizado com sucesso!");
+      }
+
+      // Agora atualiza os horários
+      await restaurantHoursApi(
+        currentRestaurantId,
+        {
+          weekday_start: weekdayStart,
+          weekday_end: weekdayEnd,
+          openingTime: openingTime,
+          closingTime: closingTime,
+        },
+        token
+      );
+
+      // Se quiser, aqui pode mostrar outro alert ou só navegar direto
       navigate("/edit-menu");
+
     } catch (error: any) {
       alert(error.message || "Erro ao salvar restaurante ou horários.");
     }
