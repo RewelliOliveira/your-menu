@@ -6,10 +6,13 @@ import { BannerAdm } from "../components/ui/banner-adm";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "@/contexts/auth-context";
 import { DeliveryInput } from "../components/ui/delivey-input";
-import { WeekDays } from "@/constants/week-days"
+import { WeekDays } from "@/constants/week-days";
 import { Button } from "../components/ui/button";
 import { useProfileForm } from "@/hooks/useProfileForm";
-import { submitRestaurantProfile } from "@/utils/submitRestaurantProfile";
+import { useEffect, useState } from "react";
+
+import { getRestaurantProfileApi, updateRestaurantProfileApi, restaurantProfileApi } from "@/services/restaurant-profile-api";
+import { getRestaurantHoursApi, restaurantHoursApi } from "@/services/restaurant-hours-api";
 
 export function ProfileRestaurant() {
   const navigate = useNavigate();
@@ -26,6 +29,54 @@ export function ProfileRestaurant() {
     bannerPicFile, setBannerPicFile,
   } = useProfileForm();
 
+  const [profilePicUrl, setProfilePicUrl] = useState<string | null>(null);
+  const [bannerPicUrl, setBannerPicUrl] = useState<string | null>(null);
+  const [restaurantId, setRestaurantId] = useState<string | null>(null);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      if (!token) return;
+
+      try {
+        const profileData = await getRestaurantProfileApi(token);
+        setRestaurantId(profileData.id);
+        setName(profileData.name);
+        setDeliveryTimeMin(String(profileData.deliveryTimeMin));
+        setDeliveryTimeMax(String(profileData.deliveryTimeMax));
+        setProfilePicUrl(profileData.profilePicUrl);
+        setBannerPicUrl(profileData.bannerPicUrl);
+
+        if (profileData.id) {
+          const hoursData = await getRestaurantHoursApi(profileData.id, token);
+          const openDays = hoursData.filter(
+            (day) => day.openingTime !== null && day.closingTime !== null
+          );
+
+          const orderWeek = ["SUNDAY", "MONDAY", "TUESDAY", "WEDNESDAY", "THURSDAY", "FRIDAY", "SATURDAY"];
+          openDays.sort(
+            (a, b) => orderWeek.indexOf(a.weekday) - orderWeek.indexOf(b.weekday)
+          );
+
+          if (openDays.length > 0) {
+            setWeekdayStart(openDays[0].weekday);
+            setWeekdayEnd(openDays[openDays.length - 1].weekday);
+            setOpeningTime(openDays[0].openingTime!.slice(0, 5));
+            setClosingTime(openDays[0].closingTime!.slice(0, 5));
+          } else {
+            setWeekdayStart("MONDAY");
+            setWeekdayEnd("FRIDAY");
+            setOpeningTime("");
+            setClosingTime("");
+          }
+        }
+      } catch (error) {
+        console.error("Erro ao carregar dados do restaurante:", error);
+      }
+    };
+
+    fetchData();
+  }, [token]);
+
   const handleSubmit = async () => {
     try {
       if (!token) {
@@ -33,21 +84,54 @@ export function ProfileRestaurant() {
         return;
       }
 
-      await submitRestaurantProfile({
-        name,
-        deliveryTimeMin,
-        deliveryTimeMax,
-        profilePicFile,
-        bannerPicFile,
-        weekdayStart,
-        weekdayEnd,
-        openingTime,
-        closingTime,
-        token,
-      });
+      let currentRestaurantId = restaurantId;
 
-      alert("Restaurante cadastrado com horários!");
+      // Se não tem restaurante, cria
+      if (!currentRestaurantId) {
+        const created = await restaurantProfileApi(
+          {
+            name,
+            deliveryTimeMin: Number(deliveryTimeMin),
+            deliveryTimeMax: Number(deliveryTimeMax),
+            profilePicFile,
+            bannerPicFile,
+          },
+          token
+        );
+        currentRestaurantId = created.id;
+        setRestaurantId(currentRestaurantId);
+        alert("Restaurante criado com sucesso!");
+      } else {
+        // Atualiza restaurante
+        await updateRestaurantProfileApi(
+          currentRestaurantId,
+          {
+            name,
+            deliveryTimeMin: Number(deliveryTimeMin),
+            deliveryTimeMax: Number(deliveryTimeMax),
+            profilePicFile,
+            bannerPicFile,
+          },
+          token
+        );
+        alert("Perfil do restaurante atualizado com sucesso!");
+      }
+
+      // Agora atualiza os horários
+      await restaurantHoursApi(
+        currentRestaurantId,
+        {
+          weekday_start: weekdayStart,
+          weekday_end: weekdayEnd,
+          openingTime: openingTime,
+          closingTime: closingTime,
+        },
+        token
+      );
+
+      // Se quiser, aqui pode mostrar outro alert ou só navegar direto
       navigate("/edit-menu");
+
     } catch (error: any) {
       alert(error.message || "Erro ao salvar restaurante ou horários.");
     }
@@ -59,6 +143,8 @@ export function ProfileRestaurant() {
       <BannerAdm
         profilePicFile={profilePicFile}
         bannerPicFile={bannerPicFile}
+        profilePicUrl={profilePicUrl}
+        bannerPicUrl={bannerPicUrl}
         setProfilePicFile={setProfilePicFile}
         setBannerPicFile={setBannerPicFile}
       />
@@ -67,7 +153,13 @@ export function ProfileRestaurant() {
         <div className="w-full max-w-[75%] space-y-12 px-4">
           <Section title="Informações gerais">
             <div className="flex flex-col gap-8">
-              <Input label="Nome do restaurante*" type="text" className="w-2xl" value={name} onChange={(e) => setName(e.target.value)} />
+              <Input
+                label="Nome do restaurante*"
+                type="text"
+                className="w-2xl"
+                value={name}
+                onChange={(e) => setName(e.target.value)}
+              />
             </div>
           </Section>
 
@@ -108,7 +200,9 @@ export function ProfileRestaurant() {
 
       <footer className="flex justify-center bg-black/5">
         <div className="flex justify-between w-full max-w-[75%] py-5">
-          <Button className="max-w-40 bg-transparent text-black border border-black hover:text-white hover:border-white">Copiar Link</Button>
+          <Button className="max-w-40 bg-transparent text-black border border-black hover:text-white hover:border-white">
+            Copiar Link
+          </Button>
           <Button className="max-w-40" onClick={handleSubmit}>Salvar</Button>
         </div>
       </footer>
