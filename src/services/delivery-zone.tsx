@@ -23,3 +23,11 @@ export async function getDeliveryZones(restaurantSlug: string, token: string) {
   });
   return response.data;
 }
+
+export async function updateDeliveryZone(id: string, data: DeliveryZoneRequest, token: string) {
+  return await api.put(`/delivery-zone/${id}`, data, {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  });
+}

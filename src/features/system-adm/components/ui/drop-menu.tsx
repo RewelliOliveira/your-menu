@@ -37,7 +37,7 @@ export function DropdownMenuDemo() {
           <DropdownMenuItem onClick={() => navigate("/restaurant-adress")}>
             Configurações de endereço
           </DropdownMenuItem>
-          <DropdownMenuItem onClick={() => navigate("/entrega")}>
+          <DropdownMenuItem onClick={() => navigate("/restaurant-delivery")}>
             Configurações de entrega
           </DropdownMenuItem>
           <DropdownMenuItem onClick={() => navigate("/historico")}>
