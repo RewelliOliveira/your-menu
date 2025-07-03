@@ -192,9 +192,9 @@ export function Orders() {
         data={orders} //array de objetos que você manda
         renderItem={(order) => <CardOrder order={order} />} //transforma e exibe, com os dados de ordem recebidos, um CardOrder (componente temporario)
       />
-      <div className="pb-15">
+      <footer className="pb-15">
         <OrderFooter orders={orders} onVerMais={handleVerMais} />
-      </div>
+      </footer>
     </>
   );
 }
