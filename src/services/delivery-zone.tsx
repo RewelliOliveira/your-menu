@@ -31,3 +31,11 @@ export async function updateDeliveryZone(id: string, data: DeliveryZoneRequest, 
     },
   });
 }
+
+export async function deleteDeliveryZone(id: string, token: string) {
+  return await api.delete(`/delivery-zone/${id}`, {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  });
+}
