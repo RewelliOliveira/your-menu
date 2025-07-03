@@ -1,18 +1,24 @@
-import { useRef, useState } from "react";
+import { useRef, useState, useEffect } from "react";
 
 interface UploadLogoProps {
   className?: string;
+  imageUrl?: string; 
+  setImageFile: React.Dispatch<React.SetStateAction<File | null>>;
 }
 
-export function UploadLogo({ className }: UploadLogoProps) {
+export function UploadLogo({ className, imageUrl, setImageFile }: UploadLogoProps) {
   const [preview, setPreview] = useState<string | null>(null);
   const inputRef = useRef<HTMLInputElement>(null);
+
+  useEffect(() => {
+    setPreview(imageUrl || null);
+  }, [imageUrl]);
 
   function handleImageChange(event: React.ChangeEvent<HTMLInputElement>) {
     const file = event.target.files?.[0];
     if (file) {
-      const url = URL.createObjectURL(file);
-      setPreview(url);
+      setImageFile(file);      
+      setPreview(URL.createObjectURL(file));
     }
   }
 

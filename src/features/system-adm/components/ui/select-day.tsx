@@ -5,23 +5,25 @@ import {
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "@/components/ui/select"
+} from "@/components/ui/select";
+
 type Option = {
-  value: string
-  label: string
-}
+  value: string;
+  label: string;
+};
 
 type SelectDayProps = {
-  label?: string
-  options: Option[]
-  onChange?: (value: string) => void
-}
+  label?: string;
+  options: Option[];
+  value?: string;        
+  onChange?: (value: string) => void;
+};
 
-export function SelectDay({ label, options, onChange }: SelectDayProps) {
+export function SelectDay({ label, options, value, onChange }: SelectDayProps) {
   return (
     <div>
       {label && <label>{label}</label>}
-      <Select onValueChange={onChange}>
+      <Select value={value} onValueChange={onChange}>
         <SelectTrigger>
           <SelectValue placeholder="Selecione uma opção" />
         </SelectTrigger>
@@ -36,5 +38,5 @@ export function SelectDay({ label, options, onChange }: SelectDayProps) {
         </SelectContent>
       </Select>
     </div>
-  )
+  );
 }

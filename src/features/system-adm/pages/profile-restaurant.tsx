@@ -3,104 +3,163 @@ import { Header } from "../components/header";
 import { SelectDay } from "../components/ui/select-day";
 import { TimerPicker } from "../components/ui/timer-picker";
 import { BannerAdm } from "../components/ui/banner-adm";
-import { useEffect, useState } from "react";
-import { restaurantProfileApi } from "@/services/restaurant-profile";
+import { useNavigate } from "react-router-dom";
 import { useAuth } from "@/contexts/auth-context";
 import { DeliveryInput } from "../components/ui/delivey-input";
 import { WeekDays } from "@/constants/week-days";
 import { Button } from "../components/ui/button";
-import { AddZoneModal } from "../components/ui/add-zone-modal";
-import { getDeliveryZones, saveDeliveryZone } from "@/services/delivery-zone";
+import { useProfileForm } from "@/hooks/useProfileForm";
+import { useEffect, useState } from "react";
+
+import { getRestaurantProfileApi, updateRestaurantProfileApi, restaurantProfileApi } from "@/services/restaurant-profile-api";
+import { getRestaurantHoursApi, restaurantHoursApi } from "@/services/restaurant-hours-api";
 
 export function ProfileRestaurant() {
-  const [name, setName] = useState('');
-  const [deliveryTimeMin, setDeliveryTimeMin] = useState("");
-  const [deliveryTimeMax, setDeliveryTimeMax] = useState("");
+  const navigate = useNavigate();
   const { token } = useAuth();
+  const {
+    name, setName,
+    weekdayStart, setWeekdayStart,
+    weekdayEnd, setWeekdayEnd,
+    openingTime, setOpeningTime,
+    closingTime, setClosingTime,
+    deliveryTimeMin, setDeliveryTimeMin,
+    deliveryTimeMax, setDeliveryTimeMax,
+    profilePicFile, setProfilePicFile,
+    bannerPicFile, setBannerPicFile,
+  } = useProfileForm();
 
-  const [isModalOpen, setIsModalOpen] = useState(false);
-  const [zones, setZones] = useState<{ local: string; valor: string }[]>([]);
-
-  const restaurantSlug = "delicias-do-rancho";
+  const [profilePicUrl, setProfilePicUrl] = useState<string | null>(null);
+  const [bannerPicUrl, setBannerPicUrl] = useState<string | null>(null);
+  const [restaurantId, setRestaurantId] = useState<string | null>(null);
 
   useEffect(() => {
-    async function fetchZones() {
+    const fetchData = async () => {
       if (!token) return;
 
       try {
-        const data = await getDeliveryZones(restaurantSlug, token);
-        setZones(data.map((item: any) => ({
-          local: item.zone,
-          valor: item.deliveryFee.toFixed(2).replace('.', ',')
-        })));
-      } catch (error) {
-        console.error("Erro ao buscar zonas:", error);
-        alert("Erro ao carregar zonas de entrega.");
-      }
-    }
+        const profileData = await getRestaurantProfileApi(token);
+        setRestaurantId(profileData.id);
+        setName(profileData.name);
+        setDeliveryTimeMin(String(profileData.deliveryTimeMin));
+        setDeliveryTimeMax(String(profileData.deliveryTimeMax));
+        setProfilePicUrl(profileData.profilePicUrl);
+        setBannerPicUrl(profileData.bannerPicUrl);
 
-    fetchZones();
+        if (profileData.id) {
+          const hoursData = await getRestaurantHoursApi(profileData.id, token);
+          const openDays = hoursData.filter(
+            (day) => day.openingTime !== null && day.closingTime !== null
+          );
+
+          const orderWeek = ["SUNDAY", "MONDAY", "TUESDAY", "WEDNESDAY", "THURSDAY", "FRIDAY", "SATURDAY"];
+          openDays.sort(
+            (a, b) => orderWeek.indexOf(a.weekday) - orderWeek.indexOf(b.weekday)
+          );
+
+          if (openDays.length > 0) {
+            setWeekdayStart(openDays[0].weekday);
+            setWeekdayEnd(openDays[openDays.length - 1].weekday);
+            setOpeningTime(openDays[0].openingTime!.slice(0, 5));
+            setClosingTime(openDays[0].closingTime!.slice(0, 5));
+          } else {
+            setWeekdayStart("MONDAY");
+            setWeekdayEnd("FRIDAY");
+            setOpeningTime("");
+            setClosingTime("");
+          }
+        }
+      } catch (error) {
+        console.error("Erro ao carregar dados do restaurante:", error);
+      }
+    };
+
+    fetchData();
   }, [token]);
 
-  const handleAddZone = async (zone: string, valor: string) => {
-    if (!token) {
-      alert("Usuário não autenticado.");
-      return;
-    }
-
-    try {
-      const payload = {
-        zone,
-        deliveryFee: parseFloat(valor.replace(',', '.')),
-        restaurantSlug,
-      };
-
-      await saveDeliveryZone(payload, token);
-
-      setZones(prev => [...prev, { local: zone, valor }]);
-      alert("Zona adicionada com sucesso!");
-    } catch (error) {
-      console.error("Erro ao adicionar zona:", error);
-      alert("Erro ao adicionar zona.");
-    }
-  };
-
   const handleSubmit = async () => {
-    if (!name || !deliveryTimeMin || !deliveryTimeMax) {
-      alert("Preencha todos os campos obrigatórios.");
-      return;
-    }
-
-    if (!token) {
-      alert("Usuário não autenticado.");
-      return;
-    }
-
     try {
-      const data = {
-        name,
-        deliveryTimeMin: parseInt(deliveryTimeMin),
-        deliveryTimeMax: parseInt(deliveryTimeMax)
-      };
+      if (!token) {
+        alert("Usuário não autenticado.");
+        return;
+      }
 
-      await restaurantProfileApi(data, token);
-      alert("Restaurante cadastrado!");
-    } catch (error) {
-      console.error("Erro ao salvar restaurante:", error);
-      alert("Erro ao salvar restaurante.");
+      let currentRestaurantId = restaurantId;
+
+      // Se não tem restaurante, cria
+      if (!currentRestaurantId) {
+        const created = await restaurantProfileApi(
+          {
+            name,
+            deliveryTimeMin: Number(deliveryTimeMin),
+            deliveryTimeMax: Number(deliveryTimeMax),
+            profilePicFile,
+            bannerPicFile,
+          },
+          token
+        );
+        currentRestaurantId = created.id;
+        setRestaurantId(currentRestaurantId);
+        alert("Restaurante criado com sucesso!");
+      } else {
+        // Atualiza restaurante
+        await updateRestaurantProfileApi(
+          currentRestaurantId,
+          {
+            name,
+            deliveryTimeMin: Number(deliveryTimeMin),
+            deliveryTimeMax: Number(deliveryTimeMax),
+            profilePicFile,
+            bannerPicFile,
+          },
+          token
+        );
+        alert("Perfil do restaurante atualizado com sucesso!");
+      }
+
+      // Agora atualiza os horários
+      await restaurantHoursApi(
+        currentRestaurantId,
+        {
+          weekday_start: weekdayStart,
+          weekday_end: weekdayEnd,
+          openingTime: openingTime,
+          closingTime: closingTime,
+        },
+        token
+      );
+
+      // Se quiser, aqui pode mostrar outro alert ou só navegar direto
+      navigate("/edit-menu");
+
+    } catch (error: any) {
+      alert(error.message || "Erro ao salvar restaurante ou horários.");
     }
   };
 
   return (
     <div className="min-h-screen flex flex-col bg-gray-50">
       <Header />
-      <BannerAdm />
+      <BannerAdm
+        profilePicFile={profilePicFile}
+        bannerPicFile={bannerPicFile}
+        profilePicUrl={profilePicUrl}
+        bannerPicUrl={bannerPicUrl}
+        setProfilePicFile={setProfilePicFile}
+        setBannerPicFile={setBannerPicFile}
+      />
 
       <main className="flex-grow flex justify-center items-start py-8">
         <div className="w-full max-w-[75%] space-y-12 px-4">
           <Section title="Informações gerais">
             <div className="flex flex-col gap-8">
-              <Input label="Nome do restaurante*" type="text" className="w-2xl" value={name} onChange={(e) => setName(e.target.value)} />
+              <Input
+                label="Nome do restaurante*"
+                type="text"
+                className="w-2xl"
+                value={name}
+                onChange={(e) => setName(e.target.value)}
+              />
             </div>
           </Section>
 
@@ -111,14 +170,21 @@ export function ProfileRestaurant() {
               </div>
               <div className="flex items-center justify-between gap-5">
                 <div className="w-full">
-                  <SelectDay options={WeekDays} />
+                  <SelectDay options={WeekDays} value={weekdayStart} onChange={setWeekdayStart} />
                 </div>
                 <div className="w-full">
-                  <SelectDay options={WeekDays} />
+                  <SelectDay options={WeekDays} value={weekdayEnd} onChange={setWeekdayEnd} />
                 </div>
               </div>
               <div className="flex flex-col gap-8 mt-8">
-                <TimerPicker label="Horário de funcionamento*" />
+                <TimerPicker
+                  label="Horário de funcionamento*"
+                  valueStart={openingTime}
+                  valueEnd={closingTime}
+                  onChangeStart={setOpeningTime}
+                  onChangeEnd={setClosingTime}
+                />
+
                 <DeliveryInput
                   label="Intervalo de entrega*"
                   deliveryTimeMin={deliveryTimeMin}
@@ -144,21 +210,12 @@ export function ProfileRestaurant() {
                   </tr>
                 </thead>
                 <tbody>
-                  {zones.map((zone, index) => (
-                    <tr key={index} className="hover:bg-gray-50">
-                      <td className="px-4 py-2 border-b">{zone.local}</td>
-                      <td className="px-4 py-2 border-b">{zone.valor}</td>
-                    </tr>
-                  ))}
+                  <tr className="hover:bg-gray-50">
+                    <td className="px-4 py-2 border-b">Centro</td>
+                    <td className="px-4 py-2 border-b">Ocara</td>
+                  </tr>
                 </tbody>
               </table>
-
-              <Button
-                className="max-w-40 !bg-[#00B37E] hover:!bg-[#00875F] text-white"
-                onClick={() => setIsModalOpen(true)}
-              >
-                Adicionar zona
-              </Button>
             </div>
           </Section>
         </div>
@@ -166,7 +223,9 @@ export function ProfileRestaurant() {
 
       <footer className="flex justify-center bg-black/5">
         <div className="flex justify-between w-full max-w-[75%] py-5">
-          <Button className="max-w-40 bg-transparent text-black border border-black hover:text-white hover:border-white">Copiar Link</Button>
+          <Button className="max-w-40 bg-transparent text-black border border-black hover:text-white hover:border-white">
+            Copiar Link
+          </Button>
           <Button className="max-w-40" onClick={handleSubmit}>Salvar</Button>
         </div>
       </footer>
