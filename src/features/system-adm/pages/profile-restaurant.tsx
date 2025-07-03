@@ -11,12 +11,19 @@ import { Button } from "../components/ui/button";
 import { useProfileForm } from "@/hooks/useProfileForm";
 import { useEffect, useState } from "react";
 
-import { getRestaurantProfileApi, updateRestaurantProfileApi, restaurantProfileApi } from "@/services/restaurant-profile-api";
+import {
+  getRestaurantProfileApi,
+  updateRestaurantProfileApi,
+  restaurantProfileApi,
+} from "@/services/restaurant-profile-api";
 import { getRestaurantHoursApi, restaurantHoursApi } from "@/services/restaurant-hours-api";
+import { useRestaurant } from "@/contexts/restaurant-context";
 
 export function ProfileRestaurant() {
   const navigate = useNavigate();
   const { token } = useAuth();
+  const { setSlug } = useRestaurant();
+
   const {
     name, setName,
     weekdayStart, setWeekdayStart,
@@ -52,7 +59,15 @@ export function ProfileRestaurant() {
             (day) => day.openingTime !== null && day.closingTime !== null
           );
 
-          const orderWeek = ["SUNDAY", "MONDAY", "TUESDAY", "WEDNESDAY", "THURSDAY", "FRIDAY", "SATURDAY"];
+          const orderWeek = [
+            "SUNDAY",
+            "MONDAY",
+            "TUESDAY",
+            "WEDNESDAY",
+            "THURSDAY",
+            "FRIDAY",
+            "SATURDAY",
+          ];
           openDays.sort(
             (a, b) => orderWeek.indexOf(a.weekday) - orderWeek.indexOf(b.weekday)
           );
@@ -68,6 +83,11 @@ export function ProfileRestaurant() {
             setOpeningTime("");
             setClosingTime("");
           }
+
+          // Atualiza o slug no contexto logo ao carregar perfil
+          if (profileData.slug) {
+            setSlug(profileData.slug);
+          }
         }
       } catch (error) {
         console.error("Erro ao carregar dados do restaurante:", error);
@@ -75,7 +95,19 @@ export function ProfileRestaurant() {
     };
 
     fetchData();
-  }, [token]);
+  }, [
+    token,
+    setName,
+    setDeliveryTimeMin,
+    setDeliveryTimeMax,
+    setProfilePicUrl,
+    setBannerPicUrl,
+    setWeekdayStart,
+    setWeekdayEnd,
+    setOpeningTime,
+    setClosingTime,
+    setSlug,
+  ]);
 
   const handleSubmit = async () => {
     try {
@@ -85,10 +117,11 @@ export function ProfileRestaurant() {
       }
 
       let currentRestaurantId = restaurantId;
+      let restaurantData;
 
       // Se não tem restaurante, cria
       if (!currentRestaurantId) {
-        const created = await restaurantProfileApi(
+        restaurantData = await restaurantProfileApi(
           {
             name,
             deliveryTimeMin: Number(deliveryTimeMin),
@@ -98,12 +131,13 @@ export function ProfileRestaurant() {
           },
           token
         );
-        currentRestaurantId = created.id;
+        currentRestaurantId = restaurantData.id;
         setRestaurantId(currentRestaurantId);
+        setSlug(restaurantData.slug); // atualiza slug no contexto
         alert("Restaurante criado com sucesso!");
       } else {
         // Atualiza restaurante
-        await updateRestaurantProfileApi(
+        restaurantData = await updateRestaurantProfileApi(
           currentRestaurantId,
           {
             name,
@@ -114,10 +148,11 @@ export function ProfileRestaurant() {
           },
           token
         );
+        setSlug(restaurantData.slug); // atualiza slug no contexto
         alert("Perfil do restaurante atualizado com sucesso!");
       }
 
-      // Agora atualiza os horários
+      // Atualiza os horários
       await restaurantHoursApi(
         currentRestaurantId,
         {
@@ -129,9 +164,7 @@ export function ProfileRestaurant() {
         token
       );
 
-      // Se quiser, aqui pode mostrar outro alert ou só navegar direto
       navigate("/edit-menu");
-
     } catch (error: any) {
       alert(error.message || "Erro ao salvar restaurante ou horários.");
     }
@@ -203,7 +236,9 @@ export function ProfileRestaurant() {
           <Button className="max-w-40 bg-transparent text-black border border-black hover:text-white hover:border-white">
             Copiar Link
           </Button>
-          <Button className="max-w-40" onClick={handleSubmit}>Salvar</Button>
+          <Button className="max-w-40" onClick={handleSubmit}>
+            Salvar
+          </Button>
         </div>
       </footer>
     </div>
