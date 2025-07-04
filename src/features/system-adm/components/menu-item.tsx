@@ -27,7 +27,7 @@ export function MenuItem(order: OrderProps) {
             onClick={() => console.log("Abrir modal")}
             type="button"
             aria-label="Editar prato"
-            className="group bg-white shadow-lg w-8 h-8 flex items-center justify-center transition-all duration-300 rounded hover:w-16 hover:bg-[#fe0000]/80"
+            className="group bg-white shadow-lg w-8 h-8 flex items-center justify-center transition-all duration-300 rounded hover:w-16 hover:bg-blue-600/80"
           >
             <Icon
               icon="solar:pen-2-outline"
