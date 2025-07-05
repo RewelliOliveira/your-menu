@@ -5,21 +5,18 @@ interface AuthContextType {
   login: (token: string) => void;
   logout: () => void;
   isAuthenticated: boolean;
-  isLoading: boolean;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [token, setToken] = useState<string | null>(null);
-  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
     const savedToken = localStorage.getItem('token');
     if (savedToken) {
       setToken(savedToken);
     }
-    setIsLoading(false); 
   }, []);
 
   const login = (newToken: string) => {
@@ -33,15 +30,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   };
 
   return (
-    <AuthContext.Provider
-      value={{
-        token,
-        login,
-        logout,
-        isAuthenticated: !!token,
-        isLoading,
-      }}
-    >
+    <AuthContext.Provider value={{ token, login, logout, isAuthenticated: !!token }}>
       {children}
     </AuthContext.Provider>
   );
