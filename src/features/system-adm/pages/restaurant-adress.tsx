@@ -1,7 +1,7 @@
 import { Input } from "@/components/ui/input";
 import { useAuth } from "@/contexts/auth-context";
-import { restaurantAdressApi } from "@/services/restaurant-adress-api";
-import { getRestaurantProfileApi } from "@/services/restaurant-profile-api"; // importe a função correta
+import { restaurantAdressApi, getRestaurantAdressApi } from "@/services/restaurant-adress-api";
+import { getRestaurantProfileApi } from "@/services/restaurant-profile-api";
 import { useState, useEffect } from "react";
 import { Header } from "../components/header";
 import { Button } from "../components/ui/button";
@@ -18,6 +18,7 @@ export function RestaurantAdress() {
     const [restaurantId, setRestaurantId] = useState<string | null>(null);
     const { token } = useAuth();
 
+    // Pega o ID do restaurante
     useEffect(() => {
         async function fetchRestaurantId() {
             if (!token) return;
@@ -30,6 +31,30 @@ export function RestaurantAdress() {
         }
         fetchRestaurantId();
     }, [token]);
+
+    // Busca os dados de endereço assim que tiver o ID
+    useEffect(() => {
+        async function fetchAddress() {
+            if (!restaurantId || !token) return;
+
+            try {
+                const adress = await getRestaurantAdressApi(restaurantId, token);
+
+                setCep(adress.cep.toString());
+                setState(adress.state);
+                setCity(adress.city);
+                setStreet(adress.street);
+                setNumber(adress.number.toString());
+                setDistrict(adress.district);
+                setComplement(adress.complement ?? "");
+                setReference(adress.reference ?? "");
+            } catch (error) {
+                console.error("Endereço ainda não cadastrado ou erro ao buscar:", error);
+            }
+        }
+
+        fetchAddress();
+    }, [restaurantId, token]);
 
     const handleSubmit = async () => {
         if (!cep || !state || !city || !street || !number || !district) {
