@@ -42,3 +42,18 @@ export async function getRestaurantAdressApi(restaurantId: string, token: string
     throw error;
   }
 }
+//PUT
+export async function updateRestaurantAdressApi(data: RestaurantAdressApiProps, token: string) {
+  try {
+    const response = await api.put("/restaurantAdress", data, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+
+    return response.data;
+  } catch (error) {
+    console.error("Erro ao atualizar endereço do restaurante:", error);
+    throw error;
+  }
+}
