@@ -4,34 +4,37 @@ import { Link, useNavigate } from "react-router-dom";
 import { useState } from "react";
 import { loginAccount } from "@/services/login-account";
 import { useAuth } from "@/contexts/auth-context";
+import { toast } from "react-toastify";
 
 export function LoginAdm() {
-  const [email, setEmail] = useState("")
+  const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const navigate = useNavigate();
   const { login } = useAuth();
 
   const handleSubmit = async () => {
     if (!email || !password) {
-      alert('Preencha os campos obrigatórios.');
+      toast.error("Preencha todos os campos obrigatórios!");
       return;
     }
 
+    const credentials = { email, password };
+
     try {
-      const data = { email, password };
-      const response = await loginAccount(data);
+      const response = await loginAccount(credentials);
       const token = response.token;
 
-      if (token) {
-        login(token);
-        alert("Login realizado com sucesso!");
-        navigate("/profile-restaurant");
-      } else {
-        alert("Token não retornado pelo servidor.");
+      if (!token) {
+        toast.error("Token de autenticação ausente na resposta!");
+        return;
       }
+
+      login(token);
+      navigate("/profile-restaurant");
+      toast.success("Login realizado com sucesso!");
+
     } catch (error) {
-      console.error("Erro ao entrar:", error);
-      alert("Erro no login.");
+      toast.error("Erro ao tentar realizar login!");
     }
   };
 
@@ -48,23 +51,24 @@ export function LoginAdm() {
           <InputLogin
             label="Email"
             placeholder="email@dominio.com"
-            value={email}
             type="email"
-            onChange={(e) => setEmail(e.target.value)} />
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+          />
           <InputLogin
             label="Senha"
-            type="password"
             placeholder="********"
+            type="password"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
           />
-          <p className=" font-bold text-base text-right text-orange-600">
+          <p className="font-bold text-base text-right text-orange-600">
             Esqueceu sua senha?
           </p>
         </main>
       </div>
 
-      <footer className="flex flex-col grid-rows-2 items-center gap-4 mt-6 lg:mt-3">
+      <footer className="flex flex-col items-center gap-4 mt-6 lg:mt-3">
         <Button onClick={handleSubmit}>Entrar</Button>
         <div className="text-lg text-black">
           <p>
