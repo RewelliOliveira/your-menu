@@ -5,6 +5,7 @@ import { useState } from "react";
 import { loginAccount } from "@/services/login-account";
 import { useAuth } from "@/contexts/auth-context";
 import { toast } from "react-toastify";
+import { api } from "@/services/api";
 
 export function LoginAdm() {
   const [email, setEmail] = useState("");
@@ -29,10 +30,35 @@ export function LoginAdm() {
         return;
       }
 
-      login(token);
-      navigate("/profile-restaurant");
-      toast.success("Login realizado com sucesso!");
+      login(token); 
 
+      try {
+        const restaurantResponse = await api.get("/restaurant", {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
+
+        const hasRestaurant = restaurantResponse.data?.id;
+
+        if (hasRestaurant) {
+          navigate("/edit-menu");
+        } else {
+          navigate("/profile-restaurant");
+        }
+      } catch (restaurantError: any) {
+        const status = restaurantError.response?.status;
+
+        if (status === 403 || status === 404) {
+          // Usuário autenticado, mas ainda sem restaurante
+          navigate("/profile-restaurant");
+        } else {
+          console.error("Erro ao verificar restaurante:", restaurantError);
+          toast.error("Erro ao verificar restaurante.");
+        }
+      }
+
+      toast.success("Login realizado com sucesso!");
     } catch (error) {
       toast.error("Erro ao tentar realizar login!");
     }
