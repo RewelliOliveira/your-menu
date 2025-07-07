@@ -18,6 +18,11 @@ export function RegisterAdm() {
     return nameParts.length >= 2;
   };
 
+  const isEmailValid = (email: string) => {
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    return emailRegex.test(email);
+  };
+
   const isFormValid = () => {
     if (!fullName || !email || !password || !confirmPassword) {
       toast.error("Preencha os campos obrigatórios!");
@@ -26,6 +31,11 @@ export function RegisterAdm() {
 
     if (!isFullNameValid(fullName)) {
       toast.error("Informe nome e sobrenome.");
+      return false;
+    }
+
+    if (!isEmailValid(email)) {
+      toast.error("Email inválido. Use um formato válido, como email@dominio.com");
       return false;
     }
 

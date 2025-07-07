@@ -12,8 +12,14 @@ import { Button } from "../components/ui/button";
 import { toast } from "react-toastify";
 import { useNavigate } from "react-router-dom";
 
-export function RestaurantAdress() {
+function maskCep(value: string) {
+  return value
+    .replace(/\D/g, "")
+    .replace(/^(\d{5})(\d)/, "$1-$2")
+    .slice(0, 9);
+}
 
+export function RestaurantAdress() {
   const [cep, setCep] = useState("");
   const [state, setState] = useState("");
   const [city, setCity] = useState("");
@@ -46,9 +52,8 @@ export function RestaurantAdress() {
 
       try {
         const adress = await getRestaurantAdressApi(restaurantId, token);
-
         setHasAddress(true);
-        setCep(adress.cep.toString());
+        setCep(maskCep(adress.cep.toString()));
         setState(adress.state);
         setCity(adress.city);
         setStreet(adress.street);
@@ -67,12 +72,12 @@ export function RestaurantAdress() {
 
   const handleSubmit = async () => {
     if (!cep || !state || !city || !street || !number || !district) {
-      toast.error("Preencha todos os campos obrigatorios!")
+      toast.error("Preencha todos os campos obrigatorios!");
       return;
     }
 
     if (!token) {
-      toast.error("Usuario não autenticado")
+      toast.error("Usuário não autenticado");
       return;
     }
 
@@ -83,7 +88,7 @@ export function RestaurantAdress() {
 
     const data = {
       restaurantId,
-      cep: parseInt(cep),
+      cep: parseInt(cep.replace("-", "")), // remove o traço para enviar número puro
       state,
       city,
       street,
@@ -96,17 +101,17 @@ export function RestaurantAdress() {
     try {
       if (hasAddress) {
         await updateRestaurantAdressApi(data, token);
-        toast.success("Endereço atualizado com sucesso!")
+        toast.success("Endereço atualizado com sucesso!");
       } else {
         await restaurantAdressApi(data, token);
-        toast.success("Endereço cadastrad0 com sucesso")
+        toast.success("Endereço cadastrado com sucesso!");
         setHasAddress(true);
       }
     } catch (error) {
       console.error("Erro ao salvar endereço:", error);
-      toast.error("Erro ao cadastrar endereço")
+      toast.error("Erro ao cadastrar endereço");
     }
-    navigate("/edit-menu")
+    navigate("/edit-menu");
   };
 
   return (
@@ -117,24 +122,66 @@ export function RestaurantAdress() {
           Informações de endereço
         </h1>
         <div className="flex gap-8">
-          <Input label="CEP*" type="text" value={cep} onChange={(e) => setCep(e.target.value)} />
-          <Input label="Estado*" type="text" value={state} onChange={(e) => setState(e.target.value)} />
+          <Input
+            label="CEP*"
+            type="text"
+            value={cep}
+            onChange={(e) => setCep(maskCep(e.target.value))}
+          />
+          <Input
+            label="Estado*"
+            type="text"
+            value={state}
+            onChange={(e) => setState(e.target.value)}
+          />
         </div>
         <div className="flex gap-8 mt-4">
-          <Input label="Cidade*" type="text" value={city} onChange={(e) => setCity(e.target.value)} />
-          <Input label="Bairro*" type="text" value={district} onChange={(e) => setDistrict(e.target.value)} />
+          <Input
+            label="Cidade*"
+            type="text"
+            value={city}
+            onChange={(e) => setCity(e.target.value)}
+          />
+          <Input
+            label="Bairro*"
+            type="text"
+            value={district}
+            onChange={(e) => setDistrict(e.target.value)}
+          />
         </div>
         <div className="flex gap-8 mt-4">
-          <Input label="Rua*" type="text" value={street} onChange={(e) => setStreet(e.target.value)} />
-          <Input label="Número" type="text" value={number} onChange={(e) => setNumber(e.target.value)} />
+          <Input
+            label="Rua*"
+            type="text"
+            value={street}
+            onChange={(e) => setStreet(e.target.value)}
+          />
+          <Input
+            label="Número"
+            type="text"
+            value={number}
+            onChange={(e) => setNumber(e.target.value)}
+          />
         </div>
         <div className="flex gap-8 mt-4">
-          <Input label="Complemento" type="text" value={complement} onChange={(e) => setComplement(e.target.value)} />
-          <Input label="Referência" type="text" value={reference} onChange={(e) => setReference(e.target.value)} />
+          <Input
+            label="Complemento"
+            type="text"
+            value={complement}
+            onChange={(e) => setComplement(e.target.value)}
+          />
+          <Input
+            label="Referência"
+            type="text"
+            value={reference}
+            onChange={(e) => setReference(e.target.value)}
+          />
         </div>
 
         <div className="flex justify-end mt-6 w-full">
-          <Button onClick={handleSubmit} className="max-w-40 max-h-10 mt-3">Salvar</Button>
+          <Button onClick={handleSubmit} className="max-w-40 max-h-10 mt-3">
+            Salvar
+          </Button>
         </div>
       </div>
     </div>
