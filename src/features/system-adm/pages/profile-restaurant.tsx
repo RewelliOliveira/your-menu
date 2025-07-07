@@ -13,6 +13,7 @@ import { useEffect, useState } from "react";
 
 import { getRestaurantProfileApi, updateRestaurantProfileApi, restaurantProfileApi } from "@/services/restaurant-profile-api";
 import { getRestaurantHoursApi, restaurantHoursApi } from "@/services/restaurant-hours-api";
+import { toast } from "react-toastify";
 
 export function ProfileRestaurant() {
   const navigate = useNavigate();
@@ -102,7 +103,7 @@ export function ProfileRestaurant() {
   const handleSubmit = async () => {
     try {
       if (!token) {
-        alert("Usuário não autenticado.");
+        toast.error("Usuario não autenticado!")
         return;
       }
 
@@ -121,7 +122,7 @@ export function ProfileRestaurant() {
         );
         currentRestaurantId = created.id;
         setRestaurantId(currentRestaurantId);
-        alert("Restaurante criado com sucesso!");
+        toast.success("Restaurante criado com sucesso!");
       } else {
         await updateRestaurantProfileApi(
           currentRestaurantId,
@@ -134,7 +135,7 @@ export function ProfileRestaurant() {
           },
           token
         );
-        alert("Perfil do restaurante atualizado com sucesso!");
+        toast.success("Dados dos restaurantes atualizados com sucesso!");
       }
 
       console.log("Enviando arquivos:", profilePicFile, bannerPicFile);
@@ -150,7 +151,7 @@ export function ProfileRestaurant() {
         token
       );
 
-      navigate("/edit-menu");
+       navigate("/restaurant-adress");
     } catch (error: any) {
       alert(error.message || "Erro ao salvar restaurante ou horários.");
     }

@@ -9,8 +9,11 @@ import { getRestaurantProfileApi } from "@/services/restaurant-profile-api";
 import { useState, useEffect } from "react";
 import { Header } from "../components/header";
 import { Button } from "../components/ui/button";
+import { toast } from "react-toastify";
+import { useNavigate } from "react-router-dom";
 
 export function RestaurantAdress() {
+
   const [cep, setCep] = useState("");
   const [state, setState] = useState("");
   const [city, setCity] = useState("");
@@ -20,10 +23,10 @@ export function RestaurantAdress() {
   const [complement, setComplement] = useState("");
   const [reference, setReference] = useState("");
   const [restaurantId, setRestaurantId] = useState<string | null>(null);
-  const [hasAddress, setHasAddress] = useState(false); // usado para definir PUT ou POST
+  const [hasAddress, setHasAddress] = useState(false);
+  const navigate = useNavigate();
   const { token } = useAuth();
 
-  // Pega o ID do restaurante
   useEffect(() => {
     async function fetchRestaurantId() {
       if (!token) return;
@@ -37,7 +40,6 @@ export function RestaurantAdress() {
     fetchRestaurantId();
   }, [token]);
 
-  // Busca os dados de endereço assim que tiver o ID
   useEffect(() => {
     async function fetchAddress() {
       if (!restaurantId || !token) return;
@@ -45,7 +47,7 @@ export function RestaurantAdress() {
       try {
         const adress = await getRestaurantAdressApi(restaurantId, token);
 
-        setHasAddress(true); // endereço já existe
+        setHasAddress(true);
         setCep(adress.cep.toString());
         setState(adress.state);
         setCity(adress.city);
@@ -65,12 +67,12 @@ export function RestaurantAdress() {
 
   const handleSubmit = async () => {
     if (!cep || !state || !city || !street || !number || !district) {
-      alert("Preencha todos os campos obrigatórios.");
+      toast.error("Preencha todos os campos obrigatorios!")
       return;
     }
 
     if (!token) {
-      alert("Usuário não autenticado.");
+      toast.error("Usuario não autenticado")
       return;
     }
 
@@ -94,16 +96,17 @@ export function RestaurantAdress() {
     try {
       if (hasAddress) {
         await updateRestaurantAdressApi(data, token);
-        alert("Endereço atualizado com sucesso!");
+        toast.success("Endereço atualizado com sucesso!")
       } else {
         await restaurantAdressApi(data, token);
-        alert("Endereço cadastrado com sucesso!");
-        setHasAddress(true); // marca como existente após salvar
+        toast.success("Endereço cadastrad0 com sucesso")
+        setHasAddress(true);
       }
     } catch (error) {
       console.error("Erro ao salvar endereço:", error);
-      alert("Erro ao salvar endereço.");
+      toast.error("Erro ao cadastrar endereço")
     }
+    navigate("/edit-menu")
   };
 
   return (
