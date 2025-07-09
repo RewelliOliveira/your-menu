@@ -1,4 +1,5 @@
-import { Button } from "../components/ui/button";
+import "tailwindcss";
+import { ButtonLogin } from "../components/ui/button-login";
 import { InputLogin } from "../components/ui/input-login";
 import { Link, useNavigate } from "react-router-dom";
 import { useState } from "react";
@@ -30,7 +31,7 @@ export function LoginAdm() {
         return;
       }
 
-      login(token); 
+      login(token);
 
       try {
         const restaurantResponse = await api.get("/restaurant", {
@@ -50,7 +51,6 @@ export function LoginAdm() {
         const status = restaurantError.response?.status;
 
         if (status === 403 || status === 404) {
-          // Usuário autenticado, mas ainda sem restaurante
           navigate("/profile-restaurant");
         } else {
           console.error("Erro ao verificar restaurante:", restaurantError);
@@ -65,14 +65,14 @@ export function LoginAdm() {
   };
 
   return (
-    <div className="min-h-screen flex flex-col text-center justify-start gap-5 mx-auto max-w-md px-4 mt-20 lg:border-1 lg:min-h-0 lg:p-6 lg:gap-0 lg:rounded-[10px] lg:shadow">
-      <header className="flex flex-col gap-5">
-        <div className="justify-center items-center w-70 mx-auto">
+    <div className="min-h-screen flex flex-col text-center justify-start gap-5 mx-auto max-w-md px-4 mt-20">
+      <header className="flex flex-col gap-5 ">
+        <div className="justify-center w-70 sm:w-50 md:w-100 mx-auto">
           <img src="/logo.svg" alt="Logo YourMenu" />
         </div>
       </header>
 
-      <div className="mt-8 bg-white py-6 sm:py-6 rounded-lg px-4 lg:mt-0">
+      <div className="mt-8 bg-white py-6 sm:py-6 rounded-lg px-4">
         <main>
           <InputLogin
             label="Email"
@@ -95,11 +95,13 @@ export function LoginAdm() {
       </div>
 
       <footer className="flex flex-col items-center gap-4 mt-6 lg:mt-3">
-        <Button onClick={handleSubmit}>Entrar</Button>
+        <ButtonLogin type="button" onClick={handleSubmit}>
+          Entrar
+        </ButtonLogin>
         <div className="text-lg text-black">
           <p>
             Não tem uma conta?
-            <Link to="/register">
+            <Link to="/cadastro">
               <span className="text-orange-600 font-bold ml-1">Crie agora</span>
             </Link>
           </p>
