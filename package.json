@@ -16,15 +16,10 @@
     "clsx": "^2.1.1",
     "lucide-react": "^0.503.0",
     "react": "^19.0.0",
-    "react-auth-kit": "^3.1.3",
     "react-dom": "^19.0.0",
-<<<<<<< HEAD
     "react-router-dom": "^7.6.1",
     "react-toastify": "^11.0.5",
     "shadcn": "^2.5.0",
-=======
-    "react-router-dom": "^7.5.3",
->>>>>>> e41d365f05b424baa37bd43de3e5b4e8e4f458c6
     "tailwind-merge": "^3.2.0",
     "tailwindcss": "^4.1.4"
   },
