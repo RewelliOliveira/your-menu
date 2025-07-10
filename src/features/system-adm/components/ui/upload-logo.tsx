@@ -2,52 +2,29 @@ import { useRef, useState, useEffect } from "react";
 
 interface UploadLogoProps {
   className?: string;
-  imageUrl?: string | null;
+  imageUrl?: string; 
   setImageFile: React.Dispatch<React.SetStateAction<File | null>>;
 }
 
 export function UploadLogo({ className, imageUrl, setImageFile }: UploadLogoProps) {
   const [preview, setPreview] = useState<string | null>(null);
   const inputRef = useRef<HTMLInputElement>(null);
-  const previewUrlRef = useRef<string | null>(null);
 
   useEffect(() => {
-    if (!imageUrl || imageUrl.trim() === "") {
-      setPreview(null);
-      if (previewUrlRef.current) {
-        URL.revokeObjectURL(previewUrlRef.current);
-        previewUrlRef.current = null;
-      }
-    } else {
-      setPreview(imageUrl);
-    }
+    setPreview(imageUrl || null);
   }, [imageUrl]);
 
   function handleImageChange(event: React.ChangeEvent<HTMLInputElement>) {
     const file = event.target.files?.[0];
     if (file) {
-      setImageFile(file);
-      if (previewUrlRef.current) {
-        URL.revokeObjectURL(previewUrlRef.current);
-      }
-      const newPreviewUrl = URL.createObjectURL(file);
-      previewUrlRef.current = newPreviewUrl;
-      setPreview(newPreviewUrl);
+      setImageFile(file);      
+      setPreview(URL.createObjectURL(file));
     }
   }
 
   function triggerFileInput() {
     inputRef.current?.click();
   }
-
-  useEffect(() => {
-    return () => {
-      if (previewUrlRef.current) {
-        URL.revokeObjectURL(previewUrlRef.current);
-        previewUrlRef.current = null;
-      }
-    };
-  }, []);
 
   return (
     <div className="flex flex-col items-center justify-center gap-2 mt-10">
@@ -58,7 +35,7 @@ export function UploadLogo({ className, imageUrl, setImageFile }: UploadLogoProp
         }
         onClick={triggerFileInput}
       >
-        {preview && preview.trim() !== "" ? (
+        {preview ? (
           <img
             src={preview}
             alt="Logo"
@@ -67,7 +44,6 @@ export function UploadLogo({ className, imageUrl, setImageFile }: UploadLogoProp
         ) : (
           <span className="text-sm text-gray-500">Logo</span>
         )}
-
       </div>
       <input
         ref={inputRef}

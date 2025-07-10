@@ -4,63 +4,34 @@ import { Link, useNavigate } from "react-router-dom";
 import { useState } from "react";
 import { loginAccount } from "@/services/login-account";
 import { useAuth } from "@/contexts/auth-context";
-import { toast } from "react-toastify";
-import { api } from "@/services/api";
 
 export function LoginAdm() {
-  const [email, setEmail] = useState("");
+  const [email, setEmail] = useState("")
   const [password, setPassword] = useState("");
   const navigate = useNavigate();
   const { login } = useAuth();
 
   const handleSubmit = async () => {
     if (!email || !password) {
-      toast.error("Preencha todos os campos obrigatórios!");
+      alert('Preencha os campos obrigatórios.');
       return;
     }
 
-    const credentials = { email, password };
-
     try {
-      const response = await loginAccount(credentials);
+      const data = { email, password };
+      const response = await loginAccount(data);
       const token = response.token;
 
-      if (!token) {
-        toast.error("Token de autenticação ausente na resposta!");
-        return;
+      if (token) {
+        login(token);
+        alert("Login realizado com sucesso!");
+        navigate("/profile-restaurant");
+      } else {
+        alert("Token não retornado pelo servidor.");
       }
-
-      login(token); 
-
-      try {
-        const restaurantResponse = await api.get("/restaurant", {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        });
-
-        const hasRestaurant = restaurantResponse.data?.id;
-
-        if (hasRestaurant) {
-          navigate("/edit-menu");
-        } else {
-          navigate("/profile-restaurant");
-        }
-      } catch (restaurantError: any) {
-        const status = restaurantError.response?.status;
-
-        if (status === 403 || status === 404) {
-          // Usuário autenticado, mas ainda sem restaurante
-          navigate("/profile-restaurant");
-        } else {
-          console.error("Erro ao verificar restaurante:", restaurantError);
-          toast.error("Erro ao verificar restaurante.");
-        }
-      }
-
-      toast.success("Login realizado com sucesso!");
     } catch (error) {
-      toast.error("Erro ao tentar realizar login!");
+      console.error("Erro ao entrar:", error);
+      alert("Erro no login.");
     }
   };
 
@@ -77,24 +48,23 @@ export function LoginAdm() {
           <InputLogin
             label="Email"
             placeholder="email@dominio.com"
-            type="email"
             value={email}
-            onChange={(e) => setEmail(e.target.value)}
-          />
+            type="email"
+            onChange={(e) => setEmail(e.target.value)} />
           <InputLogin
             label="Senha"
-            placeholder="********"
             type="password"
+            placeholder="********"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
           />
-          <p className="font-bold text-base text-right text-orange-600">
+          <p className=" font-bold text-base text-right text-orange-600">
             Esqueceu sua senha?
           </p>
         </main>
       </div>
 
-      <footer className="flex flex-col items-center gap-4 mt-6 lg:mt-3">
+      <footer className="flex flex-col grid-rows-2 items-center gap-4 mt-6 lg:mt-3">
         <Button onClick={handleSubmit}>Entrar</Button>
         <div className="text-lg text-black">
           <p>

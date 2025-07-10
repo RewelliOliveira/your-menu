@@ -33,10 +33,10 @@ export async function restaurantProfileApi(
     formData.append("deliveryTimeMax", data.deliveryTimeMax.toString());
 
     if (data.profilePicFile) {
-      formData.append("profilePictureUrl", data.profilePicFile); 
+      formData.append("profilePic", data.profilePicFile);
     }
     if (data.bannerPicFile) {
-      formData.append("bannerPictureUrl", data.bannerPicFile);
+      formData.append("bannerPic", data.bannerPicFile);
     }
 
     const response = await api.post("/restaurant", formData, {
@@ -82,10 +82,10 @@ export async function updateRestaurantProfileApi(
     formData.append("deliveryTimeMax", data.deliveryTimeMax.toString());
 
     if (data.profilePicFile) {
-      formData.append("profilePictureUrl", data.profilePicFile); 
+      formData.append("profilePic", data.profilePicFile);
     }
     if (data.bannerPicFile) {
-      formData.append("bannerPictureUrl", data.bannerPicFile);
+      formData.append("bannerPic", data.bannerPicFile);
     }
 
     const response = await api.put(`/restaurant/${restaurantId}`, formData, {
