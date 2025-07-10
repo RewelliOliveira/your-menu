@@ -4,8 +4,9 @@ type TabbedSectionsProps<T extends string, D> = {
   title: string;
   data: D[];
   renderItem: (item: D) => React.ReactNode;
-  getCategory: (item: D) => T; // função que retorna a categoria de um item
-  renderAfterItems?: () => React.ReactNode; // opcional, para adicionar conteúdo após os itens
+  getCategory: (item: D) => T;
+  renderAfterItems?: () => React.ReactNode;
+  categoriesOrder?: T[]; // 🆕 ordem fixa opcional
 };
 
 export function TabbedSections<T extends string, D>({
@@ -14,13 +15,21 @@ export function TabbedSections<T extends string, D>({
   renderItem,
   getCategory,
   renderAfterItems,
+  categoriesOrder,
 }: TabbedSectionsProps<T, D>) {
-  // Categorias extraídas dinamicamente
   const categories = useMemo(() => {
     const unique = new Set<T>();
     data.forEach((item) => unique.add(getCategory(item)));
-    return Array.from(unique);
-  }, [data, getCategory]);
+
+    const dynamic = Array.from(unique);
+
+    // se `categoriesOrder` for passada, respeita a ordem dela
+    if (categoriesOrder?.length) {
+      return categoriesOrder.filter((cat) => dynamic.includes(cat));
+    }
+
+    return dynamic;
+  }, [data, getCategory, categoriesOrder]);
 
   const [selectedTab, setSelectedTab] = useState<T>(categories[0] ?? ("" as T));
   const [isSticky, setIsSticky] = useState(false);
@@ -32,10 +41,8 @@ export function TabbedSections<T extends string, D>({
     }, {} as Record<T, HTMLDivElement | null>)
   );
 
-  // Referência à barra de abas (tabs)
   const tabsRef = useRef<HTMLDivElement>(null);
 
-  // Função chamada ao clicar em uma aba
   function handleTabClick(tab: T) {
     setSelectedTab(tab);
     const el = sectionRefs.current[tab];
@@ -48,7 +55,6 @@ export function TabbedSections<T extends string, D>({
     }
   }
 
-  // Efeito para monitorar o scroll e aplicar comportamento sticky na barra de abas
   useEffect(() => {
     function handleScroll() {
       if (!tabsRef.current) return;
