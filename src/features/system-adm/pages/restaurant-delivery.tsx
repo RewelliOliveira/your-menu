@@ -62,7 +62,6 @@ export function RestaurantDelivery() {
       setSaving(true);
 
       if (editZone && editZone.id) {
-        // Editando zona existente
         await updateDeliveryZone(
           editZone.id,
           {
@@ -73,7 +72,6 @@ export function RestaurantDelivery() {
           token
         );
 
-        // Atualiza localmente a zona editada, mantendo posição
         setZones((prevZones) =>
           prevZones.map((z) =>
             z.id === editZone.id
@@ -82,7 +80,6 @@ export function RestaurantDelivery() {
           )
         );
       } else {
-        // Verifica se já existe zona com esse nome
         const exists = zones.some(
           (z) => z.zone.trim().toLowerCase() === zone.trim().toLowerCase()
         );
@@ -113,7 +110,6 @@ export function RestaurantDelivery() {
             },
           ]);
         } else {
-          // fallback se não retornar id, recarrega geral
           await fetchZones();
         }
       }
