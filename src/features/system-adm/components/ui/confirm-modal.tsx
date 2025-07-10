@@ -1,60 +1,48 @@
-import React, { useEffect } from 'react';
-import { Button } from './button';
+import React from 'react';
+import { X } from 'lucide-react';
+import { Button } from './button'; // Importe seu componente Button
 
 interface ConfirmModalProps {
-  title: string;
-  content: string;
-  buttonmsg: string;
-  onConfirm: () => void;
-  onCancel: () => void;
+    message: string;
+    buttonmsg: string;
+    onConfirm: () => void;
+    onCancel: () => void;
+    isOpen: boolean;
 }
 
 export const ConfirmModal: React.FC<ConfirmModalProps> = ({
-  title,
-  content,
-  buttonmsg,
-  onConfirm,
-  onCancel,
+    message,
+    buttonmsg,
+    onConfirm,
+    onCancel,
+    isOpen,
 }) => {
-  useEffect(() => {
-    document.body.style.overflow = "hidden";
-    document.documentElement.style.overflow = "hidden";
+    if (!isOpen) return null;
+  
+    return (
+        <div className="fixed inset-0 flex items-center justify-center bg-black/20 z-50">
+            <div className="bg-white p-8 rounded shadow-lg text-black w-[420px] relative">
+                <button
+                    onClick={onCancel}
+                    className="absolute top-2 right-2 text-gray-500 hover:text-black"
+                >
+                    <X className="w-5 h-5" />
+                </button>
 
-    return () => {
-      document.body.style.overflow = "";
-      document.documentElement.style.overflow = "";
-    };
-  }, []);
+                <p className="mb-6 text-lg font-semibold">
+                    {message}
+                </p>
 
-  return (
-    <div
-      className="fixed inset-0 z-[60] bg-black/50 flex items-center justify-center"
-      onMouseDown={onCancel}
-    >
-      <div
-        className="bg-white p-6 rounded-md shadow-lg w-full max-w-md space-y-4 relative text-black"
-        onMouseDown={(e) => e.stopPropagation()}
-      >
-        <h2 className="text-xl font-semibold">{title}</h2>
-        <p className="text-lg">{content}</p>
-
-        <div className="flex justify-end gap-2 mt-8">
-          <Button
-            onClick={onCancel}
-            className="!bg-gray-300 !text-black !px-3 !py-1 !text-sm !w-[90px]"
-            type="button"
-          >
-            Cancelar
-          </Button>
-          <Button
-            onClick={onConfirm}
-            type="button"
-            className="!px-5 !py-1 !text-sm !w-[120px]"
-          >
-            {buttonmsg}
-          </Button>
+                <div className="flex justify-end">
+                    <Button
+                        onClick={onConfirm}
+                        type="button"
+                        className="!bg-red-600 hover:!bg-red-700 !px-3 !py-1.5 !h-auto !w-auto !text-base"
+                    >
+                        {buttonmsg}
+                    </Button>
+                </div>
+            </div>
         </div>
-      </div>
-    </div>
-  );
+    );
 };

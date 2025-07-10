@@ -7,11 +7,7 @@ interface PrivateRouteProps {
 }
 
 export function PrivateRoute({ children }: PrivateRouteProps) {
-  const { isAuthenticated, isLoading } = useAuth();
-
-  if (isLoading) {
-    return <div>Carregando...</div>; // Pode trocar por um Spinner se quiser
-  }
+  const { isAuthenticated } = useAuth();
 
   return isAuthenticated ? children : <Navigate to="/" replace />;
 }

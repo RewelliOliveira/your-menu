@@ -124,8 +124,19 @@ export function Orders() {
           "Entregue",
         ]}
       />
+
       <footer className="pb-15">
-        <OrderFooter orders={orders} onVerMais={handleVerMais} />
+        <div className="flex justify-between items-center bg-gray-100 p-4 border-t border-gray-300 fixed bottom-0 left-0 w-full z-50">
+          <div>
+            <p className="text-sm text-gray-600">Total de vendas hoje</p>
+            <p className="text-lg font-semibold">
+              R$ {total.toFixed(2)}{" "}
+              <span className="text-sm font-normal text-gray-600">
+                / {entregues.length} pedidos
+              </span>
+            </p>
+          </div>
+        </div>
       </footer>
     </>
   );
