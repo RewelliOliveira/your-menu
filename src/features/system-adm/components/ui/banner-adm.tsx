@@ -10,14 +10,6 @@ interface BannerAdmProps {
   setBannerPicFile: React.Dispatch<React.SetStateAction<File | null>>;
 }
 
-interface BannerData {
-  title: string;
-  logoUrl: string | null;
-  backgroundUrl: string | null;
-  estimatedTime: string;
-  isOpen: boolean;
-}
-
 export const BannerAdm: React.FC<BannerAdmProps> = ({
   profilePicFile,
   bannerPicFile,
@@ -26,10 +18,10 @@ export const BannerAdm: React.FC<BannerAdmProps> = ({
   setProfilePicFile,
   setBannerPicFile,
 }) => {
-  const [data, setData] = useState<BannerData>({
+  const [data, setData] = useState({
     title: '',
-    logoUrl: null,
-    backgroundUrl: null,
+    logoUrl: '',
+    backgroundUrl: '',
     estimatedTime: '',
     isOpen: false,
   });
@@ -37,18 +29,11 @@ export const BannerAdm: React.FC<BannerAdmProps> = ({
   useEffect(() => {
     const logoUrl = profilePicFile
       ? URL.createObjectURL(profilePicFile)
-      : profilePicUrl && profilePicUrl.trim() !== ''
-        ? profilePicUrl
-        : null;
+      : profilePicUrl || 'placeholder.svg';
 
     const backgroundUrl = bannerPicFile
       ? URL.createObjectURL(bannerPicFile)
-      : bannerPicUrl && bannerPicUrl.trim() !== ''
-        ? bannerPicUrl
-        : null;
-
-    // console.log('BannerAdm -> logoUrl:', logoUrl);
-    // console.log('BannerAdm -> backgroundUrl:', backgroundUrl);
+      : bannerPicUrl || 'placeholder.svg';
 
     setData({
       title: 'Restaurante',
@@ -59,12 +44,8 @@ export const BannerAdm: React.FC<BannerAdmProps> = ({
     });
 
     return () => {
-      if (profilePicFile && logoUrl && logoUrl.startsWith('blob:')) {
-        URL.revokeObjectURL(logoUrl);
-      }
-      if (bannerPicFile && backgroundUrl && backgroundUrl.startsWith('blob:')) {
-        URL.revokeObjectURL(backgroundUrl);
-      }
+      if (profilePicFile) URL.revokeObjectURL(logoUrl);
+      if (bannerPicFile) URL.revokeObjectURL(backgroundUrl);
     };
   }, [profilePicFile, bannerPicFile, profilePicUrl, bannerPicUrl]);
 
@@ -72,13 +53,13 @@ export const BannerAdm: React.FC<BannerAdmProps> = ({
     <div className="relative w-full h-60 bg-black text-white flex items-center justify-center">
       <UploadLogo
         className="absolute top-0 left-0 w-full h-full object-cover opacity-50"
-        imageUrl={data.backgroundUrl || null}
+        imageUrl={data.backgroundUrl}
         setImageFile={setBannerPicFile}
       />
 
       <div className="relative z-10 flex flex-col items-center">
         <UploadLogo
-          imageUrl={data.logoUrl || null}
+          imageUrl={data.logoUrl}
           setImageFile={setProfilePicFile}
           className="w-24 h-24 rounded-full"
         />

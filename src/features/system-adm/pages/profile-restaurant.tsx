@@ -11,13 +11,19 @@ import { Button } from "../components/ui/button";
 import { useProfileForm } from "@/hooks/useProfileForm";
 import { useEffect, useState } from "react";
 
-import { getRestaurantProfileApi, updateRestaurantProfileApi, restaurantProfileApi } from "@/services/restaurant-profile-api";
+import {
+  getRestaurantProfileApi,
+  updateRestaurantProfileApi,
+  restaurantProfileApi,
+} from "@/services/restaurant-profile-api";
 import { getRestaurantHoursApi, restaurantHoursApi } from "@/services/restaurant-hours-api";
-import { toast } from "react-toastify";
+import { useRestaurant } from "@/contexts/restaurant-context";
 
 export function ProfileRestaurant() {
   const navigate = useNavigate();
   const { token } = useAuth();
+  const { setSlug } = useRestaurant();
+
   const {
     name, setName,
     weekdayStart, setWeekdayStart,
@@ -28,10 +34,10 @@ export function ProfileRestaurant() {
     deliveryTimeMax, setDeliveryTimeMax,
     profilePicFile, setProfilePicFile,
     bannerPicFile, setBannerPicFile,
-    profilePicUrl, setProfilePicUrl,
-    bannerPicUrl, setBannerPicUrl,
   } = useProfileForm();
 
+  const [profilePicUrl, setProfilePicUrl] = useState<string | null>(null);
+  const [bannerPicUrl, setBannerPicUrl] = useState<string | null>(null);
   const [restaurantId, setRestaurantId] = useState<string | null>(null);
 
   useEffect(() => {
@@ -40,26 +46,12 @@ export function ProfileRestaurant() {
 
       try {
         const profileData = await getRestaurantProfileApi(token);
-
         setRestaurantId(profileData.id);
         setName(profileData.name);
         setDeliveryTimeMin(String(profileData.deliveryTimeMin));
         setDeliveryTimeMax(String(profileData.deliveryTimeMax));
-
-        const safeProfilePicUrl =
-          profileData.profilePicUrl && profileData.profilePicUrl.trim() !== ""
-            ? encodeURI(profileData.profilePicUrl)
-            : null;
-        const safeBannerPicUrl =
-          profileData.bannerPicUrl && profileData.bannerPicUrl.trim() !== ""
-            ? encodeURI(profileData.bannerPicUrl)
-            : null;
-
-        console.log("Profile Pic URL definida:", safeProfilePicUrl);
-        console.log("Banner Pic URL definida:", safeBannerPicUrl);
-
-        setProfilePicUrl(safeProfilePicUrl);
-        setBannerPicUrl(safeBannerPicUrl);
+        setProfilePicUrl(profileData.profilePicUrl);
+        setBannerPicUrl(profileData.bannerPicUrl);
 
         if (profileData.id) {
           const hoursData = await getRestaurantHoursApi(profileData.id, token);
@@ -91,6 +83,11 @@ export function ProfileRestaurant() {
             setOpeningTime("");
             setClosingTime("");
           }
+
+          // Atualiza o slug no contexto logo ao carregar perfil
+          if (profileData.slug) {
+            setSlug(profileData.slug);
+          }
         }
       } catch (error) {
         console.error("Erro ao carregar dados do restaurante:", error);
@@ -98,19 +95,33 @@ export function ProfileRestaurant() {
     };
 
     fetchData();
-  }, [token, setName, setDeliveryTimeMin, setDeliveryTimeMax, setProfilePicUrl, setBannerPicUrl, setWeekdayStart, setWeekdayEnd, setOpeningTime, setClosingTime]);
+  }, [
+    token,
+    setName,
+    setDeliveryTimeMin,
+    setDeliveryTimeMax,
+    setProfilePicUrl,
+    setBannerPicUrl,
+    setWeekdayStart,
+    setWeekdayEnd,
+    setOpeningTime,
+    setClosingTime,
+    setSlug,
+  ]);
 
   const handleSubmit = async () => {
     try {
       if (!token) {
-        toast.error("Usuario não autenticado!")
+        alert("Usuário não autenticado.");
         return;
       }
 
       let currentRestaurantId = restaurantId;
+      let restaurantData;
 
+      // Se não tem restaurante, cria
       if (!currentRestaurantId) {
-        const created = await restaurantProfileApi(
+        restaurantData = await restaurantProfileApi(
           {
             name,
             deliveryTimeMin: Number(deliveryTimeMin),
@@ -120,11 +131,13 @@ export function ProfileRestaurant() {
           },
           token
         );
-        currentRestaurantId = created.id;
+        currentRestaurantId = restaurantData.id;
         setRestaurantId(currentRestaurantId);
-        toast.success("Restaurante criado com sucesso!");
+        setSlug(restaurantData.slug); // atualiza slug no contexto
+        alert("Restaurante criado com sucesso!");
       } else {
-        await updateRestaurantProfileApi(
+        // Atualiza restaurante
+        restaurantData = await updateRestaurantProfileApi(
           currentRestaurantId,
           {
             name,
@@ -135,11 +148,11 @@ export function ProfileRestaurant() {
           },
           token
         );
-        toast.success("Dados dos restaurantes atualizados com sucesso!");
+        setSlug(restaurantData.slug); // atualiza slug no contexto
+        alert("Perfil do restaurante atualizado com sucesso!");
       }
 
-      console.log("Enviando arquivos:", profilePicFile, bannerPicFile);
-
+      // Atualiza os horários
       await restaurantHoursApi(
         currentRestaurantId,
         {
@@ -151,7 +164,7 @@ export function ProfileRestaurant() {
         token
       );
 
-       navigate("/restaurant-adress");
+      navigate("/edit-menu");
     } catch (error: any) {
       alert(error.message || "Erro ao salvar restaurante ou horários.");
     }
@@ -223,7 +236,9 @@ export function ProfileRestaurant() {
           <Button className="max-w-40 bg-transparent text-black border border-black hover:text-white hover:border-white">
             Copiar Link
           </Button>
-          <Button className="max-w-40" onClick={handleSubmit}>Salvar</Button>
+          <Button className="max-w-40" onClick={handleSubmit}>
+            Salvar
+          </Button>
         </div>
       </footer>
     </div>
