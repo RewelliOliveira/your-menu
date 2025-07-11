@@ -11,6 +11,7 @@ import {
 import { AddZoneModal } from "../components/ui/add-zone-modal";
 import { useRestaurant } from "@/contexts/restaurant-context";
 import { Icon } from "@iconify/react";
+import { toast } from "react-toastify";
 
 interface Zone {
   id?: string;
@@ -44,7 +45,7 @@ export function RestaurantDelivery() {
       }
     } catch (err) {
       console.error(err);
-      alert("Erro ao carregar zonas de entrega");
+      toast.error("Erro ao carregar zonas de entrega");
     }
   };
 
@@ -54,7 +55,7 @@ export function RestaurantDelivery() {
 
   const handleAddOrEditZone = async (zone: string, fee: string) => {
     if (!token || !slug) {
-      alert("Token ou slug ausentes");
+      toast.error("Token ou slug ausentes");
       return;
     }
 
@@ -62,7 +63,6 @@ export function RestaurantDelivery() {
       setSaving(true);
 
       if (editZone && editZone.id) {
-        // Editando zona existente
         await updateDeliveryZone(
           editZone.id,
           {
@@ -73,7 +73,6 @@ export function RestaurantDelivery() {
           token
         );
 
-        // Atualiza localmente a zona editada, mantendo posição
         setZones((prevZones) =>
           prevZones.map((z) =>
             z.id === editZone.id
@@ -81,13 +80,14 @@ export function RestaurantDelivery() {
               : z
           )
         );
+
+        toast.success("Zona editada com sucesso!");
       } else {
-        // Verifica se já existe zona com esse nome
         const exists = zones.some(
           (z) => z.zone.trim().toLowerCase() === zone.trim().toLowerCase()
         );
         if (exists) {
-          alert("Essa zona já está cadastrada.");
+          toast.warning("Essa zona já está cadastrada.");
           setSaving(false);
           return;
         }
@@ -113,13 +113,14 @@ export function RestaurantDelivery() {
             },
           ]);
         } else {
-          // fallback se não retornar id, recarrega geral
           await fetchZones();
         }
+
+        toast.success("Zona adicionada com sucesso!");
       }
     } catch (err) {
       console.error(err);
-      alert(editZone ? "Erro ao editar zona" : "Erro ao adicionar zona");
+      toast.error(editZone ? "Erro ao editar zona" : "Erro ao adicionar zona");
     } finally {
       setSaving(false);
       setEditZone(null);
@@ -133,9 +134,10 @@ export function RestaurantDelivery() {
     try {
       await deleteDeliveryZone(id, token);
       setZones((prev) => prev.filter((z) => z.id !== id));
+      toast.success("Zona excluída com sucesso!");
     } catch (err) {
       console.error(err);
-      alert("Erro ao apagar zona");
+      toast.error("Erro ao apagar zona");
     }
   };
 
