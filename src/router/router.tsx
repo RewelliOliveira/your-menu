@@ -1,4 +1,3 @@
-// src/routes/Router.tsx
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import { LoginAdm } from '../features/system-adm/pages/login-adm';
 import { RegisterAdm } from '../features/system-adm/pages/register-adm';
@@ -7,7 +6,7 @@ import { Orders } from '@/features/system-adm/pages/orders';
 import { PrivateRoute } from './private-router';
 import { RestaurantAdress } from '@/features/system-adm/pages/restaurant-adress';
 import { EditMenu } from '@/features/system-adm/pages/edit-menu';
-
+import { RestaurantDelivery } from '@/features/system-adm/pages/restaurant-delivery';
 
 export function Router() {
   return (
@@ -45,6 +44,14 @@ export function Router() {
           element={
             <PrivateRoute>
               <RestaurantAdress />
+            </PrivateRoute>
+          }
+        />
+        <Route
+          path="/restaurant-delivery"
+          element={
+            <PrivateRoute>
+              <RestaurantDelivery />
             </PrivateRoute>
           }
         />

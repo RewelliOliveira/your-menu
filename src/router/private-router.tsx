@@ -7,7 +7,11 @@ interface PrivateRouteProps {
 }
 
 export function PrivateRoute({ children }: PrivateRouteProps) {
-  const { isAuthenticated } = useAuth();
+  const { isAuthenticated, isLoading } = useAuth();
+
+  if (isLoading) {
+    return <div>Carregando...</div>; 
+  }
 
   return isAuthenticated ? children : <Navigate to="/" replace />;
 }
