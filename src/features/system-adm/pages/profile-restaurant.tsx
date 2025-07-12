@@ -14,10 +14,13 @@ import { useEffect, useState } from "react";
 import { getRestaurantProfileApi, updateRestaurantProfileApi, restaurantProfileApi } from "@/services/restaurant-profile-api";
 import { getRestaurantHoursApi, restaurantHoursApi } from "@/services/restaurant-hours-api";
 import { toast } from "react-toastify";
+import { useRestaurant } from "@/contexts/restaurant-context";
 
 export function ProfileRestaurant() {
   const navigate = useNavigate();
   const { token } = useAuth();
+  const { setSlug } = useRestaurant();
+
   const {
     name, setName,
     weekdayStart, setWeekdayStart,
@@ -61,6 +64,10 @@ export function ProfileRestaurant() {
         setProfilePicUrl(safeProfilePicUrl);
         setBannerPicUrl(safeBannerPicUrl);
 
+        if (profileData.slug) {
+          setSlug(profileData.slug);
+        }
+
         if (profileData.id) {
           const hoursData = await getRestaurantHoursApi(profileData.id, token);
           const openDays = hoursData.filter(
@@ -98,7 +105,7 @@ export function ProfileRestaurant() {
     };
 
     fetchData();
-  }, [token, setName, setDeliveryTimeMin, setDeliveryTimeMax, setProfilePicUrl, setBannerPicUrl, setWeekdayStart, setWeekdayEnd, setOpeningTime, setClosingTime]);
+  }, [token, setName, setDeliveryTimeMin, setDeliveryTimeMax, setProfilePicUrl, setBannerPicUrl, setWeekdayStart, setWeekdayEnd, setOpeningTime, setClosingTime, setSlug]);
 
   const handleSubmit = async () => {
     try {
@@ -108,9 +115,10 @@ export function ProfileRestaurant() {
       }
 
       let currentRestaurantId = restaurantId;
+      let restaurantData;
 
       if (!currentRestaurantId) {
-        const created = await restaurantProfileApi(
+        restaurantData = await restaurantProfileApi(
           {
             name,
             deliveryTimeMin: Number(deliveryTimeMin),
@@ -120,11 +128,12 @@ export function ProfileRestaurant() {
           },
           token
         );
-        currentRestaurantId = created.id;
+        currentRestaurantId = restaurantData.id;
         setRestaurantId(currentRestaurantId);
+        setSlug(restaurantData.slug);
         toast.success("Restaurante criado com sucesso!");
       } else {
-        await updateRestaurantProfileApi(
+        restaurantData = await updateRestaurantProfileApi(
           currentRestaurantId,
           {
             name,
@@ -135,6 +144,7 @@ export function ProfileRestaurant() {
           },
           token
         );
+        setSlug(restaurantData.slug);
         toast.success("Dados dos restaurantes atualizados com sucesso!");
       }
 
@@ -151,7 +161,7 @@ export function ProfileRestaurant() {
         token
       );
 
-       navigate("/restaurant-adress");
+      navigate("/restaurant-adress");
     } catch (error: any) {
       alert(error.message || "Erro ao salvar restaurante ou horários.");
     }
