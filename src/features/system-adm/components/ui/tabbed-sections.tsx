@@ -1,6 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 
-// Adiciona a prop onlyTitle
 export type TabbedSectionsProps<T extends string = string, D = unknown> = {
   title: string;
   onlyTitle?: boolean;
@@ -8,6 +7,7 @@ export type TabbedSectionsProps<T extends string = string, D = unknown> = {
   renderItem: (item: D) => React.ReactNode;
   getCategory: (item: D) => T;
   renderAfterItems?: () => React.ReactNode;
+  categoriesOrder?: T[]; // opcional: ordem fixa das categorias
 };
 
 export function TabbedSections<T extends string = string, D = unknown>({
@@ -17,13 +17,20 @@ export function TabbedSections<T extends string = string, D = unknown>({
   getCategory,
   renderAfterItems,
   onlyTitle = false,
+  categoriesOrder,
 }: TabbedSectionsProps<T, D>) {
-  // Categorias extraídas dinamicamente
   const categories = useMemo(() => {
     const unique = new Set<T>();
-    data.forEach((item: D) => unique.add(getCategory(item)));
-    return Array.from(unique);
-  }, [data, getCategory]);
+    data.forEach((item) => unique.add(getCategory(item)));
+    const dynamic = Array.from(unique);
+
+    // Respeita a ordem definida se fornecida
+    if (categoriesOrder?.length) {
+      return categoriesOrder.filter((cat) => dynamic.includes(cat));
+    }
+
+    return dynamic;
+  }, [data, getCategory, categoriesOrder]);
 
   const [selectedTab, setSelectedTab] = useState<T>(categories[0] ?? ("" as T));
   const [isSticky, setIsSticky] = useState(false);
@@ -55,12 +62,13 @@ export function TabbedSections<T extends string = string, D = unknown>({
       const top = tabsRef.current.getBoundingClientRect().top;
       setIsSticky(top <= 0);
     }
+
     window.addEventListener("scroll", handleScroll);
     handleScroll();
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
-  // Se onlyTitle, renderiza só o título e a linha colorida
+  // Só renderiza o título e a linha se for `onlyTitle`
   if (onlyTitle) {
     return (
       <div className="w-full bg-[#f5f5f5] py-6">
@@ -80,6 +88,7 @@ export function TabbedSections<T extends string = string, D = unknown>({
         <h1 className="text-xl font-semibold text-center text-gray-800 mb-4">
           {title}
         </h1>
+
         <div ref={tabsRef} className="sticky top-0 bg-[#f5f5f5] z-10 mb-6">
           <div className="flex justify-between">
             {categories.map((tab) => {
@@ -106,10 +115,9 @@ export function TabbedSections<T extends string = string, D = unknown>({
             })}
           </div>
         </div>
+
         {categories.map((tab) => {
-          const filteredItems = data.filter(
-            (item: D) => getCategory(item) === tab
-          );
+          const filteredItems = data.filter((item) => getCategory(item) === tab);
           return (
             <div
               key={tab}
@@ -121,7 +129,7 @@ export function TabbedSections<T extends string = string, D = unknown>({
               <h2 className="text-lg font-semibold mb-4">{tab}</h2>
               {filteredItems.length > 0 ? (
                 <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-                  {filteredItems.map((item: D, index: number) => (
+                  {filteredItems.map((item, index) => (
                     <div key={index}>{renderItem(item)}</div>
                   ))}
                   {renderAfterItems && <div>{renderAfterItems()}</div>}

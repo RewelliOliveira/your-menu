@@ -4,50 +4,81 @@ import { UploadLogo } from './upload-logo';
 interface BannerAdmProps {
   profilePicFile: File | null;
   bannerPicFile: File | null;
+  profilePicUrl: string | null;
+  bannerPicUrl: string | null;
   setProfilePicFile: React.Dispatch<React.SetStateAction<File | null>>;
   setBannerPicFile: React.Dispatch<React.SetStateAction<File | null>>;
+}
+
+interface BannerData {
+  title: string;
+  logoUrl: string | null;
+  backgroundUrl: string | null;
+  estimatedTime: string;
+  isOpen: boolean;
 }
 
 export const BannerAdm: React.FC<BannerAdmProps> = ({
   profilePicFile,
   bannerPicFile,
+  profilePicUrl,
+  bannerPicUrl,
   setProfilePicFile,
   setBannerPicFile,
 }) => {
-  const [data, setData] = useState({
+  const [data, setData] = useState<BannerData>({
     title: '',
-    logoUrl: '',
-    backgroundUrl: '',
+    logoUrl: null,
+    backgroundUrl: null,
     estimatedTime: '',
     isOpen: false,
   });
 
   useEffect(() => {
+    const logoUrl = profilePicFile
+      ? URL.createObjectURL(profilePicFile)
+      : profilePicUrl && profilePicUrl.trim() !== ''
+        ? profilePicUrl
+        : null;
+
+    const backgroundUrl = bannerPicFile
+      ? URL.createObjectURL(bannerPicFile)
+      : bannerPicUrl && bannerPicUrl.trim() !== ''
+        ? bannerPicUrl
+        : null;
+
+    // console.log('BannerAdm -> logoUrl:', logoUrl);
+    // console.log('BannerAdm -> backgroundUrl:', backgroundUrl);
+
     setData({
       title: 'Restaurante',
-      logoUrl: profilePicFile ? URL.createObjectURL(profilePicFile) : 'placeholder.svg',
-      backgroundUrl: bannerPicFile ? URL.createObjectURL(bannerPicFile) : 'placeholder.svg',
+      logoUrl,
+      backgroundUrl,
       estimatedTime: '30-45 min',
       isOpen: true,
     });
 
     return () => {
-      if (profilePicFile) URL.revokeObjectURL(data.logoUrl);
-      if (bannerPicFile) URL.revokeObjectURL(data.backgroundUrl);
+      if (profilePicFile && logoUrl && logoUrl.startsWith('blob:')) {
+        URL.revokeObjectURL(logoUrl);
+      }
+      if (bannerPicFile && backgroundUrl && backgroundUrl.startsWith('blob:')) {
+        URL.revokeObjectURL(backgroundUrl);
+      }
     };
-  }, [profilePicFile, bannerPicFile]);
+  }, [profilePicFile, bannerPicFile, profilePicUrl, bannerPicUrl]);
 
   return (
     <div className="relative w-full h-60 bg-black text-white flex items-center justify-center">
       <UploadLogo
         className="absolute top-0 left-0 w-full h-full object-cover opacity-50"
-        imageUrl={data.backgroundUrl}
+        imageUrl={data.backgroundUrl || null}
         setImageFile={setBannerPicFile}
       />
 
       <div className="relative z-10 flex flex-col items-center">
         <UploadLogo
-          imageUrl={data.logoUrl}
+          imageUrl={data.logoUrl || null}
           setImageFile={setProfilePicFile}
           className="w-24 h-24 rounded-full"
         />
