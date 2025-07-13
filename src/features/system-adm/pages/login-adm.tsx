@@ -30,32 +30,31 @@ export function LoginAdm() {
         return;
       }
 
-      login(token); 
-
+      // Pega o restaurantId da API protegida /restaurant
+      let restaurantId: string | null = null;
       try {
         const restaurantResponse = await api.get("/restaurant", {
           headers: {
             Authorization: `Bearer ${token}`,
           },
         });
-
-        const hasRestaurant = restaurantResponse.data?.id;
-
-        if (hasRestaurant) {
-          navigate("/edit-menu");
-        } else {
-          navigate("/profile-restaurant");
-        }
+        restaurantId = restaurantResponse.data?.id ?? null;
       } catch (restaurantError: any) {
         const status = restaurantError.response?.status;
-
-        if (status === 403 || status === 404) {
-          // Usuário autenticado, mas ainda sem restaurante
-          navigate("/profile-restaurant");
-        } else {
+        if (status !== 403 && status !== 404) {
           console.error("Erro ao verificar restaurante:", restaurantError);
           toast.error("Erro ao verificar restaurante.");
+          return;
         }
+        // Se 403 ou 404, continua com restaurantId null (usuário sem restaurante)
+      }
+
+      login(token, restaurantId ?? '');
+
+      if (restaurantId) {
+        navigate("/edit-menu");
+      } else {
+        navigate("/profile-restaurant");
       }
 
       toast.success("Login realizado com sucesso!");
