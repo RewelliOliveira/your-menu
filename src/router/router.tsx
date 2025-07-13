@@ -7,6 +7,8 @@ import { PrivateRoute } from './private-router';
 import { RestaurantAdress } from '@/features/system-adm/pages/restaurant-adress';
 import { EditMenu } from '@/features/system-adm/pages/edit-menu';
 import { RestaurantDelivery } from '@/features/system-adm/pages/restaurant-delivery';
+import { AddOrder } from '@/features/system-adm/pages/add-order';
+import { AddDish } from '@/features/system-adm/pages/add-dish';
 
 export function Router() {
   return (
@@ -52,6 +54,22 @@ export function Router() {
           element={
             <PrivateRoute>
               <RestaurantDelivery />
+            </PrivateRoute>
+          }
+        />
+        <Route
+          path="/add-order"
+          element={
+            <PrivateRoute>
+              <AddOrder />
+            </PrivateRoute>
+          }
+        />
+        <Route
+          path="/add-dish"
+          element={
+            <PrivateRoute>
+              <AddDish />
             </PrivateRoute>
           }
         />
