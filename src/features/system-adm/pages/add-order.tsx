@@ -1,5 +1,7 @@
 import { useAuth } from "@/contexts/auth-context";
 import { useAddOrder } from "@/hooks/useAddOrder";
+import { getSizeOptionsApi, SizeOptionApi } from "@/services/size-opition-api"; // importe a api
+import { useEffect, useState } from "react";
 import { Header } from "../components/header";
 import { Banner } from "../components/ui/banner";
 import { InputLogin } from "../components/ui/input-login";
@@ -9,9 +11,7 @@ import { TabbedSections } from "../components/ui/tabbed-sections";
 export function AddOrder() {
   const { token, restaurantId } = useAuth();
 
-  if (!token || !restaurantId) {
-    return <p>Carregando dados do restaurante...</p>;
-  }
+  const [sizeOptions, setSizeOptions] = useState<{ label: string; value: string }[]>([]);
 
   const {
     itemName,
@@ -26,7 +26,30 @@ export function AddOrder() {
     showInput,
     setShowInput,
     handleAddCategory,
-  } = useAddOrder(restaurantId, token);
+  } = useAddOrder(restaurantId!, token!);
+
+  useEffect(() => {
+    async function fetchSizeOptions() {
+      try {
+        if (!token) return;
+        const data: SizeOptionApi[] = await getSizeOptionsApi(token);
+
+        const options = data.map((size) => ({
+          label: `${size.magnitude} ${size.abbreviation}`, // ex: "200 KG"
+          value: size.id.toString(),
+        }));
+
+        setSizeOptions(options);
+      } catch (error) {
+        console.error("Erro ao carregar opções de tamanho", error);
+      }
+    }
+    fetchSizeOptions();
+  }, [token]);
+
+  if (!token || !restaurantId) {
+    return <p>Carregando dados do restaurante...</p>;
+  }
 
   return (
     <section className="bg-[#f5f5f5]">
@@ -105,8 +128,9 @@ export function AddOrder() {
             </span>
           </div>
 
-          {/* Linha: Selecionar categoria + adicionar */}
+          {/* Linha: Categoria + Tamanho + Adicionar Categoria */}
           <div className="flex flex-row flex-wrap items-center gap-3 w-full">
+            {/* Select de categorias */}
             <div>
               {categories.length === 0 ? (
                 <span className="text-gray-500 text-sm">
@@ -116,6 +140,8 @@ export function AddOrder() {
                 <SelectDay options={categories} />
               )}
             </div>
+
+            {/* Botão adicionar categoria */}
             <button
               type="button"
               className="w-8 h-8 flex items-center justify-center border border-gray-300 rounded bg-white hover:bg-gray-100 text-2xl text-green-600 font-bold"
@@ -125,6 +151,12 @@ export function AddOrder() {
               +
             </button>
 
+            {/* Select de tamanhos */}
+            <div>
+              <SelectDay options={sizeOptions} />
+            </div>
+
+            {/* Input para nova categoria */}
             {showInput && (
               <div className="flex flex-row items-center gap-2 mt-2 w-2/5">
                 <input
