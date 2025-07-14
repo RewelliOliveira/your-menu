@@ -79,7 +79,14 @@ export function AddOrder() {
     };
 
     try {
-      await createDishApi(restaurantId!, Number(selectedCategoryId), payload, token!);
+      const response = await createDishApi(
+        restaurantId!,
+        Number(selectedCategoryId),
+        payload,
+        token!
+      );
+      console.log("Resposta da API após salvar prato:", response);
+
       navigate("/edit-menu");
       toast.success('Prato salvo com sucesso!');
       setItemName('');
@@ -88,10 +95,12 @@ export function AddOrder() {
       setSelectedCategoryId('');
       setImgFile(null);
       setImgPreview(null);
-    } catch {
+    } catch (error) {
+      console.error("Erro no handleSaveDish:", error);
       toast.error('Erro ao salvar prato');
     }
   }
+
 
   if (!token || !restaurantId) {
     return <p className="text-center py-8">Carregando dados do restaurante...</p>;

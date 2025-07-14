@@ -1,5 +1,5 @@
 import { api } from "./api";
-
+//POST
 export interface DishSizeOption {
   sizeOptionId: number;
   price: number;
@@ -27,7 +27,7 @@ export async function createDishApi(
     formData.append("dto", new Blob([JSON.stringify(dto)], { type: "application/json" }));
 
     if (imgFile) {
-      formData.append("file", imgFile);
+      formData.append("imageUrl", imgFile);
     }
 
     const response = await api.post(
@@ -36,7 +36,6 @@ export async function createDishApi(
       {
         headers: {
           Authorization: `Bearer ${token}`,
-          "Content-Type": "multipart/form-data",
         },
       }
     );
@@ -44,6 +43,42 @@ export async function createDishApi(
     return response.data;
   } catch (error) {
     console.error("Erro ao criar prato:", error);
+    throw error;
+  }
+}
+
+//GET
+export interface Prato {
+  id: number;
+  restaurantId: string;
+  categoryId: number;
+  name: string;
+  description: string;
+  isAvailable: boolean;
+  imgUrl: string;
+  sizeOptionsPrices: {
+    dishSizeOptionId: number;
+    sizeOptionId: number;
+    magnitude: number | null;
+    measureUnit: string;
+    price: number;
+  }[];
+}
+
+export async function getPratosPorCategoria(
+  restaurantId: string,
+  categoryId: number,
+  token: string
+): Promise<Prato[]> {
+  try {
+    const response = await api.get(`/restaurant/${restaurantId}/category/${categoryId}/dish`, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+    return response.data;
+  } catch (error) {
+    console.error(`Erro ao buscar pratos da categoria ${categoryId}:`, error);
     throw error;
   }
 }

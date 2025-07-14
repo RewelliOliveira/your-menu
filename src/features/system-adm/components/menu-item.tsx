@@ -1,6 +1,11 @@
 import { Icon } from "@iconify/react";
 
 export type OrderProps = {
+  id: number | string;
+  sizeOptions?: {
+    size: string;
+    price: string;
+  }[];
   name: string;
   description: string;
   price: string;
@@ -8,14 +13,16 @@ export type OrderProps = {
   status: string;
 };
 
+
 export function MenuItem(order: OrderProps) {
   return (
     <div className="flex flex-col bg-white w-55 h-60 m-4 rounded-xl shadow-lg transition-all duration-300 hover:shadow-xl hover:scale-[1.02]">
       <img
         src={order.foodImg || "placeholder.svg"}
-        alt=""
+        alt={order.name || "Imagem do prato"}
         className="w-full h-24 object-cover rounded-t-lg"
       />
+
       <div className="p-3 flex flex-col flex-1">
         <h2 className="font-bold text-base">{order.name || "Nome do prato"}</h2>
         <p className="text-xs text-gray-500 break-words overflow-hidden">
