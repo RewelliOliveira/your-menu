@@ -47,3 +47,40 @@ export async function createDishApi(
     throw error;
   }
 }
+
+
+//GET
+export interface Prato {
+  id: number;
+  restaurantId: string;
+  categoryId: number;
+  name: string;
+  description: string;
+  isAvailable: boolean;
+  imgUrl: string;
+  sizeOptionsPrices: {
+    dishSizeOptionId: number;
+    sizeOptionId: number;
+    magnitude: number | null;
+    measureUnit: string;
+    price: number;
+  }[];
+}
+
+export async function getPratosPorCategoria(
+  restaurantId: string,
+  categoryId: number,
+  token: string
+): Promise<Prato[]> {
+  try {
+    const response = await api.get(`/restaurant/${restaurantId}/category/${categoryId}/dish`, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+    return response.data;
+  } catch (error) {
+    console.error(`Erro ao buscar pratos da categoria ${categoryId}:`, error);
+    throw error;
+  }
+}

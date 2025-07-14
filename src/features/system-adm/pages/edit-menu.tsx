@@ -1,98 +1,134 @@
+import { useEffect, useState } from "react";
 import { Header } from "../components/header";
 import { MenuItem, OrderProps } from "../components/menu-item";
 import { MenuItemAdd } from "../components/menu-item-add";
 import { Banner } from "../components/ui/banner";
 import { TabbedSections } from "../components/ui/tabbed-sections";
+import { getPratosPorCategoria } from "@/services/create-dish";
+import { getCategoriesApi } from "@/services/category-api";
+import { useAuth } from "@/contexts/auth-context";
+import { toast } from "react-toastify";
 
-export const fakeOrders: OrderProps[] = [
-  {
-    name: "Lasanha à Bolonhesa",
-    description: "Deliciosa lasanha com camadas...",
-    price: "32,90",
-    foodImg: "https://images.unsplash.com/photo-1550547660-d9450f859349",
-    status: "Massas",
-  },
-  {
-    name: "Hambúrguer Artesanal",
-    description: "Pão brioche, hambúrguer 180g...",
-    price: "24,50",
-    foodImg: "https://images.unsplash.com/photo-1550547660-d9450f859349",
-    status: "Lanches",
-  },
-  {
-    name: "Pizza Margherita",
-    description: "Massa fina com molho de tomate...",
-    price: "39,90",
-    foodImg: "https://images.unsplash.com/photo-1550547660-d9450f859349",
-    status: "Pizzas",
-  },
-  {
-    name: "Yakissoba de Frango",
-    description: "Macarrão oriental com frango...",
-    price: "28,00",
-    foodImg: "https://images.unsplash.com/photo-1550547660-d9450f859349",
-    status: "Oriental",
-  },
-  {
-    name: "Salada Tropical",
-    description: "Mix de folhas verdes...",
-    price: "19,90",
-    foodImg: "https://images.unsplash.com/photo-1550547660-d9450f859349",
-    status: "Saladas",
-  },
-  {
-    name: "Risoto de Camarão",
-    description: "Arroz cremoso com camarões frescos e ervas finas.",
-    price: "44,90",
-    foodImg: "https://images.unsplash.com/photo-1504674900247-0877df9cc836",
-    status: "Massas",
-  },
-  {
-    name: "Tábua de Frios",
-    description: "Seleção de queijos, embutidos e frutas.",
-    price: "59,90",
-    foodImg: "https://images.unsplash.com/photo-1519864600265-abb23847ef2c",
-    status: "Entradas",
-  },
-  {
-    name: "Sushi Especial",
-    description: "Combo de sushis variados com peixes frescos.",
-    price: "49,90",
-    foodImg: "https://images.unsplash.com/photo-1464306076886-debca5e8a6b0",
-    status: "Oriental",
-  },
-  {
-    name: "Brownie com Sorvete",
-    description: "Brownie de chocolate servido com sorvete de creme.",
-    price: "18,00",
-    foodImg: "https://images.unsplash.com/photo-1505250469679-203ad9ced0cb",
-    status: "Sobremesas",
-  },
-  {
-    name: "Suco Natural de Laranja",
-    description: "Suco fresco feito na hora.",
-    price: "8,00",
-    foodImg: "https://images.unsplash.com/photo-1502741338009-cac2772e18bc",
-    status: "Bebidas",
-  },
-];
+interface CategoriaComPratos {
+  id: number;
+  name: string;
+  pratos: OrderProps[];
+}
 
 export function EditMenu() {
+  const [categorias, setCategorias] = useState<CategoriaComPratos[]>([]);
+  const [carregando, setCarregando] = useState(true);
+  const { token, restaurantId } = useAuth();
+
+  useEffect(() => {
+    async function carregarCardapio() {
+      if (!token || !restaurantId) return;
+
+      setCarregando(true);
+
+      try {
+        console.log("Buscando categorias para restaurante:", restaurantId);
+        const categoriasAPI = await getCategoriesApi(restaurantId, token);
+        console.log("Categorias recebidas:", categoriasAPI);
+
+        const categoriasComPratos = await Promise.all(
+          categoriasAPI.map(async (categoria) => {
+            try {
+              console.log(`Buscando pratos para categoria ${categoria.name} (${categoria.Id})`);
+              const pratosAPI = await getPratosPorCategoria(
+                restaurantId,
+                categoria.Id,
+                token
+              );
+              console.log(`Pratos recebidos para categoria ${categoria.name}:`, pratosAPI);
+
+              const pratosFormatados: OrderProps[] = pratosAPI.flatMap((prato) => {
+                return prato.sizeOptionsPrices?.map((opcao) => {
+                  const urlOriginal = prato.imgUrl || "N/A";
+                  const urlConvertida = prato.imgUrl
+                    ? prato.imgUrl.replace(
+                        "s3://upload-images-teste-1/",
+                        "https://upload-images-teste-1.s3.sa-east-1.amazonaws.com/"
+                      )
+                    : "https://via.placeholder.com/150";
+
+                  console.log(`Prato: ${prato.name} - Tamanho: ${opcao.measureUnit} - URL original: ${urlOriginal} - URL convertida: ${urlConvertida}`);
+
+                  return {
+                    id: `${prato.id}-${opcao.sizeOptionId}`,
+                    name: prato.name + ` (${opcao.measureUnit})`,
+                    description: prato.description,
+                    price: opcao.price.toFixed(2),
+                    foodImg: urlConvertida,
+                    status: categoria.name,
+                    isAvailable: prato.isAvailable,
+                    sizeOptions: [],
+                  };
+                }) ?? [];
+              });
+
+              return {
+                id: categoria.Id,
+                name: categoria.name,
+                pratos: pratosFormatados,
+              };
+            } catch (error) {
+              console.error(
+                `Erro ao carregar pratos da categoria ${categoria.name}:`,
+                error
+              );
+              toast.error(`Falha ao carregar pratos de ${categoria.name}`);
+              return {
+                id: categoria.Id,
+                name: categoria.name,
+                pratos: [],
+              };
+            }
+          })
+        );
+
+        setCategorias(categoriasComPratos);
+        console.log("Categorias com pratos formatados:", categoriasComPratos);
+      } catch (error) {
+        console.error("Erro ao carregar cardápio:", error);
+        toast.error("Falha ao carregar categorias");
+      } finally {
+        setCarregando(false);
+      }
+    }
+
+    carregarCardapio();
+  }, [token, restaurantId]);
+
+  if (carregando) {
+    return (
+      <div className="flex justify-center items-center h-screen">
+        <div className="text-lg">Carregando cardápio...</div>
+      </div>
+    );
+  }
+
+  const todosPratos = categorias.flatMap((categoria) => categoria.pratos);
+
   return (
-    <div className="bg-[#f5f5f5]">
+    <div className="bg-[#f5f5f5] min-h-screen">
       <Header />
       <Banner />
+
       <TabbedSections
-        title="Editar Cardápio"
-        data={fakeOrders}
-        getCategory={(item) => item.status}
+        title="Cardápio"
+        data={todosPratos}
+        getCategory={(item) => item.status || "Sem categoria"}
         renderItem={(item) => (
           <MenuItem
+            key={item.id}
+            id={item.id}
             name={item.name}
             description={item.description}
             price={item.price}
             foodImg={item.foodImg}
             status={item.status}
+            sizeOptions={item.sizeOptions}
           />
         )}
         renderAfterItems={() => <MenuItemAdd />}
