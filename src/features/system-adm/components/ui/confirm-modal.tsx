@@ -1,5 +1,6 @@
-import React, { useEffect } from 'react';
-import { Button } from './button';
+import React, { useEffect } from "react";
+import { X } from "lucide-react";
+import { Button } from "./button";
 
 interface ConfirmModalProps {
   title: string;
@@ -35,6 +36,13 @@ export const ConfirmModal: React.FC<ConfirmModalProps> = ({
         className="bg-white p-6 rounded-md shadow-lg w-full max-w-md space-y-4 relative text-black"
         onMouseDown={(e) => e.stopPropagation()}
       >
+        <button
+          onClick={onCancel}
+          className="absolute top-2 right-2 text-gray-500 hover:text-black"
+        >
+          <X className="w-5 h-5" />
+        </button>
+
         <h2 className="text-xl font-semibold">{title}</h2>
         <p className="text-lg">{content}</p>
 
@@ -49,7 +57,7 @@ export const ConfirmModal: React.FC<ConfirmModalProps> = ({
           <Button
             onClick={onConfirm}
             type="button"
-            className="!px-5 !py-1 !text-sm !w-[120px]"
+            className="!bg-orange-600 hover:!bg-orange-700 !px-5 !py-1 !text-sm !w-[120px]"
           >
             {buttonmsg}
           </Button>

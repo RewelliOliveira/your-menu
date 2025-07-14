@@ -15,16 +15,18 @@ type Option = {
 type SelectDayProps = {
   label?: string;
   options: Option[];
-  value?: string;        
+  value?: string;
   onChange?: (value: string) => void;
 };
 
 export function SelectDay({ label, options, value, onChange }: SelectDayProps) {
   return (
-    <div>
-      {label && <label>{label}</label>}
+    <div className="flex flex-col w-full gap-2 mb-4">
+      {label && (
+        <label className="text-sm font-semibold text-black">{label}</label>
+      )}
       <Select value={value} onValueChange={onChange}>
-        <SelectTrigger>
+        <SelectTrigger className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-orange-600 focus:border-transparent transition-all">
           <SelectValue placeholder="Selecione uma opção" />
         </SelectTrigger>
         <SelectContent>

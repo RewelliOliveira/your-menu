@@ -1,29 +1,30 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 
-type TabbedSectionsProps<T extends string, D> = {
+export type TabbedSectionsProps<T extends string = string, D = unknown> = {
   title: string;
+  onlyTitle?: boolean;
   data: D[];
   renderItem: (item: D) => React.ReactNode;
   getCategory: (item: D) => T;
   renderAfterItems?: () => React.ReactNode;
-  categoriesOrder?: T[]; // 🆕 ordem fixa opcional
+  categoriesOrder?: T[]; // opcional: ordem fixa das categorias
 };
 
-export function TabbedSections<T extends string, D>({
+export function TabbedSections<T extends string = string, D = unknown>({
   title,
   data,
   renderItem,
   getCategory,
   renderAfterItems,
+  onlyTitle = false,
   categoriesOrder,
 }: TabbedSectionsProps<T, D>) {
   const categories = useMemo(() => {
     const unique = new Set<T>();
     data.forEach((item) => unique.add(getCategory(item)));
-
     const dynamic = Array.from(unique);
 
-    // se `categoriesOrder` for passada, respeita a ordem dela
+    // Respeita a ordem definida se fornecida
     if (categoriesOrder?.length) {
       return categoriesOrder.filter((cat) => dynamic.includes(cat));
     }
@@ -67,6 +68,20 @@ export function TabbedSections<T extends string, D>({
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
+  // Só renderiza o título e a linha se for `onlyTitle`
+  if (onlyTitle) {
+    return (
+      <div className="w-full bg-[#f5f5f5] py-6">
+        <div className="max-w-[75%] mx-auto px-4">
+          <h1 className="text-xl font-semibold text-center text-gray-800 mb-4">
+            {title}
+          </h1>
+          <div className="w-full h-1 bg-orange-500 rounded-full mb-6" />
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="w-full bg-[#f5f5f5] py-6">
       <div className="max-w-[75%] mx-auto px-4">
@@ -102,10 +117,7 @@ export function TabbedSections<T extends string, D>({
         </div>
 
         {categories.map((tab) => {
-          const filteredItems = data.filter(
-            (item) => getCategory(item) === tab
-          );
-
+          const filteredItems = data.filter((item) => getCategory(item) === tab);
           return (
             <div
               key={tab}
