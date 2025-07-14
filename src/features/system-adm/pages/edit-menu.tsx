@@ -27,32 +27,25 @@ export function EditMenu() {
       setCarregando(true);
 
       try {
-        console.log("Buscando categorias para restaurante:", restaurantId);
         const categoriasAPI = await getCategoriesApi(restaurantId, token);
-        console.log("Categorias recebidas:", categoriasAPI);
 
         const categoriasComPratos = await Promise.all(
           categoriasAPI.map(async (categoria) => {
             try {
-              console.log(`Buscando pratos para categoria ${categoria.name} (${categoria.Id})`);
               const pratosAPI = await getPratosPorCategoria(
                 restaurantId,
                 categoria.Id,
                 token
               );
-              console.log(`Pratos recebidos para categoria ${categoria.name}:`, pratosAPI);
 
               const pratosFormatados: OrderProps[] = pratosAPI.flatMap((prato) => {
                 return prato.sizeOptionsPrices?.map((opcao) => {
-                  const urlOriginal = prato.imgUrl || "N/A";
                   const urlConvertida = prato.imgUrl
                     ? prato.imgUrl.replace(
                         "s3://upload-images-teste-1/",
                         "https://upload-images-teste-1.s3.sa-east-1.amazonaws.com/"
                       )
                     : "https://via.placeholder.com/150";
-
-                  console.log(`Prato: ${prato.name} - Tamanho: ${opcao.measureUnit} - URL original: ${urlOriginal} - URL convertida: ${urlConvertida}`);
 
                   return {
                     id: `${prato.id}-${opcao.sizeOptionId}`,
@@ -88,7 +81,6 @@ export function EditMenu() {
         );
 
         setCategorias(categoriasComPratos);
-        console.log("Categorias com pratos formatados:", categoriasComPratos);
       } catch (error) {
         console.error("Erro ao carregar cardápio:", error);
         toast.error("Falha ao carregar categorias");

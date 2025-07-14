@@ -44,7 +44,7 @@ export function DropdownMenuDemo() {
             Histórico de pedidos
           </DropdownMenuItem>
           <DropdownMenuItem onClick={() => navigate("/add-order")}>
-            Add order
+            Adicionar prato
           </DropdownMenuItem>
         </DropdownMenuGroup>
         <DropdownMenuSeparator />

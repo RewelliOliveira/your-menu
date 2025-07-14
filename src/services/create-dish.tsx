@@ -1,5 +1,5 @@
 import { api } from "./api";
-
+//POST
 export interface DishSizeOption {
   sizeOptionId: number;
   price: number;
@@ -27,7 +27,7 @@ export async function createDishApi(
     formData.append("dto", new Blob([JSON.stringify(dto)], { type: "application/json" }));
 
     if (imgFile) {
-      formData.append("file", imgFile);
+      formData.append("imageUrl", imgFile);
     }
 
     const response = await api.post(
@@ -36,7 +36,6 @@ export async function createDishApi(
       {
         headers: {
           Authorization: `Bearer ${token}`,
-          "Content-Type": "multipart/form-data",
         },
       }
     );
@@ -47,7 +46,6 @@ export async function createDishApi(
     throw error;
   }
 }
-
 
 //GET
 export interface Prato {
