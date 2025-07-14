@@ -46,9 +46,6 @@ export function DropdownMenuDemo() {
           <DropdownMenuItem onClick={() => navigate("/add-order")}>
             Add order
           </DropdownMenuItem>
-          <DropdownMenuItem onClick={() => navigate("/add-dish")}>
-            Add dish
-          </DropdownMenuItem>
         </DropdownMenuGroup>
         <DropdownMenuSeparator />
         <DropdownMenuItem

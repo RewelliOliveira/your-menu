@@ -51,7 +51,7 @@ export function RegisterAdm() {
   };
 
   return (
-    <div className="min-h-screen flex flex-col text-center justify-start gap-5 mx-auto max-w-md px-4 mt-20 lg:border-1 lg:min-h-0 lg:p-6 lg:gap-0 lg:rounded-[10px] lg:shadow">
+    <div className="min-h-screen flex flex-col justify-start gap-5 mx-auto max-w-md px-4 mt-20 lg:border-1 lg:min-h-0 lg:p-6 lg:gap-0 lg:rounded-[10px] lg:shadow">
       <header className="flex flex-col gap-5">
         <div className="justify-center items-center w-70 mx-auto">
           <img src="/logo.svg" alt="Logo YourMenu" />
