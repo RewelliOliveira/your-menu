@@ -21,7 +21,7 @@ export function Button({
   };
 
   const baseClasses =
-    "text-[#FFFFFF] w-4/5 sm:w-1/2 h-14 rounded-[10px] font-medium font-sans text-lg lg:h-11 lg:w-2/5 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed";
+    "text-[#FFFFFF] w-4/5 sm:w-1/2 h-14 rounded-[10px] font-medium font-sans text-md lg:h-11 lg:w-2/5 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed";
 
   return (
     <button
