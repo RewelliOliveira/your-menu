@@ -23,6 +23,12 @@ interface OrderTicketProps {
     subtotal: number;
     discount?: number;
     observation?: string;
+    dateTime?: string;
+    cep?: string;
+    complement?: string;
+    reference?: string;
+    zone?: string;
+    deliveryFee?: number;
   };
 }
 
@@ -31,6 +37,7 @@ const options = [
   { value: "Em preparo", label: "Em preparo" },
   { value: "Em entrega", label: "Em entrega" },
   { value: "Entregue", label: "Entregue" },
+  { value: "Cancelados", label: "Cancelado" },
 ];
 
 export const OrderTicket: React.FC<OrderTicketProps> = ({
@@ -45,18 +52,28 @@ export const OrderTicket: React.FC<OrderTicketProps> = ({
   useEffect(() => {
     document.body.style.overflow = "hidden";
     document.documentElement.style.overflow = "hidden";
-
     return () => {
       document.body.style.overflow = "";
       document.documentElement.style.overflow = "";
     };
   }, []);
 
-  // CSS para esconder scrollbar mas permitir scroll
   const hideScrollbarStyle = {
-    scrollbarWidth: "none" as const, // Firefox
-    msOverflowStyle: "none" as const, // IE 10+
+    scrollbarWidth: "none" as const,
+    msOverflowStyle: "none" as const,
   };
+
+  function formatDate(dateStr?: string) {
+    if (!dateStr) return "";
+    const d = new Date(dateStr);
+    return d.toLocaleDateString("pt-BR", {
+      day: "2-digit",
+      month: "2-digit",
+      year: "numeric",
+      hour: "2-digit",
+      minute: "2-digit",
+    });
+  }
 
   return (
     <div
@@ -72,7 +89,6 @@ export const OrderTicket: React.FC<OrderTicketProps> = ({
         style={hideScrollbarStyle}
         onClick={(e) => e.stopPropagation()}
       >
-        {/* Para Webkit (Chrome, Safari, Edge) esconder scrollbar via style tag */}
         <style>{`
           div::-webkit-scrollbar {
             display: none;
@@ -87,10 +103,14 @@ export const OrderTicket: React.FC<OrderTicketProps> = ({
             <span>#{order.id}</span>
           </div>
 
-          <div>
-            <p>Data: <span className="font-medium">17/05/2025</span></p>
-            <p>Horário: <span className="font-medium">20:14</span></p>
-          </div>
+          {order.dateTime && (
+            <div>
+              <p>
+                Data e hora:{" "}
+                <span className="font-medium">{formatDate(order.dateTime)}</span>
+              </p>
+            </div>
+          )}
 
           <div className="pt-2">
             <p className="font-medium">Pedido:</p>
@@ -99,29 +119,58 @@ export const OrderTicket: React.FC<OrderTicketProps> = ({
             ))}
           </div>
 
-          {order.observation && (
-            <div className="pt-2">
-              <p className="font-medium">Observação:</p>
-              <p>{order.observation}</p>
-            </div>
-          )}
-
           <div className="pt-2 border-t">
             <p>Subtotal: R$ {order.subtotal.toFixed(2)}</p>
             <p>Desconto: R$ {(order.discount ?? 0).toFixed(2)}</p>
+            <p>Taxa de entrega: R$ {(order.deliveryFee ?? 0).toFixed(2)}</p>
             <p className="font-medium">
-              Valor total: R$ {(order.subtotal - (order.discount ?? 0)).toFixed(2)}
+              Valor total:{" "}
+              R${" "}
+              {(order.subtotal - (order.discount ?? 0) + (order.deliveryFee ?? 0)).toFixed(2)}
             </p>
           </div>
 
-          <div className="pt-2 border-t">
-            <p>Cliente: {order.customer}</p>
-            <p>Endereço: {order.address}</p>
-            {order.phone && <p>Telefone: {order.phone}</p>}
+          <div className="pt-2 border-t space-y-1">
+            <p>
+              <span className="font-medium">Cliente:</span> {order.customer}
+            </p>
+            {order.phone && (
+              <p>
+                <span className="font-medium">Telefone:</span> {order.phone}
+              </p>
+            )}
+            <p>
+              <span className="font-medium">Endereço:</span> {order.address}
+            </p>
+            {order.cep && (
+              <p>
+                <span className="font-medium">CEP:</span> {order.cep}
+              </p>
+            )}
+            {order.zone && (
+              <p>
+                <span className="font-medium">Zona:</span> {order.zone}
+              </p>
+            )}
+            {order.complement && (
+              <p>
+                <span className="font-medium">Complemento:</span> {order.complement}
+              </p>
+            )}
+            {order.reference && (
+              <p>
+                <span className="font-medium">Referência:</span> {order.reference}
+              </p>
+            )}
+            {order.observation && (
+              <p>
+                <span className="font-medium">Observação:</span> {order.observation}
+              </p>
+            )}
           </div>
 
           <p className="pt-2 text-center text-xs italic">
-            O restaurante agradece sua preferência!
+            Agradecemos sua preferência!
           </p>
         </div>
 
