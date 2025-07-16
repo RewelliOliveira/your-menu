@@ -49,9 +49,20 @@ export function Orders() {
       .finally(() => setLoadingOrders(false));
   }, [token, restaurantId]);
 
+  function updateOrderStatusLocally(orderId: number, newStatus: Order["status"]) {
+    setOrders((prev) =>
+      prev.map((order) =>
+        order.id === orderId ? { ...order, status: newStatus } : order
+      )
+    );
+  }
+
   if (isLoading || loadingOrders) {
     return <div>Carregando pedidos...</div>;
   }
+
+  const entregues = orders.filter((order) => order.status === "Entregue");
+  const total = entregues.reduce((acc, order) => acc + order.price, 0);
 
   return (
     <>
@@ -61,7 +72,9 @@ export function Orders() {
         title="Pedidos"
         getCategory={(order) => order.status}
         data={orders}
-        renderItem={(order) => <CardOrder order={order} />}
+        renderItem={(order) => (
+          <CardOrder order={order} onStatusChange={updateOrderStatusLocally} />
+        )}
         categoriesOrder={[
           "Solicitados",
           "Em preparo",
@@ -70,6 +83,20 @@ export function Orders() {
           "Cancelados",
         ]}
       />
+
+      <footer className="pb-15">
+        <div className="flex justify-between items-center bg-gray-100 p-4 border-t border-gray-300 fixed bottom-0 left-0 w-full z-50">
+          <div>
+            <p className="text-sm text-gray-600">Total de vendas hoje</p>
+            <p className="text-lg font-semibold">
+              R$ {total.toFixed(2)}{" "}
+              <span className="text-sm font-normal text-gray-600">
+                / {entregues.length} pedidos
+              </span>
+            </p>
+          </div>
+        </div>
+      </footer>
     </>
   );
 }

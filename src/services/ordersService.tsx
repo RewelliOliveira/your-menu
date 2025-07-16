@@ -103,7 +103,6 @@ export async function getOrderByIdApi(
   return response.data;
 }
 
-// Atualiza status
 export async function updateOrderStatusApi(
   restaurantId: string,
   orderId: number,
@@ -111,13 +110,11 @@ export async function updateOrderStatusApi(
   token: string
 ): Promise<void> {
   await api.patch(
-    `/order/`,
+    `/restaurant/${restaurantId}/order/${orderId}`,
     null,
     {
       headers: { Authorization: `Bearer ${token}` },
       params: {
-        restaurantId,
-        orderId,
         status,
       },
     }

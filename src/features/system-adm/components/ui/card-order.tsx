@@ -24,6 +24,7 @@ export type Order = {
 
 type CardOrderProps = {
   order: Order;
+  onStatusChange: (orderId: number, newStatus: Order["status"]) => void;
 };
 
 const statusMap: Record<string, string> = {
@@ -42,7 +43,7 @@ const apiStatusToPt: Record<string, string> = {
   CANCELLED: "Cancelados",
 };
 
-export function CardOrder({ order }: CardOrderProps) {
+export function CardOrder({ order, onStatusChange }: CardOrderProps) {
   const [showAction, setShowAction] = useState(false);
   const [detailedOrder, setDetailedOrder] = useState<OrderDetailResponse | null>(null);
   const { token, restaurantId } = useAuth();
@@ -78,6 +79,7 @@ export function CardOrder({ order }: CardOrderProps) {
       await updateOrderStatusApi(restaurantId, order.id, apiStatus, token);
       setShowAction(false);
       toast.success(`Status atualizado para: ${newStatus}`);
+      onStatusChange(order.id, newStatus as Order["status"]);
     } catch {
       toast.error("Erro ao atualizar status.");
     }
