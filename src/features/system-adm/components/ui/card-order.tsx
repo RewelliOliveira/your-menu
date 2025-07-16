@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { Icon } from "@iconify/react";
 import { OrderTicket } from "./order-ticket-modal";
+import { ConfirmModal } from "./confirm-modal";
 import {
   getOrderByIdApi,
   updateOrderStatusApi,
@@ -45,6 +46,7 @@ const apiStatusToPt: Record<string, string> = {
 
 export function CardOrder({ order, onStatusChange }: CardOrderProps) {
   const [showAction, setShowAction] = useState(false);
+  const [showConfirmCancel, setShowConfirmCancel] = useState(false);
   const [detailedOrder, setDetailedOrder] = useState<OrderDetailResponse | null>(null);
   const { token, restaurantId } = useAuth();
 
@@ -85,8 +87,13 @@ export function CardOrder({ order, onStatusChange }: CardOrderProps) {
     }
   }
 
+  function confirmCancelOrder() {
+    setShowConfirmCancel(true);
+  }
+
   async function cancelOrder() {
     await handleStatusChange("Cancelados");
+    setShowConfirmCancel(false);
   }
 
   const firstItem = order.items[0] || "";
@@ -118,31 +125,33 @@ export function CardOrder({ order, onStatusChange }: CardOrderProps) {
           <p className="font-semibold text-sm">R$ {order.price.toFixed(2)}</p>
 
           <div className="flex space-x-2">
-            {order.status !== "Entregue" && (
-              <button
-                onClick={openOrderDetails}
-                type="button"
-                aria-label="Editar pedido"
-                className="group bg-white shadow-lg w-8 h-8 flex items-center justify-center transition-all duration-300 rounded hover:w-16 hover:bg-blue-600/80"
-              >
-                <Icon
-                  icon="solar:pen-2-outline"
-                  className="w-5 h-5 text-gray-500 transition-colors duration-300 group-hover:text-white"
-                />
-              </button>
-            )}
+            {order.status !== "Entregue" && order.status !== "Cancelados" && (
+              <>
+                <button
+                  onClick={openOrderDetails}
+                  type="button"
+                  aria-label="Editar pedido"
+                  className="group bg-white shadow-lg w-8 h-8 flex items-center justify-center transition-all duration-300 rounded hover:w-16 hover:bg-blue-600/80"
+                >
+                  <Icon
+                    icon="solar:pen-2-outline"
+                    className="w-5 h-5 text-gray-500 transition-colors duration-300 group-hover:text-white"
+                  />
+                </button>
 
-            <button
-              onClick={cancelOrder}
-              type="button"
-              aria-label="Cancelar pedido"
-              className="group bg-white shadow-lg w-8 h-8 flex items-center justify-center transition-all duration-300 rounded hover:w-16 hover:bg-[#fe0000]/80"
-            >
-              <Icon
-                icon="mdi:trash-can-outline"
-                className="w-5 h-5 text-red-600 transition-colors duration-300 group-hover:text-white"
-              />
-            </button>
+                <button
+                  onClick={confirmCancelOrder}
+                  type="button"
+                  aria-label="Cancelar pedido"
+                  className="group bg-white shadow-lg w-8 h-8 flex items-center justify-center transition-all duration-300 rounded hover:w-16 hover:bg-[#fe0000]/80"
+                >
+                  <Icon
+                    icon="mdi:trash-can-outline"
+                    className="w-5 h-5 text-red-600 transition-colors duration-300 group-hover:text-white"
+                  />
+                </button>
+              </>
+            )}
           </div>
         </div>
       </div>
@@ -171,6 +180,16 @@ export function CardOrder({ order, onStatusChange }: CardOrderProps) {
             deliveryFee: detailedOrder.orderAdress.deliveryZone.deliveryFee,
             observation: "",
           }}
+        />
+      )}
+
+      {showConfirmCancel && (
+        <ConfirmModal
+          title="Confirmar cancelamento"
+          content={`Tem certeza que deseja cancelar o pedido #${order.id}?`}
+          buttonmsg="Confirmar"
+          onConfirm={cancelOrder}
+          onCancel={() => setShowConfirmCancel(false)}
         />
       )}
     </>
