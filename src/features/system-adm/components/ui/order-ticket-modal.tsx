@@ -20,7 +20,12 @@ interface OrderTicketProps {
     customer: string;
     address: string;
     phone?: string;
-    items: string[];
+    items: Array<{
+      name: string;
+      quantity: number;
+      size: string;
+      price: number; // preço total do item (quantidade x preço unitário)
+    }>;
     subtotal: number;
     discount?: number;
     observation?: string;
@@ -130,9 +135,16 @@ export const OrderTicket: React.FC<OrderTicketProps> = ({
 
             <div className="pt-2">
               <p className="font-medium">Pedido:</p>
-              {order.items.map((item, idx) => (
-                <p key={idx}>- {item}</p>
-              ))}
+              {order.items.map((item, idx) => {
+                const unitPrice = item.price / item.quantity;
+                return (
+                  <p key={idx}>
+                    {item.quantity} x {item.name} ({item.size}) —{" "}
+                    <span className="text-gray-500">R$ {unitPrice.toFixed(2)}</span>{" "}
+                    <span> (R$ {item.price.toFixed(2)})</span>
+                  </p>
+                );
+              })}
             </div>
 
             <div className="pt-2 border-t">

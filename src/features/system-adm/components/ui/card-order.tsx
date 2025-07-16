@@ -172,9 +172,12 @@ export function CardOrder({ order, onStatusChange }: CardOrderProps) {
             complement: detailedOrder.orderAdress.complement,
             reference: detailedOrder.orderAdress.reference,
             dateTime: detailedOrder.dateTime,
-            items: detailedOrder.orderItems.map(
-              (item) => `${item.quantity}x ${item.dishName} (${item.sizeOption.abbreviation})`
-            ),
+            items: detailedOrder.orderItems.map((item) => ({
+              name: item.dishName,
+              quantity: item.quantity,
+              size: item.sizeOption.abbreviation,
+              price: item.price,
+            })),
             subtotal: detailedOrder.price,
             discount: 0,
             deliveryFee: detailedOrder.orderAdress.deliveryZone.deliveryFee,
