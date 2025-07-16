@@ -99,7 +99,7 @@ export function RestaurantAdress() {
         toast.success("Endereço atualizado com sucesso!")
       } else {
         await restaurantAdressApi(data, token);
-        toast.success("Endereço cadastrad0 com sucesso")
+        toast.success("Endereço cadastrado com sucesso")
         setHasAddress(true);
       }
     } catch (error) {
