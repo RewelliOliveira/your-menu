@@ -25,25 +25,25 @@ export function DropdownMenuDemo() {
         <DropdownMenuLabel>Opções</DropdownMenuLabel>
         <DropdownMenuSeparator />
         <DropdownMenuGroup>
-          <DropdownMenuItem onClick={() => navigate("/edit-menu")}>
+          <DropdownMenuItem onClick={() => navigate("/adm/edit-menu")}>
             Cardápio
           </DropdownMenuItem>
-          <DropdownMenuItem onClick={() => navigate("/orders")}>
+          <DropdownMenuItem onClick={() => navigate("/adm/orders")}>
             Pedidos
           </DropdownMenuItem>
-          <DropdownMenuItem onClick={() => navigate("/profile-restaurant")}>
+          <DropdownMenuItem onClick={() => navigate("/adm/profile-restaurant")}>
             Configurar perfil
           </DropdownMenuItem>
-          <DropdownMenuItem onClick={() => navigate("/restaurant-adress")}>
+          <DropdownMenuItem onClick={() => navigate("/adm/restaurant-adress")}>
             Configurações de endereço
           </DropdownMenuItem>
-          <DropdownMenuItem onClick={() => navigate("/restaurant-delivery")}>
+          <DropdownMenuItem onClick={() => navigate("/adm/restaurant-delivery")}>
             Configurações de entrega
           </DropdownMenuItem>
-          <DropdownMenuItem onClick={() => navigate("/historico")}>
+          <DropdownMenuItem onClick={() => navigate("/adm/historico")}>
             Histórico de pedidos
           </DropdownMenuItem>
-          <DropdownMenuItem onClick={() => navigate("/add-order")}>
+          <DropdownMenuItem onClick={() => navigate("/adm/add-order")}>
             Adicionar prato
           </DropdownMenuItem>
         </DropdownMenuGroup>
@@ -51,7 +51,7 @@ export function DropdownMenuDemo() {
         <DropdownMenuItem
           onClick={() => {
             localStorage.removeItem("token");
-            navigate("/");
+            navigate("/adm/");
           }}
         >
           <LogOut className="mr-2 h-4 w-4" />
