@@ -30,32 +30,30 @@ export function LoginAdm() {
         return;
       }
 
-      login(token); 
-
+      // Pega o restaurantId da API protegida /restaurant
+      let restaurantId: string | null = null;
       try {
         const restaurantResponse = await api.get("/restaurant", {
           headers: {
             Authorization: `Bearer ${token}`,
           },
         });
-
-        const hasRestaurant = restaurantResponse.data?.id;
-
-        if (hasRestaurant) {
-          navigate("/edit-menu");
-        } else {
-          navigate("/profile-restaurant");
-        }
+        restaurantId = restaurantResponse.data?.id ?? null;
       } catch (restaurantError: any) {
         const status = restaurantError.response?.status;
-
-        if (status === 403 || status === 404) {
-          // Usuário autenticado, mas ainda sem restaurante
-          navigate("/profile-restaurant");
-        } else {
+        if (status !== 403 && status !== 404) {
           console.error("Erro ao verificar restaurante:", restaurantError);
           toast.error("Erro ao verificar restaurante.");
+          return;
         }
+      }
+
+      login(token, restaurantId ?? '');
+
+      if (restaurantId) {
+        navigate("/edit-menu");
+      } else {
+        navigate("/profile-restaurant");
       }
 
       toast.success("Login realizado com sucesso!");
@@ -65,7 +63,7 @@ export function LoginAdm() {
   };
 
   return (
-    <div className="min-h-screen flex flex-col text-center justify-start gap-5 mx-auto max-w-md px-4 mt-20 lg:border-1 lg:min-h-0 lg:p-6 lg:gap-0 lg:rounded-[10px] lg:shadow">
+    <div className="min-h-screen flex flex-col justify-start gap-5 mx-auto max-w-md px-4 mt-20 lg:border-1 lg:min-h-0 lg:p-6 lg:gap-0 lg:rounded-[10px] lg:shadow">
       <header className="flex flex-col gap-5">
         <div className="justify-center items-center w-70 mx-auto">
           <img src="/logo.svg" alt="Logo YourMenu" />

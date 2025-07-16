@@ -1,26 +1,36 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 
-type TabbedSectionsProps<T extends string, D> = {
+export type TabbedSectionsProps<T extends string = string, D = unknown> = {
   title: string;
+  onlyTitle?: boolean;
   data: D[];
   renderItem: (item: D) => React.ReactNode;
-  getCategory: (item: D) => T; // função que retorna a categoria de um item
-  renderAfterItems?: () => React.ReactNode; // opcional, para adicionar conteúdo após os itens
+  getCategory: (item: D) => T;
+  renderAfterItems?: () => React.ReactNode;
+  categoriesOrder?: T[]; // opcional: ordem fixa das categorias
 };
 
-export function TabbedSections<T extends string, D>({
+export function TabbedSections<T extends string = string, D = unknown>({
   title,
   data,
   renderItem,
   getCategory,
   renderAfterItems,
+  onlyTitle = false,
+  categoriesOrder,
 }: TabbedSectionsProps<T, D>) {
-  // Categorias extraídas dinamicamente
   const categories = useMemo(() => {
     const unique = new Set<T>();
     data.forEach((item) => unique.add(getCategory(item)));
-    return Array.from(unique);
-  }, [data, getCategory]);
+    const dynamic = Array.from(unique);
+
+    // Respeita a ordem definida se fornecida
+    if (categoriesOrder?.length) {
+      return categoriesOrder.filter((cat) => dynamic.includes(cat));
+    }
+
+    return dynamic;
+  }, [data, getCategory, categoriesOrder]);
 
   const [selectedTab, setSelectedTab] = useState<T>(categories[0] ?? ("" as T));
   const [isSticky, setIsSticky] = useState(false);
@@ -32,10 +42,8 @@ export function TabbedSections<T extends string, D>({
     }, {} as Record<T, HTMLDivElement | null>)
   );
 
-  // Referência à barra de abas (tabs)
   const tabsRef = useRef<HTMLDivElement>(null);
 
-  // Função chamada ao clicar em uma aba
   function handleTabClick(tab: T) {
     setSelectedTab(tab);
     const el = sectionRefs.current[tab];
@@ -48,7 +56,6 @@ export function TabbedSections<T extends string, D>({
     }
   }
 
-  // Efeito para monitorar o scroll e aplicar comportamento sticky na barra de abas
   useEffect(() => {
     function handleScroll() {
       if (!tabsRef.current) return;
@@ -60,6 +67,20 @@ export function TabbedSections<T extends string, D>({
     handleScroll();
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
+
+  // Só renderiza o título e a linha se for `onlyTitle`
+  if (onlyTitle) {
+    return (
+      <div className="w-full bg-[#f5f5f5] py-6">
+        <div className="max-w-[75%] mx-auto px-4">
+          <h1 className="text-xl font-semibold text-center text-gray-800 mb-4">
+            {title}
+          </h1>
+          <div className="w-full h-1 bg-orange-500 rounded-full mb-6" />
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="w-full bg-[#f5f5f5] py-6">
@@ -96,10 +117,7 @@ export function TabbedSections<T extends string, D>({
         </div>
 
         {categories.map((tab) => {
-          const filteredItems = data.filter(
-            (item) => getCategory(item) === tab
-          );
-
+          const filteredItems = data.filter((item) => getCategory(item) === tab);
           return (
             <div
               key={tab}
