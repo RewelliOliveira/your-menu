@@ -48,7 +48,7 @@ export function LoginAdm() {
         }
       }
 
-      login(token, restaurantId ?? '');
+      login(token);
 
       if (restaurantId) {
         navigate("/adm/edit-menu");
