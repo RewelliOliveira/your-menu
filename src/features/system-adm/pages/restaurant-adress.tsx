@@ -107,7 +107,7 @@ export function RestaurantAdress() {
       console.error("Erro ao salvar endereço:", error);
       toast.error("Erro ao cadastrar endereço")
     }
-    navigate("/adm/edit-menu")
+    navigate("/adm/add-order")
   };
 
   return (
