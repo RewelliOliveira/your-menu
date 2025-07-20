@@ -24,9 +24,9 @@ export function TabbedSections<T extends string = string, D = unknown>({
     data.forEach((item) => unique.add(getCategory(item)));
     const dynamic = Array.from(unique);
 
-    // Respeita a ordem definida se fornecida
     if (categoriesOrder?.length) {
-      return categoriesOrder.filter((cat) => dynamic.includes(cat));
+      // mostra todas as categorias, mesmo que não haja dados nelas
+      return categoriesOrder;
     }
 
     return dynamic;
@@ -68,7 +68,10 @@ export function TabbedSections<T extends string = string, D = unknown>({
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
-  // Só renderiza o título e a linha se for `onlyTitle`
+  function capitalize(word: string) {
+    return word.charAt(0).toUpperCase() + word.slice(1);
+  }
+
   if (onlyTitle) {
     return (
       <div className="w-full bg-[#f5f5f5] py-6">
@@ -109,7 +112,7 @@ export function TabbedSections<T extends string = string, D = unknown>({
                     }
                   `}
                 >
-                  {tab}
+                  {capitalize(tab)}
                 </button>
               );
             })}
@@ -126,7 +129,7 @@ export function TabbedSections<T extends string = string, D = unknown>({
               }}
               className="mb-12"
             >
-              <h2 className="text-lg font-semibold mb-4">{tab}</h2>
+              <h2 className="text-lg font-semibold mb-4">{capitalize(tab)}</h2>
               {filteredItems.length > 0 ? (
                 <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
                   {filteredItems.map((item, index) => (

@@ -19,7 +19,7 @@ export function MenuItemAdd() {
         </div>
         <div className="flex justify-center mt-auto p-2">
           <button
-            onClick={() => console.log(navigate("/add-order"))}
+            onClick={() => console.log(navigate("/adm/add-order"))}
             type="button"
             aria-label="Adicionar prato"
             className="group bg-[#00b37e] shadow-lg w-8 h-8 flex items-center justify-center transition-all duration-300 rounded hover:bg-[#00b37e]/80 hover:w-16"
