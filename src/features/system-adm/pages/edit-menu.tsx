@@ -38,26 +38,33 @@ export function EditMenu() {
                 token
               );
 
-              const pratosFormatados: OrderProps[] = pratosAPI.flatMap((prato) => {
-                return prato.sizeOptionsPrices?.map((opcao) => {
-                  const urlConvertida = prato.imgUrl
-                    ? prato.imgUrl.replace(
-                        "s3://upload-images-teste-1/",
-                        "https://upload-images-teste-1.s3.sa-east-1.amazonaws.com/"
-                      )
-                    : "https://via.placeholder.com/150";
+              // Mapeia pratos mantendo cada prato com todos seus tamanhos
+              const pratosFormatados: OrderProps[] = pratosAPI.map((prato) => {
+                const urlConvertida = prato.imgUrl
+                  ? prato.imgUrl.replace(
+                      "s3://upload-images-teste-1/",
+                      "https://upload-images-teste-1.s3.sa-east-1.amazonaws.com/"
+                    )
+                  : "https://via.placeholder.com/150";
 
-                  return {
-                    id: `${prato.id}-${opcao.sizeOptionId}`,
-                    name: prato.name + ` (${opcao.measureUnit})`,
-                    description: prato.description,
+                // Pega o menor preço para exibir como preço base (opcional)
+                const menorPreco = prato.sizeOptionsPrices && prato.sizeOptionsPrices.length > 0
+                  ? Math.min(...prato.sizeOptionsPrices.map((op) => op.price))
+                  : 0;
+
+                return {
+                  id: prato.id.toString(),
+                  name: prato.name,
+                  description: prato.description,
+                  price: menorPreco.toFixed(2),
+                  foodImg: urlConvertida,
+                  status: categoria.name,
+                  isAvailable: prato.isAvailable,
+                  sizeOptions: prato.sizeOptionsPrices?.map((opcao) => ({
+                    size: opcao.measureUnit,
                     price: opcao.price.toFixed(2),
-                    foodImg: urlConvertida,
-                    status: categoria.name,
-                    isAvailable: prato.isAvailable,
-                    sizeOptions: [],
-                  };
-                }) ?? [];
+                  })) || [],
+                };
               });
 
               return {
@@ -100,6 +107,7 @@ export function EditMenu() {
     );
   }
 
+  // Agora junta todos os pratos (únicos por tamanho)
   const todosPratos = categorias.flatMap((categoria) => categoria.pratos);
 
   return (

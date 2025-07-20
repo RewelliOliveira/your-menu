@@ -7,7 +7,7 @@ export type TabbedSectionsProps<T extends string = string, D = unknown> = {
   renderItem: (item: D) => React.ReactNode;
   getCategory: (item: D) => T;
   renderAfterItems?: () => React.ReactNode;
-  categoriesOrder?: T[]; // opcional: ordem fixa das categorias
+  categoriesOrder?: T[];
 };
 
 export function TabbedSections<T extends string = string, D = unknown>({
@@ -25,7 +25,6 @@ export function TabbedSections<T extends string = string, D = unknown>({
     const dynamic = Array.from(unique);
 
     if (categoriesOrder?.length) {
-      // mostra todas as categorias, mesmo que não haja dados nelas
       return categoriesOrder;
     }
 
