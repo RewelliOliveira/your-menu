@@ -107,7 +107,6 @@ export function EditMenu() {
     );
   }
 
-  // Agora junta todos os pratos (únicos por tamanho)
   const todosPratos = categorias.flatMap((categoria) => categoria.pratos);
 
   return (
