@@ -79,7 +79,6 @@ export interface OrderDetailResponse {
   };
 }
 
-
 export async function getOrdersApi(
   restaurantId: string,
   token: string
@@ -89,7 +88,6 @@ export async function getOrdersApi(
   });
   return response.data;
 }
-
 
 export async function getOrderByIdApi(
   restaurantId: string,
@@ -111,12 +109,12 @@ export async function updateOrderStatusApi(
 ): Promise<void> {
   await api.patch(
     `/restaurant/${restaurantId}/order/${orderId}`,
-    null,
+    { status },
     {
-      headers: { Authorization: `Bearer ${token}` },
-      params: {
-        status,
-      },
+      headers: { 
+        Authorization: `Bearer ${token}`,
+        'Content-Type': 'application/json'
+      }
     }
   );
 }
