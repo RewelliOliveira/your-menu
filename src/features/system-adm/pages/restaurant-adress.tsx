@@ -99,14 +99,14 @@ export function RestaurantAdress() {
         toast.success("Endereço atualizado com sucesso!")
       } else {
         await restaurantAdressApi(data, token);
-        toast.success("Endereço cadastrad0 com sucesso")
+        toast.success("Endereço cadastrado com sucesso")
         setHasAddress(true);
       }
     } catch (error) {
       console.error("Erro ao salvar endereço:", error);
       toast.error("Erro ao cadastrar endereço")
     }
-    navigate("/edit-menu")
+    navigate("/adm/edit-menu")
   };
 
   return (

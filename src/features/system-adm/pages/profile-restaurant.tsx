@@ -161,7 +161,7 @@ export function ProfileRestaurant() {
         token
       );
 
-      navigate("/restaurant-adress");
+      navigate("/adm/restaurant-adress");
     } catch (error: any) {
       alert(error.message || "Erro ao salvar restaurante ou horários.");
     }
