@@ -76,7 +76,11 @@ export function AddressData() {
         </div>
 
         <div className="flex items-center justify-between w-full mt-6 gap-4">
-          <Button type="submit" variant="dark" onClick={() => {}}>
+          <Button
+            type="submit"
+            variant="dark"
+            onClick={() => navigate("/personal-data")}
+          >
             Voltar
           </Button>
           <Button type="submit">Salvar</Button>
