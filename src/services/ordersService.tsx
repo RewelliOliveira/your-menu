@@ -79,7 +79,6 @@ export interface OrderDetailResponse {
   };
 }
 
-
 export async function getOrdersApi(
   restaurantId: string,
   token: string
@@ -89,7 +88,6 @@ export async function getOrdersApi(
   });
   return response.data;
 }
-
 
 export async function getOrderByIdApi(
   restaurantId: string,
@@ -109,14 +107,45 @@ export async function updateOrderStatusApi(
   status: string,
   token: string
 ): Promise<void> {
-  await api.patch(
-    `/restaurant/${restaurantId}/order/${orderId}`,
-    null,
-    {
-      headers: { Authorization: `Bearer ${token}` },
-      params: {
-        status,
-      },
-    }
-  );
+  await api.patch(`/restaurant/${restaurantId}/order/${orderId}`, null, {
+    headers: { Authorization: `Bearer ${token}` },
+    params: {
+      status,
+    },
+  });
+}
+
+//POST
+export interface CreateOrderPayload {
+  dateTime: string;
+  status: "PENDING" | "CONFIRMED" | "DELIVERED" | "CANCELLED"; // ajuste conforme enum do backend
+  restaurantId: string;
+  orderItems: Array<{
+    dishSizeOptionId: number;
+    quantity: number;
+  }>;
+  orderAdress: {
+    deliveryZoneId: number;
+    street: string;
+    number: string;
+    complement: string;
+    cep: string;
+    reference: string;
+  };
+  orderClient: {
+    name: string;
+    phone: string;
+  };
+}
+
+export async function createOrderApi(
+  token: string,
+  payload: CreateOrderPayload
+): Promise<{ orderId: number }> {
+  const response = await api.post("/order", payload, {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  });
+  return response.data;
 }
