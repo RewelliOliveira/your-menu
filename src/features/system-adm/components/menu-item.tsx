@@ -1,4 +1,5 @@
 import { Icon } from "@iconify/react";
+import { useNavigate } from 'react-router-dom';
 
 export type SizeOption = {
   size: string;
@@ -10,12 +11,20 @@ export type OrderProps = {
   sizeOptions?: SizeOption[];
   name: string;
   description: string;
-  price: string; // preço base (pode ser menor preço)
+  price: string;
   foodImg: string;
   status: string;
 };
 
 export function MenuItem(order: OrderProps) {
+  const navigate = useNavigate();
+  
+  const handleEditClick = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    navigate(`/adm/edit-order/${order.id}`);
+    console.log("Editar prato", order.id);
+  };
+
   return (
     <div className="flex flex-col bg-white w-55 h-auto m-4 rounded-xl shadow-lg transition-all duration-300 hover:shadow-xl hover:scale-[1.02]">
       <img
@@ -30,29 +39,11 @@ export function MenuItem(order: OrderProps) {
           {order.description || "Descrição do prato"}
         </p>
 
-        {/* Mostrar preço base */}
         <p className="font-semibold mt-2">R${order.price || " --,--"}</p>
-
-        {/* Mostrar tamanhos inline (opcional)
-        {order.sizeOptions && order.sizeOptions.length > 0 && (
-          <div className="mt-2">
-            <h4 className="font-semibold text-sm mb-1">Tamanhos disponíveis:</h4>
-            <ul className="text-xs text-gray-700">
-              {order.sizeOptions.map((opt, idx) => (
-                <li key={idx}>
-                  {opt.size}: R${opt.price}
-                </li>
-              ))}
-            </ul>
-          </div>
-        )} */}
 
         <div className="flex justify-end mt-auto">
           <button
-            onClick={(e) => {
-              e.stopPropagation();
-              console.log("Editar prato", order.id);
-            }}
+            onClick={handleEditClick}
             type="button"
             aria-label="Editar prato"
             className="group bg-white shadow-lg w-8 h-8 flex items-center justify-center transition-all duration-300 rounded hover:w-16 hover:bg-blue-600/80"

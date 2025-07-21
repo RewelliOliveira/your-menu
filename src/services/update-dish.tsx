@@ -1,3 +1,4 @@
+import axios from "axios";
 import { api } from "./api";
 
 export interface DishSizeOption {
@@ -46,4 +47,16 @@ export async function updateDishApi(
     console.error("Erro ao atualizar prato:", error);
     throw error;
   }
+}
+
+export async function getDishDetails(restaurantId: string, dishId: number, token: string) {
+  const response = await axios.get(
+    `/restaurant/${restaurantId}/category/all/dish/${dishId}`,
+    {
+      headers: {
+        Authorization: `Bearer ${token}`
+      }
+    }
+  );
+  return response.data;
 }
