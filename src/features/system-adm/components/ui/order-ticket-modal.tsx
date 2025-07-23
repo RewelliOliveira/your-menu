@@ -24,7 +24,7 @@ interface OrderTicketProps {
       name: string;
       quantity: number;
       size: string;
-      price: number; // preço total do item (quantidade x preço unitário)
+      price: number;
     }>;
     subtotal: number;
     discount?: number;
@@ -55,6 +55,11 @@ export const OrderTicket: React.FC<OrderTicketProps> = ({
 }) => {
   const [selected, setSelected] = useState(currentStatus);
   const [showConfirmModal, setShowConfirmModal] = useState(false);
+  const [modalConfig, setModalConfig] = useState({
+    title: "",
+    content: "",
+    confirmAction: () => {},
+  });
 
   useEffect(() => {
     document.body.style.overflow = "hidden";
@@ -84,15 +89,28 @@ export const OrderTicket: React.FC<OrderTicketProps> = ({
 
   function onConfirmClick() {
     if (selected === "Cancelados") {
+      setModalConfig({
+        title: "Confirmar cancelamento",
+        content: `Tem certeza que deseja cancelar o pedido #${order.id}?`,
+        confirmAction: () => {
+          onConfirm("Cancelados");
+          setShowConfirmModal(false);
+        },
+      });
+      setShowConfirmModal(true);
+    } else if (selected === "Entregue") {
+      setModalConfig({
+        title: "Confirmar entrega",
+        content: `Você confirma que o pedido #${order.id} foi entregue com sucesso?`,
+        confirmAction: () => {
+          onConfirm("Entregue");
+          setShowConfirmModal(false);
+        },
+      });
       setShowConfirmModal(true);
     } else {
       onConfirm(selected);
     }
-  }
-
-  function confirmCancel() {
-    onConfirm("Cancelados");
-    setShowConfirmModal(false);
   }
 
   return (
@@ -242,10 +260,10 @@ export const OrderTicket: React.FC<OrderTicketProps> = ({
 
       {showConfirmModal && (
         <ConfirmModal
-          title="Confirmar cancelamento"
-          content={`Tem certeza que deseja cancelar o pedido #${order.id}?`}
+          title={modalConfig.title}
+          content={modalConfig.content}
           buttonmsg="Confirmar"
-          onConfirm={confirmCancel}
+          onConfirm={modalConfig.confirmAction}
           onCancel={() => setShowConfirmModal(false)}
         />
       )}
