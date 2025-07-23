@@ -37,26 +37,31 @@ export function MenuClient() {
                                 token
                             );
 
-                            const pratosFormatados: OrderProps[] = pratosAPI.flatMap((prato) => {
-                                return prato.sizeOptionsPrices?.map((opcao) => {
-                                    const urlConvertida = prato.imgUrl
-                                        ? prato.imgUrl.replace(
-                                            "s3://upload-images-teste-1/",
-                                            "https://upload-images-teste-1.s3.sa-east-1.amazonaws.com/"
-                                        )
-                                        : "https://via.placeholder.com/150";
+                            const pratosFormatados: OrderProps[] = pratosAPI.map((prato) => {
+                                const urlConvertida = prato.imgUrl
+                                    ? prato.imgUrl.replace(
+                                        "s3://upload-images-teste-1/",
+                                        "https://upload-images-teste-1.s3.sa-east-1.amazonaws.com/"
+                                    )
+                                    : "https://via.placeholder.com/150";
 
-                                    return {
-                                        id: `${prato.id}-${opcao.sizeOptionId}`,
-                                        name: prato.name + ` (${opcao.measureUnit})`,
-                                        description: prato.description,
-                                        price: opcao.price.toFixed(2),
-                                        foodImg: urlConvertida,
-                                        status: categoria.name,
-                                        isAvailable: prato.isAvailable,
-                                        sizeOptions: [],
-                                    };
-                                }) ?? [];
+                                return {
+                                    id: prato.id,
+                                    name: prato.name,
+                                    description: prato.description,
+                                    price:
+                                        prato.sizeOptionsPrices && prato.sizeOptionsPrices.length > 0
+                                            ? prato.sizeOptionsPrices[0].price.toFixed(2)
+                                            : "0.00",
+                                    foodImg: urlConvertida,
+                                    status: categoria.name,
+                                    isAvailable: prato.isAvailable,
+                                    sizeOptions:
+                                        prato.sizeOptionsPrices?.map((opcao) => ({
+                                            size: opcao.measureUnit,
+                                            price: opcao.price.toFixed(2),
+                                        })) || [],
+                                };
                             });
 
                             return {
