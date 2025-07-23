@@ -40,6 +40,7 @@ export function useAddOrder(restaurantId: string, token: string) {
         setNewCategory("");
         setShowInput(false);
         toast.success("Categoria adicionada com sucesso!");
+        window.location.reload();
       } catch (err) {
         toast.error("Erro ao adicionar categoria. Tente novamente.");
       }

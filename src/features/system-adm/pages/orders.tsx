@@ -1,109 +1,107 @@
+import { useEffect, useState, useCallback, useRef } from "react";
+import { useAuth } from "@/contexts/auth-context";
+import { getOrdersApi} from "@/services/ordersService";
 import { Header } from "../components/header";
 import { Banner } from "../components/ui/banner";
-import { CardOrder } from "../components/ui/card-order";
+import { CardOrder, Order } from "../components/ui/card-order";
 import { TabbedSections } from "../components/ui/tabbed-sections";
+import { toast } from "react-toastify";
 
-export type Order = {
-  id: number;
-  customer: string;
-  items: string[];        // agora é array de strings
-  address: string;
-  price: number;
-  status: "Solicitados" | "Em preparo" | "Em entrega" | "Entregue";
+const apiStatusToStatusMap: Record<string, Order["status"]> = {
+  PENDING: "Solicitados",
+  CONFIRMED: "Em preparo",
+  IN_DELIVERY: "Em entrega",
+  DELIVERED: "Entregue",
+  CANCELLED: "Cancelados",
 };
 
 export function Orders() {
-  const orders: Order[] = [
-    {
-      id: 1,
-      customer: "Antonio Fagundes",
-      items: ["Pizza de Frango com Catupiry"],
-      address: "Av. Piedade Castelo, 234 – Centro",
-      price: 7.99,
-      status: "Solicitados",
-    },
-    {
-      id: 2,
-      customer: "Mariana Silva",
-      items: ["Hambúrguer Clássico"],
-      address: "Rua das Flores, 123 – Jardim",
-      price: 15.5,
-      status: "Entregue",
-    },
-    {
-      id: 3,
-      customer: "João Pereira",
-      items: ["Sushi Combo 20 peças"],
-      address: "Av. Brasil, 456 – Centro",
-      price: 45.0,
-      status: "Em entrega",
-    },
-    {
-      id: 4,
-      customer: "Carla Souza",
-      items: ["Lasanha à Bolonhesa"],
-      address: "Rua do Comércio, 78 – Vila Rica",
-      price: 32.5,
-      status: "Entregue",
-    },
-    {
-      id: 5,
-      customer: "Rafael Costa",
-      items: ["Salada Caesar"],
-      address: "Alameda Santos, 90 – Jardins",
-      price: 22.0,
-      status: "Solicitados",
-    },
-    {
-      id: 6,
-      customer: "Fernanda Lima",
-      items: ["Espaguete Carbonara"],
-      address: "Rua Nova, 15 – Centro",
-      price: 28.0,
-      status: "Solicitados",
-    },
-    {
-      id: 7,
-      customer: "Lucas Fernandes",
-      items: ["Pizza Calabresa"],
-      address: "Av. Paulista, 1000 – Bela Vista",
-      price: 38.5,
-      status: "Entregue",
-    },
-    {
-      id: 8,
-      customer: "Patrícia Gomes",
-      items: ["Hambúrguer Vegano"],
-      address: "Rua Verde, 45 – Jardim Botânico",
-      price: 18.0,
-      status: "Em entrega",
-    },
-    {
-      id: 9,
-      customer: "Roberto Silva",
-      items: ["Sushi 10 peças"],
-      address: "Rua das Palmeiras, 220 – Centro",
-      price: 35.0,
-      status: "Em preparo",
-    },
-    {
-      id: 10,
-      customer: "Ana Paula",
-      items: ["Frango Grelhado com Arroz"],
-      address: "Rua do Lago, 34 – Vila Nova",
-      price: 25.0,
-      status: "Em preparo",
-    },
-    // exemplo de pedido com vários itens pra testar
-    {
-      id: 21,
-      customer: "Teste Multi Itens",
-      items: Array.from({ length: 50 }, (_, i) => `Produto #${i + 1}`),
-      address: "Rua Teste, 123",
-      price: 200,
-      status: "Solicitados",
-    },
-  ];
+  const { token, restaurantId, isLoading } = useAuth();
+  const [orders, setOrders] = useState<Order[]>([]);
+  const [loadingOrders, setLoadingOrders] = useState(false);
+  const scrollPositionRef = useRef(0);
+
+  const fetchOrders = useCallback(async () => {
+    if (!token || !restaurantId) {
+      toast.error("Credenciais inválidas. Faça login novamente.");
+      return;
+    }
+
+    try {
+
+      scrollPositionRef.current = window.scrollY;
+      
+      const data = await getOrdersApi(restaurantId, token);
+      
+      setOrders(prevOrders => {
+        const newOrdersMap = new Map<number, Order>();
+        
+        prevOrders.forEach(order => newOrdersMap.set(order.id, order));
+        
+
+        data.forEach(apiOrder => {
+          const status = apiStatusToStatusMap[apiOrder.status] || "Solicitados";
+          const existingOrder = newOrdersMap.get(apiOrder.orderId);
+          
+          if (existingOrder) {
+            if (existingOrder.status !== status) {
+              newOrdersMap.set(apiOrder.orderId, {
+                ...existingOrder,
+                status
+              });
+            }
+          } else {
+            newOrdersMap.set(apiOrder.orderId, {
+              id: apiOrder.orderId,
+              items: apiOrder.orderItems.map(
+                item => `${item.quantity}x ${item.dishName} (${item.sizeOption.abbreviation})`
+              ),
+              address: `${apiOrder.orderAdress.street}, ${apiOrder.orderAdress.number} - ${apiOrder.orderAdress.deliveryZone.zone}`,
+              price: apiOrder.price,
+              status,
+            });
+          }
+        });
+        
+        return Array.from(newOrdersMap.values());
+      });
+
+    } catch {
+      toast.error("Erro ao carregar pedidos.");
+    } finally {
+      setLoadingOrders(false);
+    }
+  }, [token, restaurantId]);
+
+  useEffect(() => {
+    if (scrollPositionRef.current > 0) {
+      window.scrollTo(0, scrollPositionRef.current);
+    }
+  }, [orders]);
+
+  useEffect(() => {
+    if (!token || !restaurantId) return;
+
+
+    setLoadingOrders(true);
+    fetchOrders();
+
+    const intervalId = setInterval(fetchOrders, 5000);
+    
+    return () => clearInterval(intervalId);
+  }, [fetchOrders, token, restaurantId]);
+
+  const updateOrderStatusLocally = useCallback((orderId: number, newStatus: Order["status"]) => {
+    setOrders(prev => 
+      prev.map(order => 
+        order.id === orderId ? { ...order, status: newStatus } : order
+      )
+    );
+  }, []);
+
+  if (isLoading || loadingOrders) {
+    return <div>Carregando pedidos...</div>;
+  }
 
   const entregues = orders.filter((order) => order.status === "Entregue");
   const total = entregues.reduce((acc, order) => acc + order.price, 0);
@@ -116,12 +114,19 @@ export function Orders() {
         title="Pedidos"
         getCategory={(order) => order.status}
         data={orders}
-        renderItem={(order) => <CardOrder order={order} />}
+        renderItem={(order) => (
+          <CardOrder
+            key={`${order.id}-${order.status}`}
+            order={order}
+            onStatusChange={updateOrderStatusLocally}
+          />
+        )}
         categoriesOrder={[
           "Solicitados",
           "Em preparo",
           "Em entrega",
           "Entregue",
+          "Cancelados",
         ]}
       />
 
