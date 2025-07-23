@@ -8,6 +8,7 @@ import { RestaurantAdress } from '@/features/system-adm/pages/restaurant-adress'
 import { EditMenu } from '@/features/system-adm/pages/edit-menu';
 import { RestaurantDelivery } from '@/features/system-adm/pages/restaurant-delivery';
 import { AddOrder } from '@/features/system-adm/pages/add-order';
+import { EditOrder } from '@/features/system-adm/pages/edit-order';
 
 export default function AdminRoutes() {
   return (
@@ -20,6 +21,7 @@ export default function AdminRoutes() {
       <Route path="/adm/restaurant-adress" element={<PrivateRoute><RestaurantAdress /></PrivateRoute>} />
       <Route path="/adm/restaurant-delivery" element={<PrivateRoute><RestaurantDelivery /></PrivateRoute>} />
       <Route path="/adm/add-order" element={<PrivateRoute><AddOrder /></PrivateRoute>} />
+      <Route path="/adm/edit-order/:dishId" element={<PrivateRoute><EditOrder /></PrivateRoute>} />
     </Routes>
   );
 }
