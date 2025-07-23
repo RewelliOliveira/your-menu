@@ -38,7 +38,6 @@ export function EditMenu() {
                 token
               );
 
-              // Mapeia pratos mantendo cada prato com todos seus tamanhos
               const pratosFormatados: OrderProps[] = pratosAPI.map((prato) => {
                 const urlConvertida = prato.imgUrl
                   ? prato.imgUrl.replace(
@@ -46,8 +45,6 @@ export function EditMenu() {
                       "https://upload-images-teste-1.s3.sa-east-1.amazonaws.com/"
                     )
                   : "https://via.placeholder.com/150";
-
-                // Pega o menor preço para exibir como preço base (opcional)
                 const menorPreco = prato.sizeOptionsPrices && prato.sizeOptionsPrices.length > 0
                   ? Math.min(...prato.sizeOptionsPrices.map((op) => op.price))
                   : 0;
