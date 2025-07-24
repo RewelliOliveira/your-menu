@@ -111,10 +111,45 @@ export async function updateOrderStatusApi(
     `/restaurant/${restaurantId}/order/${orderId}`,
     { status },
     {
-      headers: { 
+      headers: {
         Authorization: `Bearer ${token}`,
-        'Content-Type': 'application/json'
-      }
+        "Content-Type": "application/json",
+      },
     }
   );
+}
+
+//POST
+export interface CreateOrderPayload {
+  dateTime: string;
+  status: "PENDING" | "CONFIRMED" | "DELIVERED" | "CANCELLED";
+  restaurantId: string;
+  orderItems: Array<{
+    dishSizeOptionId: number;
+    quantity: number;
+  }>;
+  orderAdress: {
+    deliveryZoneId: number;
+    street: string;
+    number: string;
+    complement: string;
+    cep: string;
+    reference: string;
+  };
+  orderClient: {
+    name: string;
+    phone: string;
+  };
+}
+
+export async function createOrderApi(
+  token: string,
+  payload: CreateOrderPayload
+): Promise<{ orderId: number }> {
+  const response = await api.post("/order", payload, {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  });
+  return response.data;
 }

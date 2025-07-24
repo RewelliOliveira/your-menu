@@ -19,12 +19,16 @@ export async function createDishApi(
   categoryId: number,
   data: CreateDishPayload,
   token: string
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
 ): Promise<any> {
   try {
     const formData = new FormData();
     const { imgFile, ...dto } = data;
 
-    formData.append("dto", new Blob([JSON.stringify(dto)], { type: "application/json" }));
+    formData.append(
+      "dto",
+      new Blob([JSON.stringify(dto)], { type: "application/json" })
+    );
 
     if (imgFile) {
       formData.append("imageUrl", imgFile);
@@ -71,11 +75,14 @@ export async function getPratosPorCategoria(
   token: string
 ): Promise<Prato[]> {
   try {
-    const response = await api.get(`/restaurant/${restaurantId}/category/${categoryId}/dish`, {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    });
+    const response = await api.get(
+      `/restaurant/${restaurantId}/category/${categoryId}/dish`,
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    );
     return response.data;
   } catch (error) {
     console.error(`Erro ao buscar pratos da categoria ${categoryId}:`, error);
