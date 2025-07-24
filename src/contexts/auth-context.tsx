@@ -3,7 +3,8 @@ import { createContext, useContext, useState, useEffect } from 'react';
 interface AuthContextType {
   token: string | null;
   restaurantId: string | null;
-  login: (token: string, restaurantId: string) => void;
+  login: (token: string, restaurantId?: string) => void;
+  updateRestaurantId: (newRestaurantId: string) => void;
   logout: () => void;
   isAuthenticated: boolean;
   isLoading: boolean;
@@ -26,10 +27,21 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     setIsLoading(false);
   }, []);
 
-  const login = (newToken: string, newRestaurantId: string) => {
+  const login = (newToken: string, newRestaurantId?: string) => {
     localStorage.setItem('token', newToken);
-    localStorage.setItem('restaurantId', newRestaurantId);
     setToken(newToken);
+
+    if (newRestaurantId) {
+      localStorage.setItem('restaurantId', newRestaurantId);
+      setRestaurantId(newRestaurantId);
+    } else {
+      localStorage.removeItem('restaurantId');
+      setRestaurantId(null);
+    }
+  };
+
+  const updateRestaurantId = (newRestaurantId: string) => {
+    localStorage.setItem('restaurantId', newRestaurantId);
     setRestaurantId(newRestaurantId);
   };
 
@@ -46,6 +58,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         token,
         restaurantId,
         login,
+        updateRestaurantId,
         logout,
         isAuthenticated: !!token,
         isLoading,

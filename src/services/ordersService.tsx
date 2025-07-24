@@ -107,18 +107,22 @@ export async function updateOrderStatusApi(
   status: string,
   token: string
 ): Promise<void> {
-  await api.patch(`/restaurant/${restaurantId}/order/${orderId}`, null, {
-    headers: { Authorization: `Bearer ${token}` },
-    params: {
-      status,
-    },
-  });
+  await api.patch(
+    `/restaurant/${restaurantId}/order/${orderId}`,
+    { status },
+    {
+      headers: {
+        Authorization: `Bearer ${token}`,
+        "Content-Type": "application/json",
+      },
+    }
+  );
 }
 
 //POST
 export interface CreateOrderPayload {
   dateTime: string;
-  status: "PENDING" | "CONFIRMED" | "DELIVERED" | "CANCELLED"; // ajuste conforme enum do backend
+  status: "PENDING" | "CONFIRMED" | "DELIVERED" | "CANCELLED";
   restaurantId: string;
   orderItems: Array<{
     dishSizeOptionId: number;

@@ -25,7 +25,7 @@ export function RestaurantAdress() {
   const [restaurantId, setRestaurantId] = useState<string | null>(null);
   const [hasAddress, setHasAddress] = useState(false);
   const navigate = useNavigate();
-  const { token } = useAuth();
+  const { token, updateRestaurantId } = useAuth();
 
   useEffect(() => {
     async function fetchRestaurantId() {
@@ -33,6 +33,7 @@ export function RestaurantAdress() {
       try {
         const restaurant = await getRestaurantProfileApi(token);
         setRestaurantId(restaurant.id);
+        updateRestaurantId(restaurant.id);
       } catch (error) {
         console.error("Erro ao buscar o perfil do restaurante:", error);
       }
