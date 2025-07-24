@@ -44,6 +44,7 @@ export interface OrderDetailResponse {
   note: string | null;
 
   orderItems: Array<{
+    foodImg: string;
     id: number;
     dishSizeOptionId: number;
     dishName: string;
