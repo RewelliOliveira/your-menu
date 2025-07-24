@@ -83,7 +83,7 @@ export function AddressData() {
           >
             Voltar
           </Button>
-          <Button type="submit">Salvar</Button>
+          <Button type="submit" onClick={() => navigate("payment")}>Salvar</Button>
         </div>
       </div>
     </section>

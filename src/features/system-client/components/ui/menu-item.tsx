@@ -26,7 +26,7 @@ export function MenuItem(order: OrderProps) {
 
   const handleConfirm = () => {
     if (!selectedSize) return alert("Selecione um tamanho!");
-    navigate("payment");
+    navigate("check-order");
     setShowModal(false);
   };
 

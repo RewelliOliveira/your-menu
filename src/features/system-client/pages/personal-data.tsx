@@ -22,9 +22,8 @@ export function PersonalData() {
     if (validate()) {
       setIsLoading(true);
       try {
-        // ...submit logic...
         toast.success("Dados enviados com sucesso!");
-        navigate("/address-data"); // Redireciona após sucesso
+        navigate("/address-data"); 
       } catch {
         toast.error("Erro ao enviar dados");
       } finally {
