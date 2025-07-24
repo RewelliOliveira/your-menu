@@ -2,7 +2,7 @@ import { api } from "./api";
 //Post
 interface RestaurantAdressApiProps {
   restaurantId: string;
-  cep: number;
+  cep: string;
   state: string;
   city: string;
   street: string;

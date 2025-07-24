@@ -27,6 +27,13 @@ export function RestaurantAdress() {
   const navigate = useNavigate();
   const { token, updateRestaurantId } = useAuth();
 
+  function formatCep(value: string) {
+    return value
+      .replace(/\D/g, "") // remove tudo que não for número
+      .replace(/(\d{5})(\d)/, "$1-$2") // adiciona o hífen após os 5 primeiros dígitos
+      .slice(0, 9); // limita o comprimento para 9 caracteres
+  }
+
   useEffect(() => {
     async function fetchRestaurantId() {
       if (!token) return;
@@ -84,15 +91,16 @@ export function RestaurantAdress() {
 
     const data = {
       restaurantId,
-      cep: parseInt(cep),
+      cep, 
       state,
       city,
       street,
-      number: parseInt(number),
+      number: parseInt(number), 
       district,
       complement: complement || null,
       reference: reference || null,
     };
+
 
     try {
       if (hasAddress) {
@@ -118,7 +126,13 @@ export function RestaurantAdress() {
           Informações de endereço
         </h1>
         <div className="flex gap-8">
-          <Input label="CEP*" type="text" value={cep} onChange={(e) => setCep(e.target.value)} />
+          <Input
+            label="CEP*"
+            type="text"
+            value={cep}
+            onChange={(e) => setCep(formatCep(e.target.value))}
+          />
+
           <Input label="Estado*" type="text" value={state} onChange={(e) => setState(e.target.value)} />
         </div>
         <div className="flex gap-8 mt-4">
@@ -127,7 +141,7 @@ export function RestaurantAdress() {
         </div>
         <div className="flex gap-8 mt-4">
           <Input label="Rua*" type="text" value={street} onChange={(e) => setStreet(e.target.value)} />
-          <Input label="Número" type="text" value={number} onChange={(e) => setNumber(e.target.value)} />
+          <Input label="Número" type="number" value={number} onChange={(e) => setNumber(e.target.value)} />
         </div>
         <div className="flex gap-8 mt-4">
           <Input label="Complemento" type="text" value={complement} onChange={(e) => setComplement(e.target.value)} />
