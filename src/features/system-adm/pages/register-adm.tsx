@@ -44,7 +44,7 @@ export function RegisterAdm() {
       const data = { email, password, fullName };
       await createAccount(data);
       toast.success("Cadastro realizado com sucesso!");
-      navigate("/");
+      navigate("/adm");
     } catch {
       toast.error("Erro ao cadastrar usuário!");
     }
@@ -97,7 +97,7 @@ export function RegisterAdm() {
         <div className="text-lg text-black">
           <p>
             Já tem uma conta?
-            <Link to="/">
+            <Link to="/adm/">
               <span className="text-orange-600 font-bold ml-1">Entre agora</span>
             </Link>
           </p>

@@ -18,7 +18,7 @@ import { useRestaurant } from "@/contexts/restaurant-context";
 
 export function ProfileRestaurant() {
   const navigate = useNavigate();
-  const { token } = useAuth();
+  const { token, updateRestaurantId } = useAuth();
   const { setSlug } = useRestaurant();
 
   const {
@@ -129,7 +129,7 @@ export function ProfileRestaurant() {
           token
         );
         currentRestaurantId = restaurantData.id;
-        setRestaurantId(currentRestaurantId);
+        updateRestaurantId(currentRestaurantId);
         setSlug(restaurantData.slug);
         toast.success("Restaurante criado com sucesso!");
       } else {
@@ -161,7 +161,7 @@ export function ProfileRestaurant() {
         token
       );
 
-      navigate("/restaurant-adress");
+      navigate("/adm/restaurant-adress");
     } catch (error: any) {
       alert(error.message || "Erro ao salvar restaurante ou horários.");
     }

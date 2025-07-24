@@ -87,7 +87,7 @@ export function AddOrder() {
       );
       console.log("Resposta da API após salvar prato:", response);
 
-      navigate("/edit-menu");
+      navigate("/adm/edit-menu");
       toast.success('Prato salvo com sucesso!');
       setItemName('');
       setItemDescription('');

@@ -48,12 +48,12 @@ export function LoginAdm() {
         }
       }
 
-      login(token, restaurantId ?? '');
+      login(token);
 
       if (restaurantId) {
-        navigate("/edit-menu");
+        navigate("/adm/edit-menu");
       } else {
-        navigate("/profile-restaurant");
+        navigate("/adm/profile-restaurant");
       }
 
       toast.success("Login realizado com sucesso!");
@@ -97,7 +97,7 @@ export function LoginAdm() {
         <div className="text-lg text-black">
           <p>
             Não tem uma conta?
-            <Link to="/register">
+            <Link to="/adm/register">
               <span className="text-orange-600 font-bold ml-1">Crie agora</span>
             </Link>
           </p>
