@@ -29,9 +29,9 @@ export function RestaurantAdress() {
 
   function formatCep(value: string) {
     return value
-      .replace(/\D/g, "") // remove tudo que não for número
-      .replace(/(\d{5})(\d)/, "$1-$2") // adiciona o hífen após os 5 primeiros dígitos
-      .slice(0, 9); // limita o comprimento para 9 caracteres
+      .replace(/\D/g, "") 
+      .replace(/(\d{5})(\d)/, "$1-$2") 
+      .slice(0, 9); 
   }
 
   useEffect(() => {
@@ -56,7 +56,7 @@ export function RestaurantAdress() {
         const adress = await getRestaurantAdressApi(restaurantId, token);
 
         setHasAddress(true);
-        setCep(adress.cep.toString());
+        setCep(formatCep(adress.cep.toString()));
         setState(adress.state);
         setCity(adress.city);
         setStreet(adress.street);
