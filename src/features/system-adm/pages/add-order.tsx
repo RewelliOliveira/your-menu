@@ -239,18 +239,25 @@ export function AddOrder() {
               </div>
 
               {/* Preço */}
+              {/* Preço */}
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">Preço (R$)</label>
                 <input
-                  type="number"
-                  placeholder="0.00"
+                  type="text"
+                  placeholder="0,00"
                   value={price}
-                  onChange={(e) => setPrice(e.target.value)}
+                  onChange={(e) => {
+                    const formatCurrencyInput = (value: string) => {
+                      const numeric = value.replace(/\D/g, ""); // remove tudo que não for número
+                      const cents = (Number(numeric) / 100).toFixed(2);
+                      return cents.replace(".", ",");
+                    };
+                    setPrice(formatCurrencyInput(e.target.value));
+                  }}
                   className="border border-gray-300 rounded-md px-3 py-1 w-24 focus:ring-2 focus:ring-green-500 focus:border-green-500"
-                  min="0"
-                  step="0.01"
                 />
               </div>
+
 
               {/* Botão Adicionar */}
               <button
