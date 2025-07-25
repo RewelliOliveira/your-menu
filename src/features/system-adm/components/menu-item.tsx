@@ -1,5 +1,5 @@
 import { Icon } from "@iconify/react";
-import { useNavigate } from 'react-router-dom';
+import { useNavigate } from "react-router-dom";
 
 export type SizeOption = {
   size: string;
@@ -16,17 +16,23 @@ export type OrderProps = {
   status: string;
 };
 
-export function MenuItem(order: OrderProps) {
+interface MenuItemProps extends OrderProps {
+  onClick?: (produto: OrderProps) => void;
+}
+
+export function MenuItem(order: MenuItemProps) {
   const navigate = useNavigate();
-  
+
   const handleEditClick = (e: React.MouseEvent) => {
     e.stopPropagation();
     navigate(`/adm/edit-order/${order.id}`);
-    console.log("Editar prato", order.id);
   };
 
   return (
-    <div className="flex flex-col bg-white w-55 h-auto m-4 rounded-xl shadow-lg transition-all duration-300 hover:shadow-xl hover:scale-[1.02]">
+    <div
+      className="flex flex-col bg-white w-55 h-auto m-4 rounded-xl shadow-lg transition-all duration-300 hover:shadow-xl hover:scale-[1.02] cursor-pointer"
+      onClick={() => order.onClick?.(order)}
+    >
       <img
         src={order.foodImg || "placeholder.svg"}
         alt={order.name || "Imagem do prato"}
@@ -39,7 +45,7 @@ export function MenuItem(order: OrderProps) {
           {order.description || "Descrição do prato"}
         </p>
 
-        <p className="font-semibold mt-2">R${order.price || " --,--"}</p>
+        <p className="font-semibold mt-2">R${order.price || "--,--"}</p>
 
         <div className="flex justify-end mt-auto">
           <button

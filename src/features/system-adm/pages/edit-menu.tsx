@@ -1,3 +1,4 @@
+// pages/edit-menu.tsx
 import { useEffect, useState } from "react";
 import { Header } from "../components/header";
 import { MenuItem, OrderProps } from "../components/menu-item";
@@ -8,6 +9,7 @@ import { getPratosPorCategoria } from "@/services/create-dish";
 import { getCategoriesApi } from "@/services/category-api";
 import { useAuth } from "@/contexts/auth-context";
 import { toast } from "react-toastify";
+import { ProductModal } from "../components/Product-modal"
 
 interface CategoriaComPratos {
   id: number;
@@ -18,6 +20,8 @@ interface CategoriaComPratos {
 export function EditMenu() {
   const [categorias, setCategorias] = useState<CategoriaComPratos[]>([]);
   const [carregando, setCarregando] = useState(true);
+  const [selectedProduct, setSelectedProduct] = useState<OrderProps | null>(null);
+
   const { token, restaurantId } = useAuth();
 
   useEffect(() => {
@@ -45,7 +49,8 @@ export function EditMenu() {
                       "https://upload-images-teste-1.s3.sa-east-1.amazonaws.com/"
                     )
                   : "https://via.placeholder.com/150";
-                const menorPreco = prato.sizeOptionsPrices && prato.sizeOptionsPrices.length > 0
+
+                const menorPreco = prato.sizeOptionsPrices?.length
                   ? Math.min(...prato.sizeOptionsPrices.map((op) => op.price))
                   : 0;
 
@@ -70,23 +75,14 @@ export function EditMenu() {
                 pratos: pratosFormatados,
               };
             } catch (error) {
-              console.error(
-                `Erro ao carregar pratos da categoria ${categoria.name}:`,
-                error
-              );
               toast.error(`Falha ao carregar pratos de ${categoria.name}`);
-              return {
-                id: categoria.Id,
-                name: categoria.name,
-                pratos: [],
-              };
+              return { id: categoria.Id, name: categoria.name, pratos: [] };
             }
           })
         );
 
         setCategorias(categoriasComPratos);
       } catch (error) {
-        console.error("Erro ao carregar cardápio:", error);
         toast.error("Falha ao carregar categorias");
       } finally {
         setCarregando(false);
@@ -118,17 +114,19 @@ export function EditMenu() {
         renderItem={(item) => (
           <MenuItem
             key={item.id}
-            id={item.id}
-            name={item.name}
-            description={item.description}
-            price={item.price}
-            foodImg={item.foodImg}
-            status={item.status}
-            sizeOptions={item.sizeOptions}
+            {...item}
+            onClick={(produto) => setSelectedProduct(produto)}
           />
         )}
         renderAfterItems={() => <MenuItemAdd />}
       />
+
+      {selectedProduct && (
+        <ProductModal
+          produto={selectedProduct}
+          onClose={() => setSelectedProduct(null)}
+        />
+      )}
     </div>
   );
 }
