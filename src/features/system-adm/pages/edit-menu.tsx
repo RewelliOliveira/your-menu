@@ -1,4 +1,3 @@
-// pages/edit-menu.tsx
 import { useEffect, useState } from "react";
 import { Header } from "../components/header";
 import { MenuItem, OrderProps } from "../components/menu-item";
@@ -10,6 +9,7 @@ import { getCategoriesApi } from "@/services/category-api";
 import { useAuth } from "@/contexts/auth-context";
 import { toast } from "react-toastify";
 import { ProductModal } from "../components/Product-modal"
+import { deleteDishApi } from "@/services/create-dish";
 
 interface CategoriaComPratos {
   id: number;
@@ -23,6 +23,22 @@ export function EditMenu() {
   const [selectedProduct, setSelectedProduct] = useState<OrderProps | null>(null);
 
   const { token, restaurantId } = useAuth();
+
+  const handleDeleteDish = async (dishId: number, categoryId: number) => {
+    if (!token || !restaurantId) return;
+
+    try {
+      await deleteDishApi(restaurantId, categoryId, dishId, token);
+      setCategorias(prev => prev.map(categoria => ({
+        ...categoria,
+        pratos: categoria.pratos.filter(prato => prato.id !== dishId.toString())
+      })));
+      toast.success("Prato excluído com sucesso!");
+    } catch (error) {
+      toast.error("Erro ao excluir prato");
+      console.error(error);
+    }
+  };
 
   useEffect(() => {
     async function carregarCardapio() {
@@ -45,9 +61,9 @@ export function EditMenu() {
               const pratosFormatados: OrderProps[] = pratosAPI.map((prato) => {
                 const urlConvertida = prato.imgUrl
                   ? prato.imgUrl.replace(
-                      "s3://upload-images-teste-1/",
-                      "https://upload-images-teste-1.s3.sa-east-1.amazonaws.com/"
-                    )
+                    "s3://upload-images-teste-1/",
+                    "https://upload-images-teste-1.s3.sa-east-1.amazonaws.com/"
+                  )
                   : "https://via.placeholder.com/150";
 
                 const menorPreco = prato.sizeOptionsPrices?.length
@@ -62,6 +78,8 @@ export function EditMenu() {
                   foodImg: urlConvertida,
                   status: categoria.name,
                   isAvailable: prato.isAvailable,
+                  restaurantId: restaurantId,
+                  categoryId: categoria.Id,
                   sizeOptions: prato.sizeOptionsPrices?.map((opcao) => ({
                     size: opcao.measureUnit,
                     price: opcao.price.toFixed(2),
@@ -115,7 +133,9 @@ export function EditMenu() {
           <MenuItem
             key={item.id}
             {...item}
+            token={token || ""}
             onClick={(produto) => setSelectedProduct(produto)}
+            onDelete={(dishId) => handleDeleteDish(dishId, item.categoryId)}
           />
         )}
         renderAfterItems={() => <MenuItemAdd />}

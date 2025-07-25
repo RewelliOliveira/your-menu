@@ -1,5 +1,8 @@
 import { Icon } from "@iconify/react";
 import { useNavigate } from "react-router-dom";
+import { deleteDishApi } from "@/services/create-dish";
+import { toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 export type SizeOption = {
   size: string;
@@ -14,10 +17,14 @@ export type OrderProps = {
   price: string;
   foodImg: string;
   status: string;
+  restaurantId: string;
+  categoryId: number;
 };
 
 interface MenuItemProps extends OrderProps {
   onClick?: (produto: OrderProps) => void;
+  onDelete?: (dishId: number, categoryId: number) => void;
+  token: string;
 }
 
 export function MenuItem(order: MenuItemProps) {
@@ -26,6 +33,26 @@ export function MenuItem(order: MenuItemProps) {
   const handleEditClick = (e: React.MouseEvent) => {
     e.stopPropagation();
     navigate(`/adm/edit-order/${order.id}`);
+  };
+
+  const handleDeleteClick = async (e: React.MouseEvent) => {
+    e.stopPropagation();
+
+    const confirmed = window.confirm(`Tem certeza que deseja excluir o prato "${order.name}"?`);
+    if (!confirmed) return;
+
+    try {
+      await deleteDishApi(
+        order.restaurantId,
+        order.categoryId,
+        Number(order.id),
+        order.token
+      );
+      toast.success("Prato excluído com sucesso!");
+      window.location.reload();
+    } catch {
+      toast.error("Erro ao excluir prato. Por favor, tente novamente.");
+    }
   };
 
   return (
@@ -48,6 +75,17 @@ export function MenuItem(order: MenuItemProps) {
         <p className="font-semibold mt-2">R${order.price || "--,--"}</p>
 
         <div className="flex justify-end mt-auto">
+          <button
+            onClick={handleDeleteClick}
+            type="button"
+            aria-label="Remover prato"
+            className="group bg-white shadow-lg w-8 h-8 flex items-center justify-center transition-all duration-300 rounded hover:w-16 hover:bg-red-600/80"
+          >
+            <Icon
+              icon="solar:trash-bin-trash-bold"
+              className="w-5 h-5 text-red-500 transition-colors duration-300 group-hover:text-white"
+            />
+          </button>
           <button
             onClick={handleEditClick}
             type="button"
