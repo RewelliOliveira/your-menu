@@ -3,7 +3,6 @@ import { useState } from "react";
 interface PersonalDataForm {
   nome: string;
   celular: string;
-  telefone: string;
 }
 
 interface PersonalDataErrors {
@@ -15,7 +14,6 @@ export function usePersonalDataForm() {
   const [form, setForm] = useState<PersonalDataForm>({
     nome: "",
     celular: "",
-    telefone: "",
   });
   const [errors, setErrors] = useState<PersonalDataErrors>({
     nome: "",

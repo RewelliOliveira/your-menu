@@ -1,18 +1,53 @@
 import { useDeliveryZones } from "@/hooks/useDeliveryZones";
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import { Button } from "../components/ui/button";
 import { Input } from "../components/ui/input";
 import { Select } from "../components/ui/select";
 
 export function AddressData() {
   const { zones, loading } = useDeliveryZones();
-
-  const [selectedZone, setSelectedZone] = useState("");
-
-  const selectedZoneData = zones.find((z) => z.zone === selectedZone);
-
   const navigate = useNavigate();
+  const location = useLocation();
+  const order = location.state?.order;
+  const orderItems = order?.orderItems ?? [];
+  const orderClient = order?.orderClient ?? {};
+
+  const [form, setForm] = useState({
+    street: "",
+    number: "",
+    zone: "",
+    complement: "",
+    cep: "",
+    reference: "",
+  });
+
+  const selectedZoneData = zones.find((z) => z.zone === form.zone);
+
+  const handleChange = (field: keyof typeof form, value: string) => {
+    setForm((prev) => ({ ...prev, [field]: value }));
+  };
+
+  const handleSave = () => {
+    const orderAdress = {
+      street: form.street,
+      number: form.number,
+      complement: form.complement,
+      cep: form.cep,
+      reference: form.reference,
+      deliveryZoneId: selectedZoneData?.id ?? 0, // <- campo necessário pela API
+    };
+
+    localStorage.setItem("order_address", JSON.stringify(orderAdress));
+
+    navigate("/finalize-order", {
+      state: {
+        orderItems,
+        orderClient,
+        orderAdress,
+      },
+    });
+  };
 
   return (
     <section className="flex flex-col items-center justify-center w-full min-h-screen px-4 py-8 bg-white">
@@ -23,15 +58,27 @@ export function AddressData() {
 
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-6 gap-y-4">
           <Input
-            label="Rua / Logradouro"
+            label={
+              <>
+                Rua / Logradouro <span className="text-orange-600">*</span>
+              </>
+            }
             placeholder="Digite o nome da rua"
             size="full"
+            value={form.street}
+            onChange={(e) => handleChange("street", e.target.value)}
           />
           <Input
-            label="Número"
+            label={
+              <>
+                Número <span className="text-orange-600">*</span>
+              </>
+            }
             placeholder="Digite o número"
             type="number"
             size="full"
+            value={form.number}
+            onChange={(e) => handleChange("number", e.target.value)}
           />
 
           {/* Bairro e Taxa de entrega lado a lado */}
@@ -39,11 +86,13 @@ export function AddressData() {
             <div className="w-2/3">
               <Select
                 label={
-                  <span className="text-sm font-medium text-black">Bairro</span>
+                  <>
+                    Bairro <span className="text-orange-600">*</span>
+                  </>
                 }
                 placeholder="Selecione um bairro"
-                value={selectedZone}
-                onChange={(e) => setSelectedZone(e.target.value)}
+                value={form.zone}
+                onChange={(e) => handleChange("zone", e.target.value)}
                 options={zones.map((z) => ({ value: z.zone, label: z.zone }))}
                 disabled={loading}
                 size="full"
@@ -63,15 +112,37 @@ export function AddressData() {
           </div>
 
           <Input
-            label="Complemento"
+            label={
+              <>
+                Complemento <span className="text-orange-600">*</span>
+              </>
+            }
             placeholder="Digite o complemento"
             size="full"
+            value={form.complement}
+            onChange={(e) => handleChange("complement", e.target.value)}
           />
-          <Input label="CEP" placeholder="Digite o CEP" size="full" />
           <Input
-            label="Ponto de referência"
+            label={
+              <>
+                CEP <span className="text-orange-600">*</span>
+              </>
+            }
+            placeholder="Digite o CEP"
+            size="full"
+            value={form.cep}
+            onChange={(e) => handleChange("cep", e.target.value)}
+          />
+          <Input
+            label={
+              <>
+                Referência <span className="text-orange-600">*</span>
+              </>
+            }
             placeholder="Digite um ponto de referência"
             size="full"
+            value={form.reference}
+            onChange={(e) => handleChange("reference", e.target.value)}
           />
         </div>
 
@@ -83,7 +154,9 @@ export function AddressData() {
           >
             Voltar
           </Button>
-          <Button type="submit">Salvar</Button>
+          <Button type="submit" onClick={handleSave}>
+            Salvar
+          </Button>
         </div>
       </div>
     </section>

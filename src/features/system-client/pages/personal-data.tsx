@@ -1,30 +1,32 @@
 import { usePersonalDataForm } from "@/hooks/usePersonalDataForm";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { Button } from "../components/ui/button";
 import { Input } from "../components/ui/input";
 
 export function PersonalData() {
-  const {
-    form,
-    errors,
-    isLoading,
-    setIsLoading,
-    handleChange,
-    maskPhone,
-    validate,
-  } = usePersonalDataForm();
+  const { form, errors, isLoading, setIsLoading, handleChange, validate } =
+    usePersonalDataForm();
 
   const navigate = useNavigate();
+  const location = useLocation();
+  const order = location.state?.order;
 
   const handleContinue = async () => {
     if (validate()) {
       setIsLoading(true);
       try {
         // ...submit logic...
+        const updateOrder = {
+          ...order,
+          orderClient: {
+            name: form.nome,
+            phone: form.celular,
+          },
+        };
         toast.success("Dados enviados com sucesso!");
-        navigate("/address-data"); // Redireciona após sucesso
+        navigate("/address-data", { state: { order: updateOrder } }); // Redireciona após sucesso
       } catch {
         toast.error("Erro ao enviar dados");
       } finally {
@@ -81,19 +83,9 @@ export function PersonalData() {
             type="tel"
             value={form.celular}
             onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
-              handleChange("celular", maskPhone(e.target.value))
+              handleChange("celular", e.target.value)
             }
             error={errors.celular}
-            disabled={isLoading}
-          />
-          <Input
-            label="Telefone"
-            type="tel"
-            placeholder="(XX) XXXX-XXXX"
-            value={form.telefone}
-            onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
-              handleChange("telefone", maskPhone(e.target.value))
-            }
             disabled={isLoading}
           />
         </div>

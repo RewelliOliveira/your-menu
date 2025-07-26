@@ -73,9 +73,7 @@ export interface OrderDetailResponse {
   };
 
   orderClient: {
-    id: number;
     firstName: string;
-    lastName: string;
     phone: number | string;
   };
 }
@@ -147,10 +145,15 @@ export async function createOrderApi(
   token: string,
   payload: CreateOrderPayload
 ): Promise<{ orderId: number }> {
-  const response = await api.post("/order", payload, {
-    headers: {
-      Authorization: `Bearer ${token}`,
-    },
-  });
+  console.log("Payload:", payload);
+  const response = await api.post(
+    `/restaurant/${payload.restaurantId}/order`,
+    payload,
+    {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    }
+  );
   return response.data;
 }
