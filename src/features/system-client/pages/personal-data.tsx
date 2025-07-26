@@ -6,14 +6,22 @@ import { Button } from "../components/ui/button";
 import { Input } from "../components/ui/input";
 
 export function PersonalData() {
-  const { form, errors, isLoading, setIsLoading, handleChange, validate } =
-    usePersonalDataForm();
+  const {
+    form,
+    errors,
+    isLoading,
+    setIsLoading,
+    handleChange,
+    validate,
+    maskPhone,
+  } = usePersonalDataForm();
 
   const navigate = useNavigate();
   const location = useLocation();
   const order = location.state?.order;
 
   const handleContinue = async () => {
+    const cleanedPhone = form.celular.replace(/\D/g, "");
     if (validate()) {
       setIsLoading(true);
       try {
@@ -22,7 +30,7 @@ export function PersonalData() {
           ...order,
           orderClient: {
             name: form.nome,
-            phone: form.celular,
+            phone: cleanedPhone,
           },
         };
         toast.success("Dados enviados com sucesso!");
@@ -83,7 +91,7 @@ export function PersonalData() {
             type="tel"
             value={form.celular}
             onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
-              handleChange("celular", e.target.value)
+              handleChange("celular", maskPhone(e.target.value))
             }
             error={errors.celular}
             disabled={isLoading}
