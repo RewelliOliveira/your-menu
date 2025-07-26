@@ -127,7 +127,7 @@ export function RestaurantAdress() {
         </div>
         <div className="flex gap-8 mt-4">
           <Input label="Rua*" type="text" value={street} onChange={(e) => setStreet(e.target.value)} />
-          <Input label="Número" type="text" value={number} onChange={(e) => setNumber(e.target.value)} />
+          <Input label="Número*" type="text" value={number} onChange={(e) => setNumber(e.target.value)} />
         </div>
         <div className="flex gap-8 mt-4">
           <Input label="Complemento" type="text" value={complement} onChange={(e) => setComplement(e.target.value)} />
