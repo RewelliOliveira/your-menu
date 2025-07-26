@@ -101,7 +101,10 @@ export function CardOrder({ order, onStatusChange }: CardOrderProps) {
 
   return (
     <>
-      <div className="flex flex-col bg-white w-55 h-60 m-4 rounded-xl shadow-lg transition-all duration-300 hover:shadow-xl hover:scale-[1.02] p-4">
+      <div
+        className="flex flex-col bg-white w-55 h-60 m-4 rounded-xl shadow-lg transition-all duration-300 hover:shadow-xl hover:scale-[1.02] p-4 cursor-pointer"
+        onClick={openOrderDetails}
+      >
         <div className="flex justify-between items-center mb-2">
           <h2 className="font-bold text-base">
             {`Pedido #${order.id.toString().padStart(3, "0")}`}
@@ -128,7 +131,10 @@ export function CardOrder({ order, onStatusChange }: CardOrderProps) {
             {order.status !== "Entregue" && order.status !== "Cancelados" && (
               <>
                 <button
-                  onClick={openOrderDetails}
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    openOrderDetails();
+                  }}
                   type="button"
                   aria-label="Editar pedido"
                   className="group bg-white shadow-lg w-8 h-8 flex items-center justify-center transition-all duration-300 rounded hover:w-16 hover:bg-blue-600/80"
@@ -140,7 +146,10 @@ export function CardOrder({ order, onStatusChange }: CardOrderProps) {
                 </button>
 
                 <button
-                  onClick={confirmCancelOrder}
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    confirmCancelOrder();
+                  }}
                   type="button"
                   aria-label="Cancelar pedido"
                   className="group bg-white shadow-lg w-8 h-8 flex items-center justify-center transition-all duration-300 rounded hover:w-16 hover:bg-[#fe0000]/80"
