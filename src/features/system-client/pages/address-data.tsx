@@ -22,6 +22,7 @@ export function AddressData() {
     reference: "",
   });
 
+  const [errors, setErrors] = useState<{ cep?: string }>({});
   const selectedZoneData = zones.find((z) => z.zone === form.zone);
 
   const handleChange = (field: keyof typeof form, value: string) => {
@@ -29,13 +30,22 @@ export function AddressData() {
   };
 
   const handleSave = () => {
+    const cleanedCep = form.cep.replace(/\D/g, ""); // remove qualquer caractere não numérico
+
+    if (cleanedCep.length !== 8) {
+      setErrors({ cep: "O CEP deve conter exatamente 8 dígitos numéricos." });
+      return;
+    }
+
+    setErrors({}); // limpa os erros
+
     const orderAdress = {
       street: form.street,
       number: form.number,
       complement: form.complement,
-      cep: form.cep,
+      cep: cleanedCep,
       reference: form.reference,
-      deliveryZoneId: selectedZoneData?.id ?? 0, // <- campo necessário pela API
+      deliveryZoneId: selectedZoneData?.id ?? 0,
     };
 
     localStorage.setItem("order_address", JSON.stringify(orderAdress));
@@ -48,6 +58,15 @@ export function AddressData() {
       },
     });
   };
+
+  const isDisabled =
+    !form.street.trim() ||
+    !form.number.trim() ||
+    !form.zone.trim() ||
+    !form.complement.trim() ||
+    !form.cep.trim() ||
+    !form.reference.trim() ||
+    loading;
 
   return (
     <section className="flex flex-col items-center justify-center w-full min-h-screen px-4 py-8 bg-white">
@@ -132,6 +151,7 @@ export function AddressData() {
             size="full"
             value={form.cep}
             onChange={(e) => handleChange("cep", e.target.value)}
+            error={errors.cep}
           />
           <Input
             label={
@@ -154,8 +174,8 @@ export function AddressData() {
           >
             Voltar
           </Button>
-          <Button type="submit" onClick={handleSave}>
-            Salvar
+          <Button type="submit" onClick={handleSave} disabled={isDisabled}>
+            {loading ? "Salvando..." : "Salvar"}
           </Button>
         </div>
       </div>
