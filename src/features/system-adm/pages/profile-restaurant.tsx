@@ -10,7 +10,7 @@ import { WeekDays } from "@/constants/week-days";
 import { Button } from "../components/ui/button";
 import { useProfileForm } from "@/hooks/useProfileForm";
 import { useEffect, useState } from "react";
-
+import { getRestaurantLinkApi } from "@/services/restaurant-adress-api";
 import { getRestaurantProfileApi, updateRestaurantProfileApi, restaurantProfileApi } from "@/services/restaurant-profile-api";
 import { getRestaurantHoursApi, restaurantHoursApi } from "@/services/restaurant-hours-api";
 import { toast } from "react-toastify";
@@ -20,6 +20,8 @@ export function ProfileRestaurant() {
   const navigate = useNavigate();
   const { token, updateRestaurantId } = useAuth();
   const { setSlug } = useRestaurant();
+  const [ ,setRestaurantLink] = useState<string | null>(null);
+
 
   const {
     name, setName,
@@ -166,6 +168,22 @@ export function ProfileRestaurant() {
       alert(error.message || "Erro ao salvar restaurante ou horários.");
     }
   };
+  const handleCopyLink = async () => {
+    if (!token || !restaurantId) {
+      toast.error("Restaurante não encontrado!");
+      return;
+    }
+
+    try {
+      const { link } = await getRestaurantLinkApi(restaurantId, token);
+      await navigator.clipboard.writeText(link);
+      setRestaurantLink(link);
+      toast.success("Link copiado para a área de transferência!");
+    } catch (error) {
+      toast.error("Erro ao copiar o link.");
+      console.error("Erro ao copiar o link:", error);
+    }
+  };
 
   return (
     <div className="min-h-screen flex flex-col bg-gray-50">
@@ -230,9 +248,13 @@ export function ProfileRestaurant() {
 
       <footer className="flex justify-center bg-black/5">
         <div className="flex justify-between w-full max-w-[75%] py-5">
-          <Button className="max-w-40 bg-transparent text-black border border-black hover:text-white hover:border-white">
+          <Button
+            className="max-w-40 bg-transparent text-black border border-black hover:text-white hover:border-white"
+            onClick={handleCopyLink}
+          >
             Copiar Link
           </Button>
+
           <Button className="max-w-40" onClick={handleSubmit}>Salvar</Button>
         </div>
       </footer>

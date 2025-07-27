@@ -13,7 +13,7 @@ interface RawZone {
 interface Zone {
   id: string;
   zone: string;
-  deliveryFee: string; // formatado para exibição (ex: "4.00")
+  deliveryFee: string;
 }
 
 export function useDeliveryZones() {

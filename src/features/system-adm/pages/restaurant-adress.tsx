@@ -27,6 +27,13 @@ export function RestaurantAdress() {
   const navigate = useNavigate();
   const { token, updateRestaurantId } = useAuth();
 
+  function formatCep(value: string) {
+    return value
+      .replace(/\D/g, "") 
+      .replace(/(\d{5})(\d)/, "$1-$2") 
+      .slice(0, 9); 
+  }
+
   useEffect(() => {
     async function fetchRestaurantId() {
       if (!token) return;
@@ -49,7 +56,7 @@ export function RestaurantAdress() {
         const adress = await getRestaurantAdressApi(restaurantId, token);
 
         setHasAddress(true);
-        setCep(adress.cep.toString());
+        setCep(formatCep(adress.cep.toString()));
         setState(adress.state);
         setCity(adress.city);
         setStreet(adress.street);
@@ -84,15 +91,16 @@ export function RestaurantAdress() {
 
     const data = {
       restaurantId,
-      cep: parseInt(cep),
+      cep, 
       state,
       city,
       street,
-      number: parseInt(number),
+      number: parseInt(number), 
       district,
       complement: complement || null,
       reference: reference || null,
     };
+
 
     try {
       if (hasAddress) {
@@ -118,7 +126,13 @@ export function RestaurantAdress() {
           Informações de endereço
         </h1>
         <div className="flex gap-8">
-          <Input label="CEP*" type="text" value={cep} onChange={(e) => setCep(e.target.value)} />
+          <Input
+            label="CEP*"
+            type="text"
+            value={cep}
+            onChange={(e) => setCep(formatCep(e.target.value))}
+          />
+
           <Input label="Estado*" type="text" value={state} onChange={(e) => setState(e.target.value)} />
         </div>
         <div className="flex gap-8 mt-4">
