@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from "react";
+import { X } from "lucide-react";
 
 export type TabbedSectionsProps<T extends string = string, D = unknown> = {
   title: string;
@@ -114,10 +115,10 @@ export function TabbedSections<T extends string = string, D = unknown>({
                           e.stopPropagation();
                           onDeleteCategory(tab);
                         }}
-                        className="absolute top-1 right-1 text-red-600 font-bold"
+                        className="absolute top-1 right-1 p-1 rounded-full hover:bg-red-100 transition"
                         title="Excluir categoria"
                       >
-                        ×
+                        <X className="w-4 h-4 text-red-500 hover:text-red-600" />
                       </button>
                     )}
                   </div>
