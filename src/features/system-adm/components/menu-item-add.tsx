@@ -6,7 +6,7 @@ export function MenuItemAdd() {
   return (
     <div className="flex flex-col bg-white w-55 h-60 m-4 rounded-xl shadow-lg transition-all duration-300 hover:shadow-xl hover:scale-[1.02]">
       <img
-        src="placeholder.svg"
+        src="/placeholder.svg"
         alt=""
         className="w-full h-24 object-cover rounded-t-lg"
       />
