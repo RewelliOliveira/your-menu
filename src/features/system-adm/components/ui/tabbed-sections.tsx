@@ -20,27 +20,19 @@ export function TabbedSections<T extends string = string, D = unknown>({
   categoriesOrder,
 }: TabbedSectionsProps<T, D>) {
   const categories = useMemo(() => {
-    const unique = new Set<T>();
-    data.forEach((item) => unique.add(getCategory(item)));
-    const dynamic = Array.from(unique);
-
     if (categoriesOrder?.length) {
       return categoriesOrder;
     }
 
-    return dynamic;
+    const unique = new Set<T>();
+    data.forEach((item) => unique.add(getCategory(item)));
+    return Array.from(unique);
   }, [data, getCategory, categoriesOrder]);
 
   const [selectedTab, setSelectedTab] = useState<T>(categories[0] ?? ("" as T));
   const [isSticky, setIsSticky] = useState(false);
 
-  const sectionRefs = useRef<Record<T, HTMLDivElement | null>>(
-    categories.reduce((acc, cat) => {
-      acc[cat] = null;
-      return acc;
-    }, {} as Record<T, HTMLDivElement | null>)
-  );
-
+  const sectionRefs = useRef<Record<T, HTMLDivElement | null>>({} as Record<T, HTMLDivElement | null>);
   const tabsRef = useRef<HTMLDivElement>(null);
 
   function handleTabClick(tab: T) {
@@ -129,18 +121,14 @@ export function TabbedSections<T extends string = string, D = unknown>({
               className="mb-12"
             >
               <h2 className="text-lg font-semibold mb-4">{capitalize(tab)}</h2>
-              {filteredItems.length > 0 ? (
-                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-                  {filteredItems.map((item, index) => (
-                    <div key={index}>{renderItem(item)}</div>
-                  ))}
-                  {renderAfterItems && <div>{renderAfterItems()}</div>}
-                </div>
-              ) : (
-                <div className="grid grid-cols-1">
-                  {renderAfterItems && <div>{renderAfterItems()}</div>}
-                  <p className="text-black-600">Nenhum item nesta seção.</p>
-                </div>
+              <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+                {filteredItems.map((item, index) => (
+                  <div key={index}>{renderItem(item)}</div>
+                ))}
+                {renderAfterItems && <div>{renderAfterItems()}</div>}
+              </div>
+              {filteredItems.length === 0 && !renderAfterItems && (
+                <p className="text-black-600">Nenhum item nesta seção.</p>
               )}
             </div>
           );

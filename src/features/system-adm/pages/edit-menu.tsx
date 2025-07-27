@@ -8,7 +8,7 @@ import { getPratosPorCategoria } from "@/services/create-dish";
 import { getCategoriesApi } from "@/services/category-api";
 import { useAuth } from "@/contexts/auth-context";
 import { toast } from "react-toastify";
-import { ProductModal } from "../components/Product-modal"
+import { ProductModal } from "../components/product-modal";
 import { deleteDishApi } from "@/services/create-dish";
 
 interface CategoriaComPratos {
@@ -21,7 +21,6 @@ export function EditMenu() {
   const [categorias, setCategorias] = useState<CategoriaComPratos[]>([]);
   const [carregando, setCarregando] = useState(true);
   const [selectedProduct, setSelectedProduct] = useState<OrderProps | null>(null);
-
   const { token, restaurantId } = useAuth();
 
   const handleDeleteDish = async (dishId: number, categoryId: number) => {
@@ -61,9 +60,9 @@ export function EditMenu() {
               const pratosFormatados: OrderProps[] = pratosAPI.map((prato) => {
                 const urlConvertida = prato.imgUrl
                   ? prato.imgUrl.replace(
-                    "s3://upload-images-teste-1/",
-                    "https://upload-images-teste-1.s3.sa-east-1.amazonaws.com/"
-                  )
+                      "s3://upload-images-teste-1/",
+                      "https://upload-images-teste-1.s3.sa-east-1.amazonaws.com/"
+                    )
                   : "https://via.placeholder.com/150";
 
                 const menorPreco = prato.sizeOptionsPrices?.length
@@ -93,14 +92,20 @@ export function EditMenu() {
                 pratos: pratosFormatados,
               };
             } catch (error) {
+              console.error(`Erro ao carregar pratos da categoria ${categoria.name}:`, error);
               toast.error(`Falha ao carregar pratos de ${categoria.name}`);
-              return { id: categoria.Id, name: categoria.name, pratos: [] };
+              return {
+                id: categoria.Id,
+                name: categoria.name,
+                pratos: [],
+              };
             }
           })
         );
 
         setCategorias(categoriasComPratos);
       } catch (error) {
+        console.error("Erro ao carregar cardápio:", error);
         toast.error("Falha ao carregar categorias");
       } finally {
         setCarregando(false);
@@ -118,7 +123,16 @@ export function EditMenu() {
     );
   }
 
-  const todosPratos = categorias.flatMap((categoria) => categoria.pratos);
+  // Prepara os dados para o TabbedSections
+  const pratosComCategoria = categorias.flatMap(categoria => 
+    categoria.pratos.map(prato => ({
+      ...prato,
+      status: categoria.name // Garante que o status (categoria) está definido
+    }))
+  );
+
+  // Ordem das categorias
+  const ordemCategorias = categorias.map(c => c.name);
 
   return (
     <div className="bg-[#f5f5f5] min-h-screen">
@@ -127,15 +141,16 @@ export function EditMenu() {
 
       <TabbedSections
         title="Cardápio"
-        data={todosPratos}
+        data={pratosComCategoria}
         getCategory={(item) => item.status || "Sem categoria"}
+        categoriesOrder={ordemCategorias}
         renderItem={(item) => (
           <MenuItem
             key={item.id}
             {...item}
             token={token || ""}
             onClick={(produto) => setSelectedProduct(produto)}
-            onDelete={(dishId) => handleDeleteDish(dishId, item.categoryId)}
+            onDelete={(dishId) => handleDeleteDish(Number(dishId), item.categoryId)}
           />
         )}
         renderAfterItems={() => <MenuItemAdd />}
