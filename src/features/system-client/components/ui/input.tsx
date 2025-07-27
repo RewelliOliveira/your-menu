@@ -8,7 +8,7 @@ interface InputProps {
   onChange?: (e: React.ChangeEvent<HTMLInputElement>) => void;
   error?: string;
   disabled?: boolean;
-  size?: "full" | "medium" | "small"; // nova prop
+  size?: "full" | "medium" | "small"; 
 }
 
 export function Input({
@@ -19,7 +19,7 @@ export function Input({
   onChange,
   error,
   disabled = false,
-  size = "full", // padrão
+  size = "full",
 }: InputProps) {
   const sizeClasses = {
     full: "w-full",
