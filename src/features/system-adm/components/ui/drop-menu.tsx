@@ -40,9 +40,6 @@ export function DropdownMenuDemo() {
           <DropdownMenuItem onClick={() => navigate("/adm/restaurant-delivery")}>
             Configurações de entrega
           </DropdownMenuItem>
-          <DropdownMenuItem onClick={() => navigate("/adm/historico")}>
-            Histórico de pedidos
-          </DropdownMenuItem>
           <DropdownMenuItem onClick={() => navigate("/adm/add-order")}>
             Adicionar prato
           </DropdownMenuItem>

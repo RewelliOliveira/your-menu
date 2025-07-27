@@ -13,11 +13,7 @@ export function UploadLogo({ className, imageUrl, setImageFile }: UploadLogoProp
 
   useEffect(() => {
     if (!imageUrl || imageUrl.trim() === "") {
-      setPreview(null);
-      if (previewUrlRef.current) {
-        URL.revokeObjectURL(previewUrlRef.current);
-        previewUrlRef.current = null;
-      }
+      setPreview("/placeholder.svg");
     } else {
       setPreview(imageUrl);
     }
@@ -50,25 +46,18 @@ export function UploadLogo({ className, imageUrl, setImageFile }: UploadLogoProp
   }, []);
 
   return (
-    <div className="flex flex-col items-center justify-center gap-2 mt-10">
-      <div
-        className={
-          className ||
-          "w-24 h-24 rounded-full bg-gray-200 flex items-center justify-center overflow-hidden cursor-pointer"
-        }
-        onClick={triggerFileInput}
-      >
-        {preview && preview.trim() !== "" ? (
-          <img
-            src={preview}
-            alt="Logo"
-            className="object-cover w-full h-full"
-          />
-        ) : (
-          <span className="text-sm text-gray-500">Logo</span>
-        )}
-
-      </div>
+    <div
+      className={
+        className ||
+        "w-24 h-24 rounded-full bg-gray-200 flex items-center justify-center overflow-hidden cursor-pointer"
+      }
+      onClick={triggerFileInput}
+    >
+      <img
+        src={preview || "/placeholder.svg"}
+        alt="Logo"
+        className="w-full h-full object-cover"
+      />
       <input
         ref={inputRef}
         type="file"

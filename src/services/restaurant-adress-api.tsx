@@ -2,7 +2,7 @@ import { api } from "./api";
 //Post
 interface RestaurantAdressApiProps {
   restaurantId: string;
-  cep: number;
+  cep: string;
   state: string;
   city: string;
   street: string;
@@ -42,6 +42,22 @@ export async function getRestaurantAdressApi(restaurantId: string, token: string
     throw error;
   }
 }
+// GET - Buscar link do restaurante
+export async function getRestaurantLinkApi(restaurantId: string, token: string) {
+  try {
+    const response = await api.get(`/restaurant/${restaurantId}/link`, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+
+    return response.data; // { link: string }
+  } catch (error) {
+    console.error("Erro ao buscar link do restaurante:", error);
+    throw error;
+  }
+}
+
 //PUT
 export async function updateRestaurantAdressApi(data: RestaurantAdressApiProps, token: string) {
   try {

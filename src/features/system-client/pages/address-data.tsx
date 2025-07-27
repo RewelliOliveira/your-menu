@@ -1,18 +1,78 @@
 import { useDeliveryZones } from "@/hooks/useDeliveryZones";
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import { Button } from "../components/ui/button";
 import { Input } from "../components/ui/input";
 import { Select } from "../components/ui/select";
 
 export function AddressData() {
   const { zones, loading } = useDeliveryZones();
-
-  const [selectedZone, setSelectedZone] = useState("");
-
-  const selectedZoneData = zones.find((z) => z.zone === selectedZone);
-
   const navigate = useNavigate();
+  const location = useLocation();
+  const order = location.state?.order;
+  const orderItems = order?.orderItems ?? [];
+  const orderClient = order?.orderClient ?? {};
+
+  const [form, setForm] = useState({
+    street: "",
+    number: "",
+    zone: "",
+    complement: "",
+    cep: "",
+    reference: "",
+  });
+
+  const [errors, setErrors] = useState<{ cep?: string }>({});
+  const selectedZoneData = zones.find((z) => z.zone === form.zone);
+
+  const handleChange = (field: keyof typeof form, value: string) => {
+    setForm((prev) => ({ ...prev, [field]: value }));
+  };
+
+  const handleCepChange = (value: string) => {
+    const cleaned = value.replace(/\D/g, "").slice(0, 8); 
+    const masked = cleaned.replace(/^(\d{5})(\d{0,3})$/, "$1-$2"); 
+    setForm((prev) => ({ ...prev, cep: masked }));
+  };
+
+  const handleSave = () => {
+    const cleanedCep = form.cep.replace(/\D/g, "");
+
+    if (cleanedCep.length !== 8) {
+      setErrors({ cep: "O CEP deve conter exatamente 8 dígitos numéricos." });
+      return;
+    }
+
+    setErrors({});
+
+    const orderAdress = {
+      street: form.street,
+      number: form.number,
+      complement: form.complement,
+      cep: cleanedCep,
+      reference: form.reference,
+      deliveryZoneId: selectedZoneData?.id ?? 0,
+    };
+
+    localStorage.setItem("order_address", JSON.stringify(orderAdress));
+
+    navigate("/finalize-order", {
+      state: {
+        orderItems,
+        orderClient,
+        orderAdress,
+      },
+    });
+  };
+
+  const isDisabled =
+    !form.street.trim() ||
+    !form.number.trim() ||
+    !form.zone.trim() ||
+    !form.complement.trim() ||
+    !form.cep.trim() ||
+    !form.reference.trim() ||
+    loading;
 
   return (
     <section className="flex flex-col items-center justify-center w-full min-h-screen px-4 py-8 bg-white">
@@ -23,27 +83,40 @@ export function AddressData() {
 
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-6 gap-y-4">
           <Input
-            label="Rua / Logradouro"
+            label={
+              <>
+                Rua / Logradouro <span className="text-orange-600">*</span>
+              </>
+            }
             placeholder="Digite o nome da rua"
             size="full"
+            value={form.street}
+            onChange={(e) => handleChange("street", e.target.value)}
           />
           <Input
-            label="Número"
+            label={
+              <>
+                Número <span className="text-orange-600">*</span>
+              </>
+            }
             placeholder="Digite o número"
             type="number"
             size="full"
+            value={form.number}
+            onChange={(e) => handleChange("number", e.target.value)}
           />
 
-          {/* Bairro e Taxa de entrega lado a lado */}
           <div className="flex gap-4">
             <div className="w-2/3">
               <Select
                 label={
-                  <span className="text-sm font-medium text-black">Bairro</span>
+                  <>
+                    Bairro <span className="text-orange-600">*</span>
+                  </>
                 }
                 placeholder="Selecione um bairro"
-                value={selectedZone}
-                onChange={(e) => setSelectedZone(e.target.value)}
+                value={form.zone}
+                onChange={(e) => handleChange("zone", e.target.value)}
                 options={zones.map((z) => ({ value: z.zone, label: z.zone }))}
                 disabled={loading}
                 size="full"
@@ -63,15 +136,38 @@ export function AddressData() {
           </div>
 
           <Input
-            label="Complemento"
+            label={
+              <>
+                Complemento <span className="text-orange-600">*</span>
+              </>
+            }
             placeholder="Digite o complemento"
             size="full"
+            value={form.complement}
+            onChange={(e) => handleChange("complement", e.target.value)}
           />
-          <Input label="CEP" placeholder="Digite o CEP" size="full" />
           <Input
-            label="Ponto de referência"
+            label={
+              <>
+                CEP <span className="text-orange-600">*</span>
+              </>
+            }
+            placeholder="Digite o CEP"
+            size="full"
+            value={form.cep}
+            onChange={(e) => handleCepChange(e.target.value)}
+            error={errors.cep}
+          />
+          <Input
+            label={
+              <>
+                Referência <span className="text-orange-600">*</span>
+              </>
+            }
             placeholder="Digite um ponto de referência"
             size="full"
+            value={form.reference}
+            onChange={(e) => handleChange("reference", e.target.value)}
           />
         </div>
 
@@ -83,7 +179,9 @@ export function AddressData() {
           >
             Voltar
           </Button>
-          <Button type="submit">Salvar</Button>
+          <Button type="submit" onClick={handleSave} disabled={isDisabled}>
+            {loading ? "Salvando..." : "Salvar"}
+          </Button>
         </div>
       </div>
     </section>

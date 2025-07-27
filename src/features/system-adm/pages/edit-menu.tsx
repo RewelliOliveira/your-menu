@@ -4,10 +4,12 @@ import { MenuItem, OrderProps } from "../components/menu-item";
 import { MenuItemAdd } from "../components/menu-item-add";
 import { Banner } from "../components/ui/banner";
 import { TabbedSections } from "../components/ui/tabbed-sections";
-import { getPratosPorCategoria } from "@/services/create-dish";
-import { getCategoriesApi } from "@/services/category-api";
+import { getPratosPorCategoria, deleteDishApi } from "@/services/create-dish";
+import { getCategoriesApi, deleteCategoryApi } from "@/services/category-api";
 import { useAuth } from "@/contexts/auth-context";
 import { toast } from "react-toastify";
+import { ProductModal } from "../components/product-modal";
+import { ConfirmModal } from "../components/ui/confirm-modal";
 
 interface CategoriaComPratos {
   id: number;
@@ -18,7 +20,46 @@ interface CategoriaComPratos {
 export function EditMenu() {
   const [categorias, setCategorias] = useState<CategoriaComPratos[]>([]);
   const [carregando, setCarregando] = useState(true);
+  const [selectedProduct, setSelectedProduct] = useState<OrderProps | null>(null);
+  const [categoriaParaExcluir, setCategoriaParaExcluir] = useState<CategoriaComPratos | null>(null);
   const { token, restaurantId } = useAuth();
+
+  const handleDeleteDish = async (dishId: number, categoryId: number) => {
+    if (!token || !restaurantId) return;
+
+    try {
+      await deleteDishApi(restaurantId, categoryId, dishId, token);
+      setCategorias(prev => prev.map(categoria => ({
+        ...categoria,
+        pratos: categoria.pratos.filter(prato => prato.id !== dishId.toString())
+      })));
+      toast.success("Prato excluído com sucesso!");
+    } catch (error) {
+      toast.error("Erro ao excluir prato");
+      console.error(error);
+    }
+  };
+
+  const handleDeleteCategory = (categoryName: string) => {
+    const categoria = categorias.find((c) => c.name === categoryName);
+    if (!categoria) return;
+    setCategoriaParaExcluir(categoria);
+  };
+
+  const confirmDeleteCategory = async () => {
+    if (!token || !restaurantId || !categoriaParaExcluir) return;
+
+    try {
+      await deleteCategoryApi(restaurantId, categoriaParaExcluir.id, token);
+      setCategorias(prev => prev.filter(c => c.id !== categoriaParaExcluir.id));
+      toast.success("Categoria excluída com sucesso!");
+    } catch (error) {
+      toast.error("Erro ao excluir categoria");
+      console.error(error);
+    } finally {
+      setCategoriaParaExcluir(null);
+    }
+  };
 
   useEffect(() => {
     async function carregarCardapio() {
@@ -38,7 +79,6 @@ export function EditMenu() {
                 token
               );
 
-              // Mapeia pratos mantendo cada prato com todos seus tamanhos
               const pratosFormatados: OrderProps[] = pratosAPI.map((prato) => {
                 const urlConvertida = prato.imgUrl
                   ? prato.imgUrl.replace(
@@ -47,8 +87,7 @@ export function EditMenu() {
                     )
                   : "https://via.placeholder.com/150";
 
-                // Pega o menor preço para exibir como preço base (opcional)
-                const menorPreco = prato.sizeOptionsPrices && prato.sizeOptionsPrices.length > 0
+                const menorPreco = prato.sizeOptionsPrices?.length
                   ? Math.min(...prato.sizeOptionsPrices.map((op) => op.price))
                   : 0;
 
@@ -60,6 +99,8 @@ export function EditMenu() {
                   foodImg: urlConvertida,
                   status: categoria.name,
                   isAvailable: prato.isAvailable,
+                  restaurantId: restaurantId,
+                  categoryId: categoria.Id,
                   sizeOptions: prato.sizeOptionsPrices?.map((opcao) => ({
                     size: opcao.measureUnit,
                     price: opcao.price.toFixed(2),
@@ -73,10 +114,7 @@ export function EditMenu() {
                 pratos: pratosFormatados,
               };
             } catch (error) {
-              console.error(
-                `Erro ao carregar pratos da categoria ${categoria.name}:`,
-                error
-              );
+              console.error(`Erro ao carregar pratos da categoria ${categoria.name}:`, error);
               toast.error(`Falha ao carregar pratos de ${categoria.name}`);
               return {
                 id: categoria.Id,
@@ -107,7 +145,14 @@ export function EditMenu() {
     );
   }
 
-  const todosPratos = categorias.flatMap((categoria) => categoria.pratos);
+  const pratosComCategoria = categorias.flatMap(categoria => 
+    categoria.pratos.map(prato => ({
+      ...prato,
+      status: categoria.name
+    }))
+  );
+
+  const ordemCategorias = categorias.map(c => c.name);
 
   return (
     <div className="bg-[#f5f5f5] min-h-screen">
@@ -116,22 +161,38 @@ export function EditMenu() {
 
       <TabbedSections
         title="Cardápio"
-        data={todosPratos}
+        data={pratosComCategoria}
         getCategory={(item) => item.status || "Sem categoria"}
+        categoriesOrder={ordemCategorias}
         renderItem={(item) => (
           <MenuItem
             key={item.id}
-            id={item.id}
-            name={item.name}
-            description={item.description}
-            price={item.price}
-            foodImg={item.foodImg}
-            status={item.status}
-            sizeOptions={item.sizeOptions}
+            {...item}
+            token={token || ""}
+            onClick={(produto) => setSelectedProduct(produto)}
+            onDelete={(dishId) => handleDeleteDish(Number(dishId), item.categoryId)}
           />
         )}
         renderAfterItems={() => <MenuItemAdd />}
+        onDeleteCategory={handleDeleteCategory}
       />
+
+      {selectedProduct && (
+        <ProductModal
+          produto={selectedProduct}
+          onClose={() => setSelectedProduct(null)}
+        />
+      )}
+
+      {categoriaParaExcluir && (
+        <ConfirmModal
+          title="Excluir categoria"
+          content={`Tem certeza que deseja excluir a categoria "${categoriaParaExcluir.name}"?`}
+          buttonmsg="Excluir"
+          onConfirm={confirmDeleteCategory}
+          onCancel={() => setCategoriaParaExcluir(null)}
+        />
+      )}
     </div>
   );
 }

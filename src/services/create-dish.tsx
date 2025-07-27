@@ -19,7 +19,6 @@ export async function createDishApi(
   categoryId: number,
   data: CreateDishPayload,
   token: string
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
 ): Promise<any> {
   try {
     const formData = new FormData();
@@ -86,6 +85,30 @@ export async function getPratosPorCategoria(
     return response.data;
   } catch (error) {
     console.error(`Erro ao buscar pratos da categoria ${categoryId}:`, error);
+    throw error;
+  }
+}
+// DELETE
+export async function deleteDishApi(
+  restaurantId: string,
+  categoryId: number,
+  dishId: number,
+  token: string
+): Promise<void> {
+  try {
+    await api.delete(
+      `/restaurant/${restaurantId}/category/${categoryId}/dish/${dishId}`,
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    );
+  } catch (error) {
+    console.error(
+      `Erro ao deletar prato ${dishId} da categoria ${categoryId}:`,
+      error
+    );
     throw error;
   }
 }
