@@ -60,7 +60,7 @@ export function MenuItem(order: OrderProps) {
 
   return (
     <>
-      <div className="flex flex-col bg-white w-55 h-60 m-4 rounded-xl shadow-lg transition-all duration-300 hover:shadow-xl hover:scale-[1.02]">
+      <div className="flex flex-col bg-white w-55 min-h-60 m-4 rounded-xl shadow-lg transition-all duration-300 hover:shadow-xl hover:scale-[1.02]">
         <img
           src={order.foodImg || "placeholder.svg"}
           alt={order.name || "Imagem do prato"}
@@ -109,11 +109,10 @@ export function MenuItem(order: OrderProps) {
                   <button
                     key={idx}
                     onClick={() => setSelectedSize(opt)}
-                    className={`px-4 py-2 border rounded-full transition-all duration-200 ${
-                      selectedSize?.size === opt.size
-                        ? "bg-green-600 text-white border-green-700"
-                        : "bg-white text-gray-700 hover:bg-gray-100"
-                    }`}
+                    className={`px-4 py-2 border rounded-full transition-all duration-200 ${selectedSize?.size === opt.size
+                      ? "bg-green-600 text-white border-green-700"
+                      : "bg-white text-gray-700 hover:bg-gray-100"
+                      }`}
                   >
                     {opt.size} - R$ {opt.price.replace(".", ",")}
                   </button>
@@ -133,11 +132,10 @@ export function MenuItem(order: OrderProps) {
               <button
                 disabled={!selectedSize}
                 onClick={handleConfirm}
-                className={`px-4 py-2 rounded text-white ${
-                  selectedSize
-                    ? "bg-green-600 hover:bg-green-700"
-                    : "bg-gray-400 cursor-not-allowed"
-                }`}
+                className={`px-4 py-2 rounded text-white ${selectedSize
+                  ? "bg-green-600 hover:bg-green-700"
+                  : "bg-gray-400 cursor-not-allowed"
+                  }`}
               >
                 Confirmar
               </button>

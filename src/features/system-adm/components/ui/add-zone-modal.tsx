@@ -9,6 +9,18 @@ interface AddZoneModalProps {
   editData?: { zone: string; valor: string };
 }
 
+// Função para aplicar a máscara de moeda brasileira
+function formatCurrency(value: string): string {
+  const cleanValue = value.replace(/\D/g, "");
+  const numericValue = (parseInt(cleanValue, 10) / 100).toFixed(2);
+  return `R$ ${numericValue.replace(".", ",")}`;
+}
+
+// Função para remover a máscara e retornar apenas o número
+function unformatCurrency(value: string): string {
+  return value.replace(/[R$\s.]/g, "").replace(",", ".");
+}
+
 export function AddZoneModal({ isOpen, onClose, onAdd, editData }: AddZoneModalProps) {
   const [zone, setZone] = useState("");
   const [valor, setValor] = useState("");
@@ -19,7 +31,7 @@ export function AddZoneModal({ isOpen, onClose, onAdd, editData }: AddZoneModalP
       document.body.style.overflow = "hidden";
       if (editData) {
         setZone(editData.zone);
-        setValor(editData.valor);
+        setValor(formatCurrency(editData.valor));
       } else {
         setZone("");
         setValor("");
@@ -35,6 +47,14 @@ export function AddZoneModal({ isOpen, onClose, onAdd, editData }: AddZoneModalP
 
   if (!isOpen) return null;
 
+  const handleChangeValor = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const input = e.target.value;
+    const cleanInput = input.replace(/\D/g, "");
+    if (cleanInput.length > 10) return; // limite de 99999999,99
+    const formatted = formatCurrency(input);
+    setValor(formatted);
+  };
+
   const handleSubmit = async () => {
     if (!zone || !valor) {
       alert("Preencha todos os campos");
@@ -44,7 +64,8 @@ export function AddZoneModal({ isOpen, onClose, onAdd, editData }: AddZoneModalP
     if (saving) return;
 
     setSaving(true);
-    await onAdd(zone, valor);
+    const valorSemFormatacao = unformatCurrency(valor);
+    await onAdd(zone, valorSemFormatacao);
     setSaving(false);
     onClose();
   };
@@ -62,7 +83,12 @@ export function AddZoneModal({ isOpen, onClose, onAdd, editData }: AddZoneModalP
           {editData ? "Editar zona" : "Adicionar nova zona"}
         </h2>
         <Input label="Local" value={zone} onChange={(e) => setZone(e.target.value)} />
-        <Input label="Valor" value={valor} onChange={(e) => setValor(e.target.value)} />
+        <Input
+          label="Valor"
+          value={valor}
+          onChange={handleChangeValor}
+          placeholder="R$ 0,00"
+        />
 
         <div className="flex justify-end gap-2 mt-8 w-full">
           <div className="flex gap-2">

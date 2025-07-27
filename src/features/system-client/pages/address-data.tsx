@@ -29,6 +29,12 @@ export function AddressData() {
     setForm((prev) => ({ ...prev, [field]: value }));
   };
 
+  const handleCepChange = (value: string) => {
+    const cleaned = value.replace(/\D/g, "").slice(0, 8); 
+    const masked = cleaned.replace(/^(\d{5})(\d{0,3})$/, "$1-$2"); 
+    setForm((prev) => ({ ...prev, cep: masked }));
+  };
+
   const handleSave = () => {
     const cleanedCep = form.cep.replace(/\D/g, "");
 
@@ -149,7 +155,7 @@ export function AddressData() {
             placeholder="Digite o CEP"
             size="full"
             value={form.cep}
-            onChange={(e) => handleChange("cep", e.target.value)}
+            onChange={(e) => handleCepChange(e.target.value)}
             error={errors.cep}
           />
           <Input
