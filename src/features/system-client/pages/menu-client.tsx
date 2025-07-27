@@ -1,12 +1,12 @@
-import { useAuth } from "@/contexts/auth-context";
-import { TabbedSections } from "@/features/system-adm/components/ui/tabbed-sections";
-import { getCategoriesApi } from "@/services/category-api";
-import { getPratosPorCategoria } from "@/services/create-dish";
 import { useEffect, useState } from "react";
 import { toast } from "react-toastify";
+import { useAuth } from "@/contexts/auth-context";
 import { Header } from "../components/header";
 import { Banner } from "../components/ui/banner";
 import { MenuItem, OrderProps } from "../components/ui/menu-item";
+import { TabbedSections } from "@/features/system-adm/components/ui/tabbed-sections";
+import { getCategoriesApi } from "@/services/category-api";
+import { getPratosPorCategoria } from "@/services/create-dish";
 
 interface CategoriaComPratos {
   id: number;
@@ -50,8 +50,7 @@ export function MenuClient() {
                   name: prato.name,
                   description: prato.description,
                   price:
-                    prato.sizeOptionsPrices &&
-                    prato.sizeOptionsPrices.length > 0
+                    prato.sizeOptionsPrices && prato.sizeOptionsPrices.length > 0
                       ? prato.sizeOptionsPrices[0].price.toFixed(2)
                       : "0.00",
                   foodImg: urlConvertida,
@@ -59,7 +58,7 @@ export function MenuClient() {
                   isAvailable: prato.isAvailable,
                   sizeOptions:
                     prato.sizeOptionsPrices?.map((opcao) => ({
-                      id: opcao.dishSizeOptionId, // Add the id property
+                      id: opcao.dishSizeOptionId,
                       size: opcao.measureUnit,
                       price: opcao.price.toFixed(2),
                     })) || [],
@@ -112,7 +111,6 @@ export function MenuClient() {
     <div className="bg-[#f5f5f5] min-h-screen">
       <Header />
       <Banner />
-
       <TabbedSections
         title="Cardápio"
         data={todosPratos}
