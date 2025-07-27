@@ -25,7 +25,6 @@ export function PersonalData() {
     if (validate()) {
       setIsLoading(true);
       try {
-        // ...submit logic...
         const updateOrder = {
           ...order,
           orderClient: {
@@ -34,7 +33,7 @@ export function PersonalData() {
           },
         };
         toast.success("Dados enviados com sucesso!");
-        navigate("/address-data", { state: { order: updateOrder } }); // Redireciona após sucesso
+        navigate("/address-data", { state: { order: updateOrder } });
       } catch {
         toast.error("Erro ao enviar dados");
       } finally {
@@ -46,7 +45,6 @@ export function PersonalData() {
   const handleRetirar = async () => {
     setIsLoading(true);
     try {
-      // ...submit logic...
       toast.info("Opção: Retirar no Balcão");
     } catch {
       toast.error("Erro ao processar opção");

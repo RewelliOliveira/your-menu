@@ -6,7 +6,7 @@ import { toast } from "react-toastify";
 export type OrderProps = {
   id: number | string;
   sizeOptions?: {
-    id?: number; // deixado como opcional para casos de dados antigos
+    id?: number;
     size: string;
     price: string;
   }[];

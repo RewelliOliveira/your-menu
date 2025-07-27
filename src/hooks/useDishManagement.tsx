@@ -90,7 +90,8 @@ export function useDishManagement(token: string, restaurantId: string) {
     }
 
     const sizeOptionIdNum = Number(selectedSizeId);
-    const priceNum = Number(price);
+
+    const priceNum = parseFloat(price.replace(',', '.'));
 
     if (isNaN(priceNum)) {
       toast.warn('Informe um preço válido');

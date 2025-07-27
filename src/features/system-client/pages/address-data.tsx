@@ -30,14 +30,14 @@ export function AddressData() {
   };
 
   const handleSave = () => {
-    const cleanedCep = form.cep.replace(/\D/g, ""); // remove qualquer caractere não numérico
+    const cleanedCep = form.cep.replace(/\D/g, "");
 
     if (cleanedCep.length !== 8) {
       setErrors({ cep: "O CEP deve conter exatamente 8 dígitos numéricos." });
       return;
     }
 
-    setErrors({}); // limpa os erros
+    setErrors({});
 
     const orderAdress = {
       street: form.street,
@@ -100,7 +100,6 @@ export function AddressData() {
             onChange={(e) => handleChange("number", e.target.value)}
           />
 
-          {/* Bairro e Taxa de entrega lado a lado */}
           <div className="flex gap-4">
             <div className="w-2/3">
               <Select
