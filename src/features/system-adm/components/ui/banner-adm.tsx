@@ -12,8 +12,8 @@ interface BannerAdmProps {
 
 interface BannerData {
   title: string;
-  logoUrl: string | null;
-  backgroundUrl: string | null;
+  logoUrl: string;
+  backgroundUrl: string;
   estimatedTime: string;
   isOpen: boolean;
 }
@@ -27,11 +27,11 @@ export const BannerAdm: React.FC<BannerAdmProps> = ({
   setBannerPicFile,
 }) => {
   const [data, setData] = useState<BannerData>({
-    title: '',
-    logoUrl: null,
-    backgroundUrl: null,
-    estimatedTime: '',
-    isOpen: false,
+    title: 'Restaurante',
+    logoUrl: '/placeholder.svg',
+    backgroundUrl: '/placeholder.svg',
+    estimatedTime: '30-45 min',
+    isOpen: true,
   });
 
   useEffect(() => {
@@ -39,30 +39,25 @@ export const BannerAdm: React.FC<BannerAdmProps> = ({
       ? URL.createObjectURL(profilePicFile)
       : profilePicUrl && profilePicUrl.trim() !== ''
         ? profilePicUrl
-        : null;
+        : '/placeholder.svg';
 
     const backgroundUrl = bannerPicFile
       ? URL.createObjectURL(bannerPicFile)
       : bannerPicUrl && bannerPicUrl.trim() !== ''
         ? bannerPicUrl
-        : null;
+        : '/placeholder.svg';
 
-    // console.log('BannerAdm -> logoUrl:', logoUrl);
-    // console.log('BannerAdm -> backgroundUrl:', backgroundUrl);
-
-    setData({
-      title: 'Restaurante',
+    setData((prev) => ({
+      ...prev,
       logoUrl,
       backgroundUrl,
-      estimatedTime: '30-45 min',
-      isOpen: true,
-    });
+    }));
 
     return () => {
-      if (profilePicFile && logoUrl && logoUrl.startsWith('blob:')) {
+      if (profilePicFile && logoUrl.startsWith('blob:')) {
         URL.revokeObjectURL(logoUrl);
       }
-      if (bannerPicFile && backgroundUrl && backgroundUrl.startsWith('blob:')) {
+      if (bannerPicFile && backgroundUrl.startsWith('blob:')) {
         URL.revokeObjectURL(backgroundUrl);
       }
     };
@@ -70,18 +65,21 @@ export const BannerAdm: React.FC<BannerAdmProps> = ({
 
   return (
     <div className="relative w-full h-60 bg-black text-white flex items-center justify-center">
+      {/* Banner de fundo */}
       <UploadLogo
         className="absolute top-0 left-0 w-full h-full object-cover opacity-50"
-        imageUrl={data.backgroundUrl || null}
+        imageUrl={data.backgroundUrl}
         setImageFile={setBannerPicFile}
       />
 
       <div className="relative z-10 flex flex-col items-center">
-        <UploadLogo
-          imageUrl={data.logoUrl || null}
-          setImageFile={setProfilePicFile}
-          className="w-24 h-24 rounded-full"
-        />
+        <div className="w-24 h-24 rounded-full bg-gray-200 flex items-center justify-center overflow-hidden mb-2">
+          <UploadLogo
+            imageUrl={data.logoUrl}
+            setImageFile={setProfilePicFile}
+            className="object-cover w-full h-full"
+          />
+        </div>
 
         <h2 className="text-xl font-bold">{data.title}</h2>
 
