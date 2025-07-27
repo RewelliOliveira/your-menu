@@ -1,10 +1,12 @@
 import { useState } from "react";
 import { Icon } from "@iconify/react";
 import { useNavigate } from "react-router-dom";
+import { toast } from "react-toastify";
 
 export type OrderProps = {
   id: number | string;
   sizeOptions?: {
+    id?: number;
     size: string;
     price: string;
   }[];
@@ -17,7 +19,11 @@ export type OrderProps = {
 
 export function MenuItem(order: OrderProps) {
   const [showModal, setShowModal] = useState(false);
-  const [selectedSize, setSelectedSize] = useState<string | null>(null);
+  const [selectedSize, setSelectedSize] = useState<{
+    id?: number;
+    size: string;
+    price: string;
+  } | null>(null);
   const navigate = useNavigate();
 
   const handleBuy = () => {
@@ -25,9 +31,31 @@ export function MenuItem(order: OrderProps) {
   };
 
   const handleConfirm = () => {
-    if (!selectedSize) return alert("Selecione um tamanho!");
-    navigate("check-order");
+    if (!selectedSize) {
+      toast.error("Selecione um tamanho!");
+      return;
+    }
+
+    const orderData = {
+      orderItems: [
+        {
+          id: Number(new Date()),
+          dishId: order.id,
+          dishName: order.name,
+          foodImg: order.foodImg,
+          sizeOption: {
+            id: selectedSize.id,
+            magnitude: selectedSize.size,
+          },
+          quantity: 1,
+          price: parseFloat(selectedSize.price),
+        },
+      ],
+      price: parseFloat(selectedSize.price),
+    };
+
     setShowModal(false);
+    navigate("/check-order", { state: { item: orderData } });
   };
 
   return (
@@ -45,7 +73,7 @@ export function MenuItem(order: OrderProps) {
             {order.description || "Descrição do prato"}
           </p>
           <div className="flex justify-between items-end flex-1 mt-2">
-            <p className="font-semibold">R${order.price || " --,--"}</p>
+            <p className="font-semibold">R$ {order.price || "--,--"}</p>
             <button
               onClick={handleBuy}
               type="button"
@@ -61,7 +89,6 @@ export function MenuItem(order: OrderProps) {
         </div>
       </div>
 
-      {/* Modal */}
       {showModal && (
         <div
           onClick={() => setShowModal(false)}
@@ -81,11 +108,12 @@ export function MenuItem(order: OrderProps) {
                 order.sizeOptions.map((opt, idx) => (
                   <button
                     key={idx}
-                    onClick={() => setSelectedSize(opt.size)}
-                    className={`px-4 py-2 border rounded-full transition-all duration-200 ${selectedSize === opt.size
-                      ? "bg-green-600 text-white border-green-700"
-                      : "bg-white text-gray-700 hover:bg-gray-100"
-                      }`}
+                    onClick={() => setSelectedSize(opt)}
+                    className={`px-4 py-2 border rounded-full transition-all duration-200 ${
+                      selectedSize?.size === opt.size
+                        ? "bg-green-600 text-white border-green-700"
+                        : "bg-white text-gray-700 hover:bg-gray-100"
+                    }`}
                   >
                     {opt.size} - R$ {opt.price.replace(".", ",")}
                   </button>
@@ -105,10 +133,11 @@ export function MenuItem(order: OrderProps) {
               <button
                 disabled={!selectedSize}
                 onClick={handleConfirm}
-                className={`px-4 py-2 rounded text-white ${selectedSize
-                  ? "bg-green-600 hover:bg-green-700"
-                  : "bg-gray-400 cursor-not-allowed"
-                  }`}
+                className={`px-4 py-2 rounded text-white ${
+                  selectedSize
+                    ? "bg-green-600 hover:bg-green-700"
+                    : "bg-gray-400 cursor-not-allowed"
+                }`}
               >
                 Confirmar
               </button>
