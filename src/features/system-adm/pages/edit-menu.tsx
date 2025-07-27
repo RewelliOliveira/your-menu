@@ -4,12 +4,12 @@ import { MenuItem, OrderProps } from "../components/menu-item";
 import { MenuItemAdd } from "../components/menu-item-add";
 import { Banner } from "../components/ui/banner";
 import { TabbedSections } from "../components/ui/tabbed-sections";
-import { getPratosPorCategoria } from "@/services/create-dish";
-import { getCategoriesApi } from "@/services/category-api";
+import { getPratosPorCategoria, deleteDishApi } from "@/services/create-dish";
+import { getCategoriesApi, deleteCategoryApi } from "@/services/category-api";
 import { useAuth } from "@/contexts/auth-context";
 import { toast } from "react-toastify";
 import { ProductModal } from "../components/product-modal";
-import { deleteDishApi } from "@/services/create-dish";
+import { ConfirmModal } from "../components/ui/confirm-modal";
 
 interface CategoriaComPratos {
   id: number;
@@ -21,6 +21,7 @@ export function EditMenu() {
   const [categorias, setCategorias] = useState<CategoriaComPratos[]>([]);
   const [carregando, setCarregando] = useState(true);
   const [selectedProduct, setSelectedProduct] = useState<OrderProps | null>(null);
+  const [categoriaParaExcluir, setCategoriaParaExcluir] = useState<CategoriaComPratos | null>(null);
   const { token, restaurantId } = useAuth();
 
   const handleDeleteDish = async (dishId: number, categoryId: number) => {
@@ -36,6 +37,27 @@ export function EditMenu() {
     } catch (error) {
       toast.error("Erro ao excluir prato");
       console.error(error);
+    }
+  };
+
+  const handleDeleteCategory = (categoryName: string) => {
+    const categoria = categorias.find((c) => c.name === categoryName);
+    if (!categoria) return;
+    setCategoriaParaExcluir(categoria);
+  };
+
+  const confirmDeleteCategory = async () => {
+    if (!token || !restaurantId || !categoriaParaExcluir) return;
+
+    try {
+      await deleteCategoryApi(restaurantId, categoriaParaExcluir.id, token);
+      setCategorias(prev => prev.filter(c => c.id !== categoriaParaExcluir.id));
+      toast.success("Categoria excluída com sucesso!");
+    } catch (error) {
+      toast.error("Erro ao excluir categoria");
+      console.error(error);
+    } finally {
+      setCategoriaParaExcluir(null);
     }
   };
 
@@ -123,15 +145,13 @@ export function EditMenu() {
     );
   }
 
-  // Prepara os dados para o TabbedSections
   const pratosComCategoria = categorias.flatMap(categoria => 
     categoria.pratos.map(prato => ({
       ...prato,
-      status: categoria.name // Garante que o status (categoria) está definido
+      status: categoria.name
     }))
   );
 
-  // Ordem das categorias
   const ordemCategorias = categorias.map(c => c.name);
 
   return (
@@ -154,12 +174,23 @@ export function EditMenu() {
           />
         )}
         renderAfterItems={() => <MenuItemAdd />}
+        onDeleteCategory={handleDeleteCategory}
       />
 
       {selectedProduct && (
         <ProductModal
           produto={selectedProduct}
           onClose={() => setSelectedProduct(null)}
+        />
+      )}
+
+      {categoriaParaExcluir && (
+        <ConfirmModal
+          title="Excluir categoria"
+          content={`Tem certeza que deseja excluir a categoria "${categoriaParaExcluir.name}"?`}
+          buttonmsg="Excluir"
+          onConfirm={confirmDeleteCategory}
+          onCancel={() => setCategoriaParaExcluir(null)}
         />
       )}
     </div>

@@ -8,6 +8,7 @@ export type TabbedSectionsProps<T extends string = string, D = unknown> = {
   getCategory: (item: D) => T;
   renderAfterItems?: () => React.ReactNode;
   categoriesOrder?: T[];
+  onDeleteCategory?: (category: T) => void;
 };
 
 export function TabbedSections<T extends string = string, D = unknown>({
@@ -18,6 +19,7 @@ export function TabbedSections<T extends string = string, D = unknown>({
   renderAfterItems,
   onlyTitle = false,
   categoriesOrder,
+  onDeleteCategory,
 }: TabbedSectionsProps<T, D>) {
   const categories = useMemo(() => {
     if (categoriesOrder?.length) {
@@ -88,23 +90,38 @@ export function TabbedSections<T extends string = string, D = unknown>({
             {categories.map((tab) => {
               const isSelected = selectedTab === tab;
               return (
-                <button
-                  key={tab}
-                  onClick={() => handleTabClick(tab)}
-                  className={`flex-1 text-center py-2 font-medium transition-colors duration-200 text-black
-                    ${
-                      isSticky
-                        ? isSelected
-                          ? "border-b-4 border-orange-500"
-                          : "border-b-2 border-black"
-                        : isSelected
-                        ? "border-t-4 border-orange-500"
-                        : "border-t-2 border-black"
-                    }
-                  `}
-                >
-                  {capitalize(tab)}
-                </button>
+                <div key={tab} className="flex-1">
+                  <div className="relative">
+                    <button
+                      onClick={() => handleTabClick(tab)}
+                      className={`w-full text-center py-2 font-medium transition-colors duration-200 text-black
+                        ${
+                          isSticky
+                            ? isSelected
+                              ? "border-b-4 border-orange-500"
+                              : "border-b-2 border-black"
+                            : isSelected
+                            ? "border-t-4 border-orange-500"
+                            : "border-t-2 border-black"
+                        }
+                      `}
+                    >
+                      {capitalize(tab)}
+                    </button>
+                    {onDeleteCategory && (
+                      <button
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          onDeleteCategory(tab);
+                        }}
+                        className="absolute top-1 right-1 text-red-600 font-bold"
+                        title="Excluir categoria"
+                      >
+                        ×
+                      </button>
+                    )}
+                  </div>
+                </div>
               );
             })}
           </div>
