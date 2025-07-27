@@ -10,7 +10,8 @@ import { useDishManagement } from '@/hooks/useDishManagement';
 import { useImageHandler } from '@/hooks/useImageHandler';
 import { useNavigate, useParams } from 'react-router-dom';
 import { useState, useEffect } from 'react';
-import { updateDishApi, getDishDetails } from '@/services/update-dish';
+import { updateDishApi } from '@/services/update-dish';
+import { getPratosPorCategoria } from '@/services/create-dish';
 
 export function EditOrder() {
     const { token, restaurantId } = useAuth();
@@ -21,7 +22,6 @@ export function EditOrder() {
     const [itemDescription, setItemDescription] = useState('');
     const [isAvailable, setIsAvailable] = useState(true);
     const [isLoadingDish, setIsLoadingDish] = useState(true);
-    const [initialLoadComplete, setInitialLoadComplete] = useState(false);
 
     const handleToggleAvailable = () => setIsAvailable(prev => !prev);
 
@@ -48,39 +48,39 @@ export function EditOrder() {
     } = useImageHandler();
 
     useEffect(() => {
-        const loadDishData = async () => {
-            if (!dishId || !restaurantId || !token) {
-                toast.error('ID do prato inválido');
-                navigate("/adm/edit-menu");
-                return;
-            }
+        const loadDish = async () => {
+            if (!token || !restaurantId || !dishId) return;
 
             try {
                 setIsLoadingDish(true);
-                const dishData = await getDishDetails(restaurantId, Number(dishId), token);
 
-                // Preenche os estados com os dados do prato
-                setItemName(dishData.name);
-                setItemDescription(dishData.description || '');
-                setIsAvailable(dishData.isAvailable);
-                setSelectedCategoryId(String(dishData.categoryId));
-                setSizeOptionsPrices(dishData.sizeOptionsPrices || []);
+                for (const category of categoryOptions) {
+                    const pratos = await getPratosPorCategoria(restaurantId, Number(category.value), token);
+                    const prato = pratos.find(p => p.id === Number(dishId));
 
-                if (dishData.imgUrl) {
-                    setImgPreview(dishData.imgUrl);
+                    if (prato) {
+                        setItemName(prato.name);
+                        setItemDescription(prato.description);
+                        setIsAvailable(prato.isAvailable);
+                        setSelectedCategoryId(String(prato.categoryId));
+                        setSizeOptionsPrices(prato.sizeOptionsPrices || []);
+                        if (prato.imgUrl) {
+                            setImgPreview(prato.imgUrl);
+                        }
+                        break;
+                    }
                 }
             } catch (error) {
-                console.error("Erro ao carregar prato:", error);
+                console.error('Erro ao carregar prato:', error);
                 toast.error('Erro ao carregar dados do prato');
-                navigate("/adm/edit-menu");
+                navigate('/adm/edit-menu');
             } finally {
                 setIsLoadingDish(false);
-                setInitialLoadComplete(true);
             }
         };
 
-        loadDishData();
-    }, [dishId, restaurantId, token, navigate]);
+        loadDish();
+    }, [token, restaurantId, dishId, categoryOptions]);
 
     async function handleUpdateDish() {
         if (!dishId || isNaN(Number(dishId))) {
@@ -133,9 +133,10 @@ export function EditOrder() {
         return <p className="text-center py-8">Carregando dados do restaurante...</p>;
     }
 
-    if (isLoadingDish || !initialLoadComplete) {
+    if (isLoadingDish) {
         return <p className="text-center py-8">Carregando dados do prato...</p>;
     }
+
 
     return (
         <section className="bg-[#f5f5f5]">
@@ -192,7 +193,6 @@ export function EditOrder() {
                                 onClick={handleToggleAvailable}
                                 className={`w-14 h-7 flex items-center rounded-full p-1 transition-all ${isAvailable ? "bg-green-500" : "bg-gray-300"}`}
                                 type="button"
-                                aria-label={isAvailable ? "Desativar produto" : "Ativar produto"}
                             >
                                 <div className={`bg-white w-5 h-5 rounded-full shadow-sm transform transition-all ${isAvailable ? "translate-x-7" : ""}`} />
                             </button>
@@ -203,7 +203,7 @@ export function EditOrder() {
                     </div>
 
                     <div className="flex flex-col gap-6 p-4 bg-white rounded-lg shadow">
-                        <div className="flex gap-4 ">
+                        <div className="flex gap-4">
                             <div className="flex-1 min-w-[200px]">
                                 <label className="block text-sm font-medium text-gray-700 mb-1">Categoria</label>
                                 <SelectDay
@@ -225,13 +225,18 @@ export function EditOrder() {
                             <div>
                                 <label className="block text-sm font-medium text-gray-700 mb-1">Preço (R$)</label>
                                 <input
-                                    type="number"
-                                    placeholder="0.00"
+                                    type="text"
+                                    placeholder="0,00"
                                     value={price}
-                                    onChange={(e) => setPrice(e.target.value)}
+                                    onChange={(e) => {
+                                        const formatCurrencyInput = (value: string) => {
+                                            const numeric = value.replace(/\D/g, ""); // remove tudo que não for número
+                                            const cents = (Number(numeric) / 100).toFixed(2);
+                                            return cents.replace(".", ",");
+                                        };
+                                        setPrice(formatCurrencyInput(e.target.value));
+                                    }}
                                     className="border border-gray-300 rounded-md px-3 py-1 w-24 focus:ring-2 focus:ring-green-500 focus:border-green-500"
-                                    min="0"
-                                    step="0.01"
                                 />
                             </div>
 
