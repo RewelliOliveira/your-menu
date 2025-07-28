@@ -43,9 +43,37 @@ export function PersonalData() {
   };
 
   const handleRetirar = async () => {
+    const cleanedPhone = form.celular.replace(/\D/g, "");
+
+    if (
+      !form.nome.trim() ||
+      cleanedPhone.length < 10 ||
+      cleanedPhone.length > 11
+    ) {
+      toast.error("Preencha os campos obrigatórios corretamente");
+      return;
+    }
+
     setIsLoading(true);
     try {
-      toast.info("Opção: Retirar no Balcão");
+      const updateOrder = {
+        ...order,
+        orderClient: {
+          name: form.nome,
+          phone: cleanedPhone,
+        },
+        orderAdress: {
+          deliveryZoneId: 1,
+          street: "-",
+          number: "0",
+          complement: "-",
+          cep: "00000000",
+          reference: "-",
+        },
+      };
+
+      toast.success("Opção: Retirar no Balcão");
+      navigate("/finalize-order", { state: updateOrder });
     } catch {
       toast.error("Erro ao processar opção");
     } finally {
