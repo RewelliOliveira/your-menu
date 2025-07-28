@@ -40,6 +40,9 @@ export function FinalizeOrder() {
 
     createOrderApi(token, payload)
       .then((res) => {
+        localStorage.removeItem("orderItems");
+        localStorage.removeItem("orderClient");
+        localStorage.removeItem("orderAdress");
         toast.success(`Pedido criado com sucesso! ID: ${res.orderId}`);
         navigate("/payment");
       })
