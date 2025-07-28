@@ -48,7 +48,8 @@ export function FinalizeOrder() {
       })
       .catch((err) => {
         console.error(err);
-        toast.error("Erro ao criar pedido");
+        toast.error("Número ou CEP inválidos");
+        navigate("/");
       });
   }, [orderItems, orderClient, orderAdress, restaurantId, token]);
 
