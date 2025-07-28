@@ -1,6 +1,6 @@
 import { useAuth } from "@/contexts/auth-context";
 import { createOrderApi } from "@/services/ordersService";
-import { useEffect } from "react";
+import { useEffect, useRef } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 
@@ -8,10 +8,13 @@ export function FinalizeOrder() {
   const { token, restaurantId } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
+  const hasPosted = useRef(false);
 
   const { orderItems, orderClient, orderAdress } = location.state ?? {};
 
   useEffect(() => {
+    if (hasPosted.current) return;
+    hasPosted.current = true;
     if (
       !orderItems ||
       !orderClient ||
