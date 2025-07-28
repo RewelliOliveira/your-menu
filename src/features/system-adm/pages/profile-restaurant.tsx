@@ -234,7 +234,7 @@ export function ProfileRestaurant() {
                 />
 
                 <DeliveryInput
-                  label="Intervalo de entrega*"
+                  label="Intervalo de entrega (em minutos)*"
                   deliveryTimeMin={deliveryTimeMin}
                   deliveryTimeMax={deliveryTimeMax}
                   onChangeMin={setDeliveryTimeMin}
