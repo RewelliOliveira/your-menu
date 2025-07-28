@@ -1,12 +1,13 @@
 import { useEffect, useState } from "react";
+import { useParams } from "react-router-dom";
 import { toast } from "react-toastify";
-import { useAuth } from "@/contexts/auth-context";
 import { Header } from "../components/header";
 import { Banner } from "../components/ui/banner";
 import { MenuItem, OrderProps } from "../components/ui/menu-item";
 import { TabbedSections } from "@/features/system-adm/components/ui/tabbed-sections";
 import { getCategoriesApi } from "@/services/category-api";
 import { getPratosPorCategoria } from "@/services/create-dish";
+import { useAuth } from "@/contexts/auth-context";
 
 interface CategoriaComPratos {
   id: number;
@@ -15,9 +16,10 @@ interface CategoriaComPratos {
 }
 
 export function MenuClient() {
-  const [categorias, setCategorias] = useState<CategoriaComPratos[]>([]);
-  const [carregando, setCarregando] = useState(true);
-  const { token, restaurantId } = useAuth();
+const { restaurantId } = useParams<{ restaurantId: string }>();
+const [categorias, setCategorias] = useState<CategoriaComPratos[]>([]);
+const [carregando, setCarregando] = useState(true);
+const { token } = useAuth(); 
 
   useEffect(() => {
     async function carregarCardapio() {

@@ -1,6 +1,6 @@
 import { useAuth } from "@/contexts/auth-context";
 import { createOrderApi } from "@/services/ordersService";
-import { useEffect } from "react";
+import { useEffect, useRef } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 
@@ -8,10 +8,13 @@ export function FinalizeOrder() {
   const { token, restaurantId } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
+  const hasPosted = useRef(false);
 
   const { orderItems, orderClient, orderAdress } = location.state ?? {};
 
   useEffect(() => {
+    if (hasPosted.current) return;
+    hasPosted.current = true;
     if (
       !orderItems ||
       !orderClient ||
@@ -37,12 +40,16 @@ export function FinalizeOrder() {
 
     createOrderApi(token, payload)
       .then((res) => {
+        localStorage.removeItem("orderItems");
+        localStorage.removeItem("orderClient");
+        localStorage.removeItem("orderAdress");
         toast.success(`Pedido criado com sucesso! ID: ${res.orderId}`);
         navigate("/payment");
       })
       .catch((err) => {
         console.error(err);
-        toast.error("Erro ao criar pedido");
+        toast.error("Número ou CEP inválidos");
+        navigate(`/${restaurantId}`);
       });
   }, [orderItems, orderClient, orderAdress, restaurantId, token]);
 
