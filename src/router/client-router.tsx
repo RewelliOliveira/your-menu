@@ -10,7 +10,7 @@ import { Route, Routes } from "react-router-dom";
 export default function ClientRoutes() {
   return (
     <Routes>
-      <Route path="/" element={<MenuClient />} />
+     <Route path="/:restaurantId" element={<MenuClient />} />
       <Route path="/check-order" element={<CheckOrder />} />
       <Route path="/personal-data" element={<PersonalData />} />
       <Route path="/address-data" element={<AddressData />} />

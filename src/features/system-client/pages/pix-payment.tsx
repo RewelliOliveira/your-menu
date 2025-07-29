@@ -1,10 +1,12 @@
 import { Icon } from "@iconify/react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "../components/ui/button";
+import { useAuth } from "@/contexts/auth-context";
 
 export function PixPayment() {
   const qrCodeLink = "hbdajhbd333432-dsfsfsdfsdf-sdfsdfs-34342e";
   const navigate = useNavigate();
+  const { restaurantId } = useAuth();
 
   return (
     <section className="flex flex-col items-center justify-center w-full min-h-screen p-4 bg-white">
@@ -32,8 +34,8 @@ export function PixPayment() {
         <div className="flex flex-wrap gap-4 w-full justify-center">
           <Button
             variant="dark"
-            className="w-40 flex items-center justify-center gap-1"
-            onClick={() => navigate("/")}
+            className="w-45 flex items-center justify-center gap-1"
+            onClick={() => navigate(`/${restaurantId}`)}
           >
             <Icon icon="mdi:keyboard-return" />
             <span>Voltar ao menu</span>

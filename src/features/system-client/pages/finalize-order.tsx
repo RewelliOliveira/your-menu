@@ -49,7 +49,7 @@ export function FinalizeOrder() {
       .catch((err) => {
         console.error(err);
         toast.error("Número ou CEP inválidos");
-        navigate("/");
+        navigate(`/${restaurantId}`);
       });
   }, [orderItems, orderClient, orderAdress, restaurantId, token]);
 
