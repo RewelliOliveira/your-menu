@@ -85,7 +85,7 @@ export function PersonalData() {
 
   return (
     <section className="flex flex-col items-center justify-center w-full min-h-screen p-4 bg-white">
-      <div className="flex flex-col items-center justify-around w-110 h-120 p-2 bg-[#f5f5f5] rounded-lg border border-gray-400 shadow-md">
+      <div className="flex flex-col w-full max-w-3xl p-6 bg-[#f5f5f5] rounded-lg border border-gray-400 shadow-md">
         <div className="flex items-center justify-center w-full mb-4">
           <h1 className="text-2xl font-bold justify-self-auto">
             Dados pessoais
@@ -123,7 +123,7 @@ export function PersonalData() {
             disabled={isLoading}
           />
         </div>
-        <div className="flex items-center justify-between w-full p-4">
+        <div className="flex justify-between m-4 gap-4">
           <Button variant="dark" onClick={handleRetirar} disabled={isLoading}>
             {isLoading ? "Processando..." : "Retirar no Balcão"}
           </Button>
