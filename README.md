@@ -1,54 +1,36 @@
-# React + TypeScript + Vite
+Your-Menu
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+Plataforma web de pedidos para pequenos restaurantes, permitindo que cada um crie e gerencie seu próprio site.
+Oferece painel para editar cardápio, controlar pedidos e acompanhar entregas. Foco em simplicidade e autonomia, ideal para negócios que buscam digitalização acessível.
 
-Currently, two official plugins are available:
+🚀 Visão Geral
+O Your-Menu é uma plataforma que ajuda pequenos restaurantes a se digitalizarem de forma simples e eficiente.
+A ideia é oferecer autonomia para que cada restaurante gerencie seu cardápio, pedidos e entregas, proporcionando uma experiência prática tanto para o administrador quanto para o cliente.
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react/README.md) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+🧩 Principais Funcionalidades
 
-## Expanding the ESLint configuration
+🍽️ Gestão de cardápio: adicione, edite ou remova pratos e categorias.
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+🛒 Controle de pedidos: acompanhe os pedidos em tempo real.
 
-```js
-export default tseslint.config({
-  extends: [
-    // Remove ...tseslint.configs.recommended and replace with this
-    ...tseslint.configs.recommendedTypeChecked,
-    // Alternatively, use this for stricter rules
-    ...tseslint.configs.strictTypeChecked,
-    // Optionally, add this for stylistic rules
-    ...tseslint.configs.stylisticTypeChecked,
-  ],
-  languageOptions: {
-    // other options...
-    parserOptions: {
-      project: ['./tsconfig.node.json', './tsconfig.app.json'],
-      tsconfigRootDir: import.meta.dirname,
-    },
-  },
-})
-```
+📦 Gestão de entregas: visualize status e histórico de entregas.
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+🎨 Interface intuitiva: design limpo e moderno, focado na experiência do usuário.
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
+🌐 Personalização do site do restaurante: cada estabelecimento pode ter seu próprio layout e informações de contato.
 
-export default tseslint.config({
-  plugins: {
-    // Add the react-x and react-dom plugins
-    'react-x': reactX,
-    'react-dom': reactDom,
-  },
-  rules: {
-    // other rules...
-    // Enable its recommended typescript rules
-    ...reactX.configs['recommended-typescript'].rules,
-    ...reactDom.configs.recommended.rules,
-  },
-})
-```
+🏗️ Tecnologias Utilizadas
+Front-end (Web)
+
+Linguagem: TypeScript / JavaScript
+
+Framework: React
+
+Estilização: Tailwind CSS 
+
+Roteamento: React Router
+
+Gerenciamento de estado: React Hooks / Context API
+
+💡 Impacto e Objetivo
+O Your-Menu busca facilitar a digitalização de pequenos restaurantes, tornando o gerenciamento de pedidos e cardápio acessível, intuitivo e eficiente, sem complicações técnicas.
