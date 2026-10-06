@@ -31,13 +31,9 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     localStorage.setItem('token', newToken);
     setToken(newToken);
 
-    if (newRestaurantId) {
-      localStorage.setItem('restaurantId', newRestaurantId);
-      setRestaurantId(newRestaurantId);
-    } else {
-      localStorage.removeItem('restaurantId');
-      setRestaurantId(null);
-    }
+    const resolvedRestaurantId = newRestaurantId || localStorage.getItem('restaurantId') || 'rest-mock-123';
+    localStorage.setItem('restaurantId', resolvedRestaurantId);
+    setRestaurantId(resolvedRestaurantId);
   };
 
   const updateRestaurantId = (newRestaurantId: string) => {
@@ -69,6 +65,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   );
 }
 
+// eslint-disable-next-line react-refresh/only-export-components
 export function useAuth() {
   const context = useContext(AuthContext);
   if (!context) {

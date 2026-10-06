@@ -5,11 +5,11 @@ import { useState } from "react";
 import { loginAccount } from "@/services/login-account";
 import { useAuth } from "@/contexts/auth-context";
 import { toast } from "react-toastify";
-import { api } from "@/services/api";
 
 export function LoginAdm() {
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
+  const [email, setEmail] = useState("admin@yourmenu.com");
+  const [password, setPassword] = useState("admin123");
+  const [isLoading, setIsLoading] = useState(false);
   const navigate = useNavigate();
   const { login } = useAuth();
 
@@ -20,45 +20,26 @@ export function LoginAdm() {
     }
 
     const credentials = { email, password };
+    setIsLoading(true);
 
     try {
       const response = await loginAccount(credentials);
       const token = response.token;
+      const restaurantId = response.restaurantId || "rest-mock-123";
 
       if (!token) {
         toast.error("Token de autenticação ausente na resposta!");
         return;
       }
 
-      // Pega o restaurantId da API protegida /restaurant
-      let restaurantId: string | null = null;
-      try {
-        const restaurantResponse = await api.get("/restaurant", {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        });
-        restaurantId = restaurantResponse.data?.id ?? null;
-      } catch (restaurantError: any) {
-        const status = restaurantError.response?.status;
-        if (status !== 403 && status !== 404) {
-          console.error("Erro ao verificar restaurante:", restaurantError);
-          toast.error("Erro ao verificar restaurante.");
-          return;
-        }
-      }
+      login(token, restaurantId);
 
-      login(token);
-
-      if (restaurantId) {
-        navigate("/adm/edit-menu");
-      } else {
-        navigate("/adm/profile-restaurant");
-      }
-
-      toast.success("Login realizado com sucesso!");
-    } catch (error) {
+      toast.success("Login realizado com sucesso! (Modo Mock)");
+      navigate("/adm/edit-menu");
+    } catch {
       toast.error("Erro ao tentar realizar login!");
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -67,6 +48,9 @@ export function LoginAdm() {
       <header className="flex flex-col gap-5">
         <div className="justify-center items-center w-70 mx-auto">
           <img src="/logo.svg" alt="Logo YourMenu" />
+        </div>
+        <div className="bg-orange-50 border border-orange-200 text-orange-800 text-xs rounded-lg p-2.5 text-center">
+          <strong>Modo Mock Ativado:</strong> Dados simulados para design. Use as credenciais padrão ou qualquer email/senha.
         </div>
       </header>
 
@@ -93,7 +77,9 @@ export function LoginAdm() {
       </div>
 
       <footer className="flex flex-col items-center gap-4 mt-6 lg:mt-3">
-        <Button onClick={handleSubmit}>Entrar</Button>
+        <Button onClick={handleSubmit} disabled={isLoading}>
+          {isLoading ? "Entrando..." : "Entrar"}
+        </Button>
         <div className="text-lg text-black">
           <p>
             Não tem uma conta?
