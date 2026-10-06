@@ -33,39 +33,17 @@ export function Orders() {
       
       const data = await getOrdersApi(restaurantId, token);
       
-      setOrders(prevOrders => {
-        const newOrdersMap = new Map<number, Order>();
-        
-        prevOrders.forEach(order => newOrdersMap.set(order.id, order));
-        
-
-        data.forEach(apiOrder => {
-          const status = apiStatusToStatusMap[apiOrder.status] || "Solicitados";
-          const existingOrder = newOrdersMap.get(apiOrder.orderId);
-          
-          if (existingOrder) {
-            if (existingOrder.status !== status) {
-              newOrdersMap.set(apiOrder.orderId, {
-                ...existingOrder,
-                status
-              });
-            }
-          } else {
-            newOrdersMap.set(apiOrder.orderId, {
-              id: apiOrder.orderId,
-              items: apiOrder.orderItems.map(
-                item => `${item.quantity}x ${item.dishName} (${item.sizeOption.abbreviation})`
-              ),
-              address: `${apiOrder.orderAdress.street}, ${apiOrder.orderAdress.number} - ${apiOrder.orderAdress.deliveryZone.zone}`,
-              price: apiOrder.price,
-              status,
-            });
-          }
-        });
-        
-        return Array.from(newOrdersMap.values());
-      });
-
+      setOrders(
+        data.map((apiOrder) => ({
+          id: apiOrder.orderId,
+          items: apiOrder.orderItems.map(
+            (item) => `${item.quantity}x ${item.dishName} (${item.sizeOption.abbreviation})`
+          ),
+          address: `${apiOrder.orderAdress.street}, ${apiOrder.orderAdress.number} - ${apiOrder.orderAdress.deliveryZone.zone}`,
+          price: apiOrder.price,
+          status: apiStatusToStatusMap[apiOrder.status] || "Solicitados",
+        }))
+      );
     } catch {
       toast.error("Erro ao carregar pedidos.");
     } finally {
@@ -99,8 +77,12 @@ export function Orders() {
     );
   }, []);
 
-  if (isLoading || loadingOrders) {
-    return <div>Carregando pedidos...</div>;
+  if (isLoading || (loadingOrders && orders.length === 0)) {
+    return (
+      <div className="flex justify-center items-center h-screen bg-[#f5f5f5]">
+        <div className="text-lg font-medium text-gray-700">Carregando pedidos...</div>
+      </div>
+    );
   }
 
   const entregues = orders.filter((order) => order.status === "Entregue");

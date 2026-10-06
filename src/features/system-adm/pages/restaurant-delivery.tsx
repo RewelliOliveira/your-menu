@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import { Header } from "../components/header";
 import { Button } from "../components/ui/button";
 import { useAuth } from "@/contexts/auth-context";
@@ -28,13 +28,13 @@ export function RestaurantDelivery() {
   const [saving, setSaving] = useState(false);
   const [editZone, setEditZone] = useState<Zone | null>(null);
 
-  const fetchZones = async () => {
+  const fetchZones = useCallback(async () => {
     if (!token || !slug) return;
     try {
       const data = await getDeliveryZones(slug, token);
       if (data?.length) {
         setZones(
-          data.map((z: any) => ({
+          data.map((z) => ({
             id: z.id,
             zone: z.zone,
             deliveryFee: z.deliveryFee.toFixed(2),
@@ -47,11 +47,11 @@ export function RestaurantDelivery() {
       console.error(err);
       toast.error("Erro ao carregar zonas de entrega");
     }
-  };
+  }, [token, slug]);
 
   useEffect(() => {
     fetchZones();
-  }, [token, slug]);
+  }, [fetchZones]);
 
   const handleAddOrEditZone = async (zone: string, fee: string) => {
     if (!token || !slug) {

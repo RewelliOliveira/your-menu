@@ -46,7 +46,7 @@ export function RestaurantAdress() {
       }
     }
     fetchRestaurantId();
-  }, [token]);
+  }, [token, updateRestaurantId]);
 
   useEffect(() => {
     async function fetchAddress() {

@@ -164,8 +164,9 @@ export function ProfileRestaurant() {
       );
 
       navigate("/adm/restaurant-adress");
-    } catch (error: any) {
-      alert(error.message || "Erro ao salvar restaurante ou horários.");
+    } catch (error) {
+      const message = error instanceof Error ? error.message : "Erro ao salvar restaurante ou horários.";
+      alert(message);
     }
   };
   const handleCopyLink = async () => {

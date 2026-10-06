@@ -80,7 +80,7 @@ export function EditOrder() {
         };
 
         loadDish();
-    }, [token, restaurantId, dishId, categoryOptions]);
+    }, [token, restaurantId, dishId, categoryOptions, navigate, setImgPreview, setSelectedCategoryId, setSizeOptionsPrices]);
 
     async function handleUpdateDish() {
         if (!dishId || isNaN(Number(dishId))) {
