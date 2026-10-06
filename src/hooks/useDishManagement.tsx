@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { toast } from 'react-toastify';
 import { getSizeOptionsApi, SizeOptionApi } from '@/services/size-opition-api';
 import { getCategoriesApi, CategoryApi, createCategoryApi } from '@/services/category-api';
@@ -18,6 +18,32 @@ export function useDishManagement(token: string, restaurantId: string) {
   const [price, setPrice] = useState('');
   const [sizeOptionsPrices, setSizeOptionsPrices] = useState<DishSizeOption[]>([]);
 
+  const fetchSizeOptions = useCallback(async () => {
+    try {
+      const data: SizeOptionApi[] = await getSizeOptionsApi(token);
+      const options = data.map((size) => ({
+        label: `${size.magnitude ?? ''} ${size.abbreviation}`.trim(),
+        value: size.id.toString(),
+      }));
+      setSizeOptions(options);
+    } catch {
+      toast.error('Erro ao carregar opções de tamanho');
+    }
+  }, [token]);
+
+  const fetchCategories = useCallback(async () => {
+    try {
+      const data: CategoryApi[] = await getCategoriesApi(restaurantId, token);
+      const options = data.map((cat) => ({
+        label: cat.name,
+        value: cat.Id.toString(),
+      }));
+      setCategoryOptions(options);
+    } catch {
+      toast.error('Erro ao carregar categorias');
+    }
+  }, [restaurantId, token]);
+
   useEffect(() => {
     async function fetchInitialData() {
       if (!token || !restaurantId) return;
@@ -32,33 +58,7 @@ export function useDishManagement(token: string, restaurantId: string) {
       }
     }
     fetchInitialData();
-  }, [token, restaurantId]);
-
-  async function fetchSizeOptions() {
-    try {
-      const data: SizeOptionApi[] = await getSizeOptionsApi(token);
-      const options = data.map((size) => ({
-        label: `${size.magnitude ?? ''} ${size.abbreviation}`.trim(),
-        value: size.id.toString(),
-      }));
-      setSizeOptions(options);
-    } catch (error) {
-      toast.error('Erro ao carregar opções de tamanho');
-    }
-  }
-
-  async function fetchCategories() {
-    try {
-      const data: CategoryApi[] = await getCategoriesApi(restaurantId, token);
-      const options = data.map((cat) => ({
-        label: cat.name,
-        value: cat.Id.toString(),
-      }));
-      setCategoryOptions(options);
-    } catch {
-      toast.error('Erro ao carregar categorias');
-    }
-  }
+  }, [token, restaurantId, fetchSizeOptions, fetchCategories]);
 
   async function addNewCategory(categoryName: string) {
     if (!categoryName.trim()) return;
@@ -75,7 +75,7 @@ export function useDishManagement(token: string, restaurantId: string) {
 
       toast.success('Categoria adicionada com sucesso!');
       return true;
-    } catch (error) {
+    } catch {
       toast.error('Erro ao adicionar categoria');
       return false;
     } finally {
@@ -128,6 +128,6 @@ export function useDishManagement(token: string, restaurantId: string) {
     handleAddSizeOptionPrice,
     fetchSizeOptions,
     fetchCategories,
-    addNewCategory, // Nova função exportada
+    addNewCategory,
   };
 }

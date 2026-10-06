@@ -41,7 +41,7 @@ export function useAddOrder(restaurantId: string, token: string) {
         setShowInput(false);
         toast.success("Categoria adicionada com sucesso!");
         window.location.reload();
-      } catch (err) {
+      } catch {
         toast.error("Erro ao adicionar categoria. Tente novamente.");
       }
     } else if (alreadyExists) {

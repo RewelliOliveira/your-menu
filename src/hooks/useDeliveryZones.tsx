@@ -24,9 +24,9 @@ export function useDeliveryZones() {
 
   useEffect(() => {
     const fetchZones = async () => {
-      if (!token || !slug) return;
       try {
-        const data: RawZone[] = await getDeliveryZones(slug, token);
+        const targetSlug = slug || "your-burger";
+        const data: RawZone[] = await getDeliveryZones(targetSlug, token || "");
 
         if (data?.length) {
           setZones(
