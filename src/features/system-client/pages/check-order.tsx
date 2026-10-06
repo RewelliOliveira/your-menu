@@ -9,18 +9,17 @@ export function CheckOrder() {
 
   const order: OrderDetailResponse | undefined = location.state?.item;
 
-  if (!order) {
+  if (!order || !order.orderItems || order.orderItems.length === 0) {
     return (
-      <section className="flex flex-col items-center justify-center w-full min-h-screen px-4 py-8 bg-white">
-        <p>Pedido não encontrado.</p>
+      <section className="flex flex-col items-center justify-center w-full min-h-screen px-4 py-8 bg-white gap-4">
+        <p className="text-gray-600 text-lg">Nenhum item selecionado no pedido.</p>
         <Button type="button" onClick={() => navigate(-1)}>
-          Voltar
+          Voltar ao Cardápio
         </Button>
       </section>
     );
   }
 
-  console.log(order.orderItems);
   return (
     <section className="flex flex-col items-center justify-center w-full min-h-screen px-4 py-8 bg-white">
       <div className="flex flex-col w-full max-w-3xl p-6 bg-[#f5f5f5] rounded-lg border border-gray-400 shadow-md">
@@ -35,7 +34,7 @@ export function CheckOrder() {
               name={item.dishName}
               description={`${item.sizeOption?.magnitude ?? ""} ${
                 item.sizeOption?.abbreviation ?? ""
-              }`}
+              }`.trim()}
               price={item.price}
               quantity={item.quantity}
               imageUrl={item.foodImg ?? "placeholder.svg"}

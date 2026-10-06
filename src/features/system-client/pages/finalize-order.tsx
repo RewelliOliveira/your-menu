@@ -4,6 +4,13 @@ import { useEffect, useRef } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 
+interface OrderCheckoutItem {
+  sizeOption: {
+    id: number;
+  };
+  quantity: number;
+}
+
 export function FinalizeOrder() {
   const { token, restaurantId } = useAuth();
   const navigate = useNavigate();
@@ -11,6 +18,8 @@ export function FinalizeOrder() {
   const hasPosted = useRef(false);
 
   const { orderItems, orderClient, orderAdress } = location.state ?? {};
+  const activeRestaurantId = restaurantId || "rest-mock-123";
+  const activeToken = token || "mock-token";
 
   useEffect(() => {
     if (hasPosted.current) return;
@@ -18,9 +27,7 @@ export function FinalizeOrder() {
     if (
       !orderItems ||
       !orderClient ||
-      !orderAdress ||
-      !restaurantId ||
-      !token
+      !orderAdress
     ) {
       toast.error("Dados incompletos para finalizar pedido");
       return;
@@ -29,8 +36,8 @@ export function FinalizeOrder() {
     const payload = {
       dateTime: new Date().toISOString(),
       status: "PENDING" as const,
-      restaurantId,
-      orderItems: orderItems.map((item: any) => ({
+      restaurantId: activeRestaurantId,
+      orderItems: orderItems.map((item: OrderCheckoutItem) => ({
         dishSizeOptionId: item.sizeOption.id,
         quantity: item.quantity,
       })),
@@ -38,7 +45,7 @@ export function FinalizeOrder() {
       orderClient,
     };
 
-    createOrderApi(token, payload)
+    createOrderApi(activeToken, payload)
       .then((res) => {
         localStorage.removeItem("orderItems");
         localStorage.removeItem("orderClient");
@@ -48,10 +55,10 @@ export function FinalizeOrder() {
       })
       .catch((err) => {
         console.error(err);
-        toast.error("Número ou CEP inválidos");
-        navigate(`/${restaurantId}`);
+        toast.error("Erro ao finalizar pedido");
+        navigate(`/${activeRestaurantId}`);
       });
-  }, [orderItems, orderClient, orderAdress, restaurantId, token]);
+  }, [orderItems, orderClient, orderAdress, activeRestaurantId, activeToken, navigate]);
 
   return (
     <section className="flex items-center justify-center min-h-screen">

@@ -16,27 +16,27 @@ interface CategoriaComPratos {
 }
 
 export function MenuClient() {
-const { restaurantId } = useParams<{ restaurantId: string }>();
-const [categorias, setCategorias] = useState<CategoriaComPratos[]>([]);
-const [carregando, setCarregando] = useState(true);
-const { token } = useAuth(); 
+  const { restaurantId } = useParams<{ restaurantId: string }>();
+  const [categorias, setCategorias] = useState<CategoriaComPratos[]>([]);
+  const [carregando, setCarregando] = useState(true);
+  const { token } = useAuth();
+
+  const activeRestaurantId = restaurantId || "rest-mock-123";
 
   useEffect(() => {
     async function carregarCardapio() {
-      if (!token || !restaurantId) return;
-
       setCarregando(true);
 
       try {
-        const categoriasAPI = await getCategoriesApi(restaurantId, token);
+        const categoriasAPI = await getCategoriesApi(activeRestaurantId, token || "");
 
         const categoriasComPratos = await Promise.all(
           categoriasAPI.map(async (categoria) => {
             try {
               const pratosAPI = await getPratosPorCategoria(
-                restaurantId,
+                activeRestaurantId,
                 categoria.Id,
-                token
+                token || ""
               );
 
               const pratosFormatados: OrderProps[] = pratosAPI.map((prato) => {
@@ -97,12 +97,12 @@ const { token } = useAuth();
     }
 
     carregarCardapio();
-  }, [token, restaurantId]);
+  }, [token, activeRestaurantId]);
 
   if (carregando) {
     return (
       <div className="flex justify-center items-center h-screen">
-        <div className="text-lg">Carregando cardápio...</div>
+        <div className="text-lg font-medium text-gray-700">Carregando cardápio...</div>
       </div>
     );
   }
