@@ -1,4 +1,11 @@
-import { api } from "./api";
+import {
+  mockGetOrders,
+  mockGetOrderById,
+  mockUpdateOrderStatus,
+  mockCreateOrder,
+  MockOrder,
+  CreateOrderPayloadInput,
+} from "@/mocks/orders";
 
 export interface OrderListItemResponse {
   orderId: number;
@@ -74,51 +81,11 @@ export interface OrderDetailResponse {
 
   orderClient: {
     firstName: string;
+    lastName?: string;
     phone: number | string;
   };
 }
 
-export async function getOrdersApi(
-  restaurantId: string,
-  token: string
-): Promise<OrderListItemResponse[]> {
-  const response = await api.get(`/restaurant/${restaurantId}/order`, {
-    headers: { Authorization: `Bearer ${token}` },
-  });
-  return response.data;
-}
-
-export async function getOrderByIdApi(
-  restaurantId: string,
-  orderId: number,
-  token: string
-): Promise<OrderDetailResponse> {
-  const response = await api.get(
-    `/restaurant/${restaurantId}/order/${orderId}`,
-    { headers: { Authorization: `Bearer ${token}` } }
-  );
-  return response.data;
-}
-
-export async function updateOrderStatusApi(
-  restaurantId: string,
-  orderId: number,
-  status: string,
-  token: string
-): Promise<void> {
-  await api.patch(
-    `/restaurant/${restaurantId}/order/${orderId}`,
-    { status },
-    {
-      headers: {
-        Authorization: `Bearer ${token}`,
-        "Content-Type": "application/json",
-      },
-    }
-  );
-}
-
-//POST
 export interface CreateOrderPayload {
   dateTime: string;
   status: "PENDING" | "CONFIRMED" | "DELIVERED" | "CANCELLED";
@@ -141,19 +108,78 @@ export interface CreateOrderPayload {
   };
 }
 
+function mapToOrderListItem(order: MockOrder): OrderListItemResponse {
+  return {
+    orderId: order.id,
+    dateTime: order.dateTime,
+    status: order.status,
+    price: order.price,
+    orderItems: order.orderItems.map((item) => ({
+      id: item.id,
+      dishSizeOptionId: item.dishSizeOptionId,
+      dishName: item.dishName,
+      sizeOption: item.sizeOption,
+      quantity: item.quantity,
+      price: item.price,
+    })),
+    orderAdress: order.orderAdress,
+  };
+}
+
+function mapToOrderDetail(order: MockOrder): OrderDetailResponse {
+  return {
+    id: order.id,
+    restaurantId: order.restaurantId,
+    dateTime: order.dateTime,
+    price: order.price,
+    status: order.status,
+    note: order.note,
+    orderItems: order.orderItems.map((item) => ({
+      id: item.id,
+      foodImg: item.foodImg || "placeholder.svg",
+      dishSizeOptionId: item.dishSizeOptionId,
+      dishName: item.dishName,
+      sizeOption: item.sizeOption,
+      quantity: item.quantity,
+      price: item.price,
+    })),
+    orderAdress: order.orderAdress,
+    orderClient: order.orderClient,
+  };
+}
+
+export async function getOrdersApi(
+  _restaurantId: string,
+  _token?: string
+): Promise<OrderListItemResponse[]> {
+  const orders = await mockGetOrders();
+  return orders.map(mapToOrderListItem);
+}
+
+export async function getOrderByIdApi(
+  _restaurantId: string,
+  orderId: number,
+  _token?: string
+): Promise<OrderDetailResponse> {
+  const order = await mockGetOrderById(orderId);
+  if (!order) {
+    throw new Error(`Pedido #${orderId} não encontrado.`);
+  }
+  return mapToOrderDetail(order);
+}
+
+export async function updateOrderStatusApi(
+  _restaurantId: string,
+  orderId: number,
+  status: string,
+  _token?: string
+): Promise<void> {
+  await mockUpdateOrderStatus(orderId, status as MockOrder["status"]);
+}
+
 export async function createOrderApi(
-  token: string,
+  _token: string,
   payload: CreateOrderPayload
 ): Promise<{ orderId: number }> {
-  console.log("Payload:", payload);
-  const response = await api.post(
-    `/restaurant/${payload.restaurantId}/order`,
-    payload,
-    {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    }
-  );
-  return response.data;
+  return await mockCreateOrder(payload as CreateOrderPayloadInput);
 }

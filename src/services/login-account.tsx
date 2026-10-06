@@ -1,15 +1,7 @@
-import { api } from "./api";
+import { mockLoginAccount, LoginCredentials } from "@/mocks/auth";
 
-interface LoginAccountData {
-  email: string;
-  password: string;
-}
+export type LoginAccountData = LoginCredentials;
 
 export async function loginAccount(data: LoginAccountData) {
-  try {
-    const response = await api.post("/auth/login", data);
-    return response.data;
-  } catch (error) {
-    throw error;
-  }
+  return await mockLoginAccount(data);
 }

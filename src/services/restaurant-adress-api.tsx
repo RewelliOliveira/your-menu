@@ -1,6 +1,10 @@
-import { api } from "./api";
-//Post
-interface RestaurantAdressApiProps {
+import {
+  mockGetRestaurantAddress,
+  mockUpdateRestaurantAddress,
+  mockGetRestaurantLink,
+} from "@/mocks/restaurant";
+
+export interface RestaurantAdressApiProps {
   restaurantId: string;
   cep: string;
   state: string;
@@ -12,64 +16,33 @@ interface RestaurantAdressApiProps {
   reference: string | null;
 }
 
-export async function restaurantAdressApi(data: RestaurantAdressApiProps, token: string) {
-  try {
-    const response = await api.post("/restaurantAdress", data, {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    });
-
-    return response.data;
-  } catch (error) {
-    console.error("Erro ao cadastrar endereço do restaurante:", error);
-    throw error;
-  }
+export async function restaurantAdressApi(
+  data: RestaurantAdressApiProps,
+  _token?: string
+) {
+  const address = await mockUpdateRestaurantAddress(data);
+  return address;
 }
 
-//GET
-export async function getRestaurantAdressApi(restaurantId: string, token: string) {
-  try {
-    const response = await api.get(`/restaurantAdress/${restaurantId}`, {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    });
-
-    return response.data;
-  } catch (error) {
-    console.error("Erro ao buscar endereço do restaurante:", error);
-    throw error;
-  }
-}
-// GET - Buscar link do restaurante
-export async function getRestaurantLinkApi(restaurantId: string, token: string) {
-  try {
-    const response = await api.get(`/restaurant/${restaurantId}/link`, {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    });
-
-    return response.data; // { link: string }
-  } catch (error) {
-    console.error("Erro ao buscar link do restaurante:", error);
-    throw error;
-  }
+export async function getRestaurantAdressApi(
+  _restaurantId: string,
+  _token?: string
+) {
+  const address = await mockGetRestaurantAddress();
+  return address;
 }
 
-//PUT
-export async function updateRestaurantAdressApi(data: RestaurantAdressApiProps, token: string) {
-  try {
-    const response = await api.put("/restaurantAdress", data, {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    });
+export async function getRestaurantLinkApi(
+  restaurantId: string,
+  _token?: string
+) {
+  return await mockGetRestaurantLink(restaurantId);
+}
 
-    return response.data;
-  } catch (error) {
-    console.error("Erro ao atualizar endereço do restaurante:", error);
-    throw error;
-  }
+export async function updateRestaurantAdressApi(
+  data: RestaurantAdressApiProps,
+  _token?: string
+) {
+  const address = await mockUpdateRestaurantAddress(data);
+  return address;
 }

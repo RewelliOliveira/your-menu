@@ -1,15 +1,11 @@
-import { api } from "./api";
+import { mockCreateAccount, RegisterData } from "@/mocks/auth";
 
-interface CreateAccountData {
-  email: string;
-  password: string;
-  fullName: string;
-}
+export type CreateAccountData = RegisterData;
 
 export async function createAccount(data: CreateAccountData) {
   try {
-    const response = await api.post("/auth/register", data);
-    return response.data;
+    const response = await mockCreateAccount(data);
+    return response;
   } catch (error) {
     console.error("Erro ao criar conta:", error);
     throw error;

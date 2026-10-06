@@ -1,4 +1,4 @@
-import { api } from "./api";
+import { mockGetSizeOptions } from "@/mocks/products";
 
 export type SizeOptionApi = {
   id: number;
@@ -8,18 +8,8 @@ export type SizeOptionApi = {
 };
 
 export async function getSizeOptionsApi(
-  token: string
+  _token?: string
 ): Promise<SizeOptionApi[]> {
-  try {
-    const response = await api.get("/sizeoptions", {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    });
-
-    return response.data as SizeOptionApi[];
-  } catch (error) {
-    console.error("Erro ao buscar opções de tamanho:", error);
-    throw error;
-  }
+  const options = await mockGetSizeOptions();
+  return options;
 }

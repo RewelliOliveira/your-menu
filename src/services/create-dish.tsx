@@ -1,5 +1,10 @@
-import { api } from "./api";
-//POST
+import {
+  mockCreateDish,
+  mockGetDishesByCategory,
+  mockDeleteDish,
+  MockDish,
+} from "@/mocks/products";
+
 export interface DishSizeOption {
   sizeOptionId: number;
   price: number;
@@ -14,43 +19,6 @@ export interface CreateDishPayload {
   imgFile?: File | null;
 }
 
-export async function createDishApi(
-  restaurantId: string,
-  categoryId: number,
-  data: CreateDishPayload,
-  token: string
-): Promise<any> {
-  try {
-    const formData = new FormData();
-    const { imgFile, ...dto } = data;
-
-    formData.append(
-      "dto",
-      new Blob([JSON.stringify(dto)], { type: "application/json" })
-    );
-
-    if (imgFile) {
-      formData.append("imageUrl", imgFile);
-    }
-
-    const response = await api.post(
-      `/restaurant/${restaurantId}/category/${categoryId}/dish`,
-      formData,
-      {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      }
-    );
-
-    return response.data;
-  } catch (error) {
-    console.error("Erro ao criar prato:", error);
-    throw error;
-  }
-}
-
-//GET
 export interface Prato {
   id: number;
   restaurantId: string;
@@ -68,47 +36,50 @@ export interface Prato {
   }[];
 }
 
-export async function getPratosPorCategoria(
-  restaurantId: string,
-  categoryId: number,
-  token: string
-): Promise<Prato[]> {
-  try {
-    const response = await api.get(
-      `/restaurant/${restaurantId}/category/${categoryId}/dish`,
-      {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      }
-    );
-    return response.data;
-  } catch (error) {
-    console.error(`Erro ao buscar pratos da categoria ${categoryId}:`, error);
-    throw error;
-  }
+function mapMockDishToPrato(dish: MockDish): Prato {
+  return {
+    id: dish.id,
+    restaurantId: dish.restaurantId,
+    categoryId: dish.categoryId,
+    name: dish.name,
+    description: dish.description,
+    isAvailable: dish.isAvailable,
+    imgUrl: dish.imgUrl,
+    sizeOptionsPrices: dish.sizeOptionsPrices,
+  };
 }
-// DELETE
-export async function deleteDishApi(
+
+export async function createDishApi(
   restaurantId: string,
   categoryId: number,
+  data: CreateDishPayload,
+  _token?: string
+): Promise<Prato> {
+  const newDish = await mockCreateDish(restaurantId, categoryId, {
+    name: data.name,
+    description: data.description,
+    isAvailable: data.isAvailable,
+    imgUrl: data.imgUrl,
+    sizeOptionsPrices: data.sizeOptionsPrices,
+    imgFile: data.imgFile,
+  });
+  return mapMockDishToPrato(newDish);
+}
+
+export async function getPratosPorCategoria(
+  _restaurantId: string,
+  categoryId: number,
+  _token?: string
+): Promise<Prato[]> {
+  const dishes = await mockGetDishesByCategory(categoryId);
+  return dishes.map(mapMockDishToPrato);
+}
+
+export async function deleteDishApi(
+  _restaurantId: string,
+  _categoryId: number,
   dishId: number,
-  token: string
+  _token?: string
 ): Promise<void> {
-  try {
-    await api.delete(
-      `/restaurant/${restaurantId}/category/${categoryId}/dish/${dishId}`,
-      {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      }
-    );
-  } catch (error) {
-    console.error(
-      `Erro ao deletar prato ${dishId} da categoria ${categoryId}:`,
-      error
-    );
-    throw error;
-  }
+  await mockDeleteDish(dishId);
 }

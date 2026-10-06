@@ -1,5 +1,8 @@
-import axios from "axios";
-import { api } from "./api";
+import {
+  mockUpdateDish,
+  mockGetDishById,
+} from "@/mocks/products";
+import { Prato } from "./create-dish";
 
 export interface DishSizeOption {
   sizeOptionId: number;
@@ -16,47 +19,49 @@ export interface UpdateDishPayload {
 }
 
 export async function updateDishApi(
-  restaurantId: string,
+  _restaurantId: string,
   categoryId: number,
   dishId: number,
   data: UpdateDishPayload,
-  token: string
-): Promise<any> {
-  try {
-    const formData = new FormData();
-    const { imgFile, ...dto } = data;
+  _token?: string
+): Promise<Prato> {
+  const updated = await mockUpdateDish(dishId, categoryId, {
+    name: data.name,
+    description: data.description,
+    isAvailable: data.isAvailable,
+    imgUrl: data.imgUrl,
+    sizeOptionsPrices: data.sizeOptionsPrices,
+    imgFile: data.imgFile,
+  });
 
-    formData.append("dto", new Blob([JSON.stringify(dto)], { type: "application/json" }));
-
-    if (imgFile) {
-      formData.append("imageUrl", imgFile);
-    }
-
-    const response = await api.put(
-      `/restaurant/${restaurantId}/category/${categoryId}/dish/${dishId}`,
-      formData,
-      {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      }
-    );
-
-    return response.data;
-  } catch (error) {
-    console.error("Erro ao atualizar prato:", error);
-    throw error;
-  }
+  return {
+    id: updated.id,
+    restaurantId: updated.restaurantId,
+    categoryId: updated.categoryId,
+    name: updated.name,
+    description: updated.description,
+    isAvailable: updated.isAvailable,
+    imgUrl: updated.imgUrl,
+    sizeOptionsPrices: updated.sizeOptionsPrices,
+  };
 }
 
-export async function getDishDetails(restaurantId: string, dishId: number, token: string) {
-  const response = await axios.get(
-    `/restaurant/${restaurantId}/category/all/dish/${dishId}`,
-    {
-      headers: {
-        Authorization: `Bearer ${token}`
-      }
-    }
-  );
-  return response.data;
+export async function getDishDetails(
+  _restaurantId: string,
+  dishId: number,
+  _token?: string
+): Promise<Prato | null> {
+  const dish = await mockGetDishById(dishId);
+  if (!dish) return null;
+
+  return {
+    id: dish.id,
+    restaurantId: dish.restaurantId,
+    categoryId: dish.categoryId,
+    name: dish.name,
+    description: dish.description,
+    isAvailable: dish.isAvailable,
+    imgUrl: dish.imgUrl,
+    sizeOptionsPrices: dish.sizeOptionsPrices,
+  };
 }

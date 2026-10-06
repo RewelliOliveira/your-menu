@@ -1,68 +1,44 @@
-import { api } from "./api";
-//POST
-export async function createCategoryApi(
-  restaurantId: string,
-  categoryName: string,
-  token: string
-): Promise<unknown> {
-  try {
-    const response = await api.post(
-      `/restaurant/${restaurantId}/category`,
-      {
-        name: categoryName,
-      },
-      {
-        headers: {
-          Authorization: `Bearer ${token}`,
-          "Content-Type": "application/json",
-        },
-      }
-    );
+import {
+  mockGetCategories,
+  mockCreateCategory,
+  mockDeleteCategory,
+} from "@/mocks/products";
 
-    return response.data;
-  } catch (error) {
-    console.error("Erro ao criar categoria:", error);
-    throw error;
-  }
-}
-//GET
 export interface CategoryApi {
   Id: number;
   name: string;
   restaurantId: string;
 }
 
+export async function createCategoryApi(
+  restaurantId: string,
+  categoryName: string,
+  _token?: string
+): Promise<CategoryApi> {
+  const newCat = await mockCreateCategory(restaurantId, categoryName);
+  return {
+    Id: newCat.Id,
+    name: newCat.name,
+    restaurantId: newCat.restaurantId,
+  };
+}
+
 export async function getCategoriesApi(
   restaurantId: string,
-  token: string
+  _token?: string
 ): Promise<CategoryApi[]> {
-  try {
-    const response = await api.get(`/restaurant/${restaurantId}/category`, {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    });
-
-    return response.data;
-  } catch (error) {
-    console.error("Erro ao buscar categorias:", error);
-    throw error;
-  }
+  const list = await mockGetCategories(restaurantId);
+  return list.map((c) => ({
+    Id: c.Id,
+    name: c.name,
+    restaurantId: c.restaurantId,
+  }));
 }
 
 export async function deleteCategoryApi(
-  restaurantId: string,
+  _restaurantId: string,
   categoryId: number,
-  token: string
+  _token?: string
 ): Promise<void> {
-  try {
-    await api.delete(`/restaurant/${restaurantId}/category/${categoryId}`, {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    });
-  } catch (error) {
-    console.error("Erro ao deletar categoria:", error);
-    throw error;
-  }
+  await mockDeleteCategory(categoryId);
 }

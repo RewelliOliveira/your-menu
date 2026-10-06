@@ -1,25 +1,10 @@
-import { AxiosError } from "axios";
-import { api } from "./api";
+import { mockToggleRestaurantOpenStatus } from "@/mocks/restaurant";
 
 export async function toggleRestaurantOpenStatusApi(
-  restaurantId: string,
+  _restaurantId: string,
   isOpen: boolean,
-  token: string
+  _token?: string
 ) {
-  try {
-    const response = await api.patch(`/restaurant/is-open/${restaurantId}`, { isOpen }, {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    });
-
-    return response.data;
-  } catch (error) {
-    if (error instanceof AxiosError) {
-      console.error("Erro axios:", error.response?.data || error.message);
-    } else {
-      console.error("Erro desconhecido:", error);
-    }
-    throw error;
-  }
+  const result = await mockToggleRestaurantOpenStatus(isOpen);
+  return result;
 }

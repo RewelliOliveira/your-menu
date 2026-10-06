@@ -1,16 +1,18 @@
-import { api } from "./api";
+import {
+  mockGetRestaurantProfile,
+  mockUpdateRestaurantProfile,
+  MockRestaurantProfile,
+} from "@/mocks/restaurant";
 
-interface RestaurantProfileApiProps {
+export interface RestaurantProfileApiProps {
   name: string;
   deliveryTimeMin: number;
   deliveryTimeMax: number;
-  profilePicFile: File | null;
-  bannerPicFile: File | null;
+  profilePicFile?: File | null;
+  bannerPicFile?: File | null;
 }
 
 export interface RestaurantApiResponse {
-  closingTime: any;
-  openingTime(openingTime: any): unknown;
   id: string;
   slug: string;
   name: string;
@@ -19,85 +21,51 @@ export interface RestaurantApiResponse {
   isOpen: boolean;
   profilePicUrl: string | null;
   bannerPicUrl: string | null;
+  closingTime?: string | null;
+  openingTime?: string | null;
 }
 
-// POST
+function mapToApiResponse(profile: MockRestaurantProfile): RestaurantApiResponse {
+  return {
+    id: profile.id,
+    slug: profile.slug,
+    name: profile.name,
+    deliveryTimeMin: profile.deliveryTimeMin,
+    deliveryTimeMax: profile.deliveryTimeMax,
+    isOpen: profile.isOpen,
+    profilePicUrl: profile.profilePicUrl,
+    bannerPicUrl: profile.bannerPicUrl,
+  };
+}
+
 export async function restaurantProfileApi(
   data: RestaurantProfileApiProps,
-  token: string
+  _token?: string
 ): Promise<RestaurantApiResponse> {
-  try {
-    const formData = new FormData();
-    formData.append("name", data.name);
-    formData.append("deliveryTimeMin", data.deliveryTimeMin.toString());
-    formData.append("deliveryTimeMax", data.deliveryTimeMax.toString());
-
-    if (data.profilePicFile) {
-      formData.append("profilePictureUrl", data.profilePicFile); 
-    }
-    if (data.bannerPicFile) {
-      formData.append("bannerPictureUrl", data.bannerPicFile);
-    }
-
-    const response = await api.post("/restaurant", formData, {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    });
-
-    return response.data as RestaurantApiResponse;
-
-  } catch (error) {
-    console.error("Erro ao cadastrar restaurante:", error);
-    throw error;
-  }
+  const updated = await mockUpdateRestaurantProfile({
+    name: data.name,
+    deliveryTimeMin: data.deliveryTimeMin,
+    deliveryTimeMax: data.deliveryTimeMax,
+  });
+  return mapToApiResponse(updated);
 }
 
-// GET
-export async function getRestaurantProfileApi(token: string): Promise<RestaurantApiResponse> {
-  try {
-    const response = await api.get("/restaurant", {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    });
-
-    return response.data as RestaurantApiResponse;
-  } catch (error) {
-    console.error("Erro ao buscar perfil do restaurante:", error);
-    throw error;
-  }
+export async function getRestaurantProfileApi(
+  _token?: string
+): Promise<RestaurantApiResponse> {
+  const profile = await mockGetRestaurantProfile();
+  return mapToApiResponse(profile);
 }
 
-// PUT
 export async function updateRestaurantProfileApi(
-  restaurantId: string,
+  _restaurantId: string,
   data: RestaurantProfileApiProps,
-  token: string
+  _token?: string
 ): Promise<RestaurantApiResponse> {
-  try {
-    const formData = new FormData();
-    formData.append("name", data.name);
-    formData.append("deliveryTimeMin", data.deliveryTimeMin.toString());
-    formData.append("deliveryTimeMax", data.deliveryTimeMax.toString());
-
-    if (data.profilePicFile) {
-      formData.append("profilePictureUrl", data.profilePicFile); 
-    }
-    if (data.bannerPicFile) {
-      formData.append("bannerPictureUrl", data.bannerPicFile);
-    }
-
-    const response = await api.put(`/restaurant/${restaurantId}`, formData, {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    });
-
-    return response.data as RestaurantApiResponse;
-
-  } catch (error) {
-    console.error("Erro ao atualizar perfil do restaurante:", error);
-    throw error;
-  }
+  const updated = await mockUpdateRestaurantProfile({
+    name: data.name,
+    deliveryTimeMin: data.deliveryTimeMin,
+    deliveryTimeMax: data.deliveryTimeMax,
+  });
+  return mapToApiResponse(updated);
 }
