@@ -1,5 +1,6 @@
 import { useNavigate } from "react-router-dom";
 import { LogOut } from "lucide-react";
+import { useAuth } from "@/contexts/auth-context";
 
 import {
   DropdownMenu,
@@ -15,11 +16,14 @@ import { DropMenu } from "@/assets/icons-adm";
 
 export function DropdownMenuDemo() {
   const navigate = useNavigate();
+  const { logout } = useAuth();
 
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
-        <button><DropMenu className="w-8" /></button>
+        <button className="cursor-pointer focus:outline-none">
+          <DropMenu className="w-8" />
+        </button>
       </DropdownMenuTrigger>
       <DropdownMenuContent className="w-56">
         <DropdownMenuLabel>Opções</DropdownMenuLabel>
@@ -47,8 +51,8 @@ export function DropdownMenuDemo() {
         <DropdownMenuSeparator />
         <DropdownMenuItem
           onClick={() => {
-            localStorage.removeItem("token");
-            navigate("/adm/");
+            logout();
+            navigate("/adm");
           }}
         >
           <LogOut className="mr-2 h-4 w-4" />

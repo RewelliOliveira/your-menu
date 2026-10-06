@@ -45,14 +45,17 @@ export function MenuItem(order: MenuItemProps) {
 
   const confirmDelete = async () => {
     try {
-      await deleteDishApi(
-        order.restaurantId,
-        order.categoryId,
-        Number(order.id),
-        order.token
-      );
-      toast.success("Prato excluído com sucesso!");
-      window.location.reload();
+      if (order.onDelete) {
+        order.onDelete(Number(order.id), order.categoryId);
+      } else {
+        await deleteDishApi(
+          order.restaurantId,
+          order.categoryId,
+          Number(order.id),
+          order.token
+        );
+        toast.success("Prato excluído com sucesso!");
+      }
     } catch {
       toast.error("Erro ao excluir prato. Por favor, tente novamente.");
     } finally {
