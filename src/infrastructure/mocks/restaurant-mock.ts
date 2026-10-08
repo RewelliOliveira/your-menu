@@ -1,41 +1,13 @@
-export interface MockRestaurantProfile {
-  id: string;
-  slug: string;
-  name: string;
-  deliveryTimeMin: number;
-  deliveryTimeMax: number;
-  isOpen: boolean;
-  profilePicUrl: string | null;
-  bannerPicUrl: string | null;
-}
+import { DeliveryZone, DeliveryZonePayload } from "@/core/types/delivery-zone-types";
+import {
+  RestaurantAddress,
+  RestaurantAddressPayload,
+  RestaurantHours,
+  RestaurantProfile,
+  RestaurantProfilePayload,
+} from "@/core/types/restaurant-types";
 
-export interface MockRestaurantHour {
-  id_businessHours: string;
-  weekday: string;
-  openingTime: string | null;
-  closingTime: string | null;
-}
-
-export interface MockRestaurantAddress {
-  restaurantId: string;
-  cep: string;
-  state: string;
-  city: string;
-  street: string;
-  number: number;
-  district: string;
-  complement: string | null;
-  reference: string | null;
-}
-
-export interface MockDeliveryZone {
-  id: string;
-  zone: string;
-  deliveryFee: number;
-  restaurantSlug: string;
-}
-
-export const INITIAL_MOCK_RESTAURANT: MockRestaurantProfile = {
+export const INITIAL_MOCK_RESTAURANT: RestaurantProfile = {
   id: "rest-mock-123",
   slug: "your-burger",
   name: "YourBurger Artesanal",
@@ -46,7 +18,7 @@ export const INITIAL_MOCK_RESTAURANT: MockRestaurantProfile = {
   bannerPicUrl: "https://images.unsplash.com/photo-1555396273-367ea4eb4db5?w=1200&auto=format&fit=crop&q=80",
 };
 
-export const INITIAL_MOCK_HOURS: MockRestaurantHour[] = [
+export const INITIAL_MOCK_HOURS: RestaurantHours[] = [
   { id_businessHours: "h-1", weekday: "MONDAY", openingTime: "18:00", closingTime: "23:30" },
   { id_businessHours: "h-2", weekday: "TUESDAY", openingTime: "18:00", closingTime: "23:30" },
   { id_businessHours: "h-3", weekday: "WEDNESDAY", openingTime: "18:00", closingTime: "23:30" },
@@ -56,7 +28,7 @@ export const INITIAL_MOCK_HOURS: MockRestaurantHour[] = [
   { id_businessHours: "h-7", weekday: "SUNDAY", openingTime: "18:00", closingTime: "23:00" },
 ];
 
-export const INITIAL_MOCK_ADDRESS: MockRestaurantAddress = {
+export const INITIAL_MOCK_ADDRESS: RestaurantAddress = {
   restaurantId: "rest-mock-123",
   cep: "01310-100",
   state: "SP",
@@ -68,7 +40,7 @@ export const INITIAL_MOCK_ADDRESS: MockRestaurantAddress = {
   reference: "Próximo ao MASP",
 };
 
-export const INITIAL_MOCK_ZONES: MockDeliveryZone[] = [
+export const INITIAL_MOCK_ZONES: DeliveryZone[] = [
   { id: "zone-1", zone: "Centro", deliveryFee: 5.0, restaurantSlug: "your-burger" },
   { id: "zone-2", zone: "Bela Vista", deliveryFee: 7.0, restaurantSlug: "your-burger" },
   { id: "zone-3", zone: "Consolação", deliveryFee: 6.5, restaurantSlug: "your-burger" },
@@ -81,112 +53,106 @@ const HOURS_KEY = "your_menu_mock_hours";
 const ADDRESS_KEY = "your_menu_mock_address";
 const ZONES_KEY = "your_menu_mock_zones";
 
-function getStoredProfile(): MockRestaurantProfile {
+function getStoredProfile(): RestaurantProfile {
   try {
     const raw = localStorage.getItem(PROFILE_KEY);
     if (raw) return JSON.parse(raw);
-  } catch (e) {
-    console.warn("Erro ao ler perfil do localStorage:", e);
+  } catch {
+    void 0;
   }
   return INITIAL_MOCK_RESTAURANT;
 }
 
-function saveProfile(profile: MockRestaurantProfile) {
+function saveProfile(profile: RestaurantProfile): void {
   try {
     localStorage.setItem(PROFILE_KEY, JSON.stringify(profile));
-  } catch (e) {
-    console.warn("Erro ao salvar perfil no localStorage:", e);
+  } catch {
+    void 0;
   }
 }
 
-function getStoredHours(): MockRestaurantHour[] {
+function getStoredHours(): RestaurantHours[] {
   try {
     const raw = localStorage.getItem(HOURS_KEY);
     if (raw) return JSON.parse(raw);
-  } catch (e) {
-    console.warn("Erro ao ler horários do localStorage:", e);
+  } catch {
+    void 0;
   }
   return INITIAL_MOCK_HOURS;
 }
 
-function saveHours(hours: MockRestaurantHour[]) {
+function saveHours(hours: RestaurantHours[]): void {
   try {
     localStorage.setItem(HOURS_KEY, JSON.stringify(hours));
-  } catch (e) {
-    console.warn("Erro ao salvar horários no localStorage:", e);
+  } catch {
+    void 0;
   }
 }
 
-function getStoredAddress(): MockRestaurantAddress {
+function getStoredAddress(): RestaurantAddress {
   try {
     const raw = localStorage.getItem(ADDRESS_KEY);
     if (raw) return JSON.parse(raw);
-  } catch (e) {
-    console.warn("Erro ao ler endereço do localStorage:", e);
+  } catch {
+    void 0;
   }
   return INITIAL_MOCK_ADDRESS;
 }
 
-function saveAddress(address: MockRestaurantAddress) {
+function saveAddress(address: RestaurantAddress): void {
   try {
     localStorage.setItem(ADDRESS_KEY, JSON.stringify(address));
-  } catch (e) {
-    console.warn("Erro ao salvar endereço no localStorage:", e);
+  } catch {
+    void 0;
   }
 }
 
-function getStoredZones(): MockDeliveryZone[] {
+function getStoredZones(): DeliveryZone[] {
   try {
     const raw = localStorage.getItem(ZONES_KEY);
     if (raw) return JSON.parse(raw);
-  } catch (e) {
-    console.warn("Erro ao ler zonas do localStorage:", e);
+  } catch {
+    void 0;
   }
   return INITIAL_MOCK_ZONES;
 }
 
-function saveZones(zones: MockDeliveryZone[]) {
+function saveZones(zones: DeliveryZone[]): void {
   try {
     localStorage.setItem(ZONES_KEY, JSON.stringify(zones));
-  } catch (e) {
-    console.warn("Erro ao salvar zonas no localStorage:", e);
+  } catch {
+    void 0;
   }
 }
 
-// ========================
-// Perfil do Restaurante
-// ========================
-
-export async function mockGetRestaurantProfile(): Promise<MockRestaurantProfile> {
-  await new Promise((r) => setTimeout(r, 100));
+export async function mockGetRestaurantProfile(): Promise<RestaurantProfile> {
+  await new Promise((r) => setTimeout(r, 80));
   return getStoredProfile();
 }
 
-export async function mockUpdateRestaurantProfile(data: Partial<MockRestaurantProfile>): Promise<MockRestaurantProfile> {
-  await new Promise((r) => setTimeout(r, 150));
+export async function mockUpdateRestaurantProfile(data: Partial<RestaurantProfilePayload>): Promise<RestaurantProfile> {
+  await new Promise((r) => setTimeout(r, 120));
   const current = getStoredProfile();
-  const updated: MockRestaurantProfile = {
+  const updated: RestaurantProfile = {
     ...current,
-    ...data,
+    ...(data.name ? { name: data.name } : {}),
+    ...(data.deliveryTimeMin ? { deliveryTimeMin: data.deliveryTimeMin } : {}),
+    ...(data.deliveryTimeMax ? { deliveryTimeMax: data.deliveryTimeMax } : {}),
   };
   saveProfile(updated);
   return updated;
 }
 
 export async function mockToggleRestaurantOpenStatus(isOpen: boolean): Promise<{ success: boolean; isOpen: boolean }> {
-  await new Promise((r) => setTimeout(r, 100));
+  await new Promise((r) => setTimeout(r, 80));
   const profile = getStoredProfile();
   profile.isOpen = isOpen;
   saveProfile(profile);
   return { success: true, isOpen };
 }
 
-// ========================
-// Horários de Funcionamento
-// ========================
-
-export async function mockGetRestaurantHours(): Promise<MockRestaurantHour[]> {
-  await new Promise((r) => setTimeout(r, 100));
+export async function mockGetRestaurantHours(): Promise<RestaurantHours[]> {
+  await new Promise((r) => setTimeout(r, 80));
   return getStoredHours();
 }
 
@@ -195,13 +161,13 @@ export async function mockUpdateRestaurantHours(
   weekday_end: string,
   openingTime: string,
   closingTime: string
-): Promise<MockRestaurantHour[]> {
-  await new Promise((r) => setTimeout(r, 150));
+): Promise<RestaurantHours[]> {
+  await new Promise((r) => setTimeout(r, 120));
   const orderWeek = ["SUNDAY", "MONDAY", "TUESDAY", "WEDNESDAY", "THURSDAY", "FRIDAY", "SATURDAY"];
   const startIndex = orderWeek.indexOf(weekday_start);
   const endIndex = orderWeek.indexOf(weekday_end);
 
-  const hours = orderWeek.map((day, idx) => {
+  const hours: RestaurantHours[] = orderWeek.map((day, idx) => {
     let isOpenDay = false;
     if (startIndex <= endIndex) {
       isOpenDay = idx >= startIndex && idx <= endIndex;
@@ -221,19 +187,15 @@ export async function mockUpdateRestaurantHours(
   return hours;
 }
 
-// ========================
-// Endereço do Restaurante
-// ========================
-
-export async function mockGetRestaurantAddress(): Promise<MockRestaurantAddress> {
-  await new Promise((r) => setTimeout(r, 100));
+export async function mockGetRestaurantAddress(): Promise<RestaurantAddress> {
+  await new Promise((r) => setTimeout(r, 80));
   return getStoredAddress();
 }
 
-export async function mockUpdateRestaurantAddress(data: Partial<MockRestaurantAddress>): Promise<MockRestaurantAddress> {
-  await new Promise((r) => setTimeout(r, 150));
+export async function mockUpdateRestaurantAddress(data: Partial<RestaurantAddressPayload>): Promise<RestaurantAddress> {
+  await new Promise((r) => setTimeout(r, 120));
   const current = getStoredAddress();
-  const updated: MockRestaurantAddress = {
+  const updated: RestaurantAddress = {
     ...current,
     ...data,
   };
@@ -247,24 +209,16 @@ export async function mockGetRestaurantLink(restaurantId: string): Promise<{ lin
   return { link: `${origin}/${restaurantId || "rest-mock-123"}` };
 }
 
-// ========================
-// Zonas de Entrega
-// ========================
-
-export async function mockGetDeliveryZones(slug?: string): Promise<MockDeliveryZone[]> {
-  await new Promise((r) => setTimeout(r, 100));
+export async function mockGetDeliveryZones(slug?: string): Promise<DeliveryZone[]> {
+  await new Promise((r) => setTimeout(r, 80));
   const zones = getStoredZones();
   return slug ? zones.filter((z) => z.restaurantSlug === slug) : zones;
 }
 
-export async function mockSaveDeliveryZone(data: {
-  zone: string;
-  deliveryFee: number;
-  restaurantSlug: string;
-}): Promise<MockDeliveryZone> {
-  await new Promise((r) => setTimeout(r, 150));
+export async function mockSaveDeliveryZone(data: DeliveryZonePayload): Promise<DeliveryZone> {
+  await new Promise((r) => setTimeout(r, 120));
   const zones = getStoredZones();
-  const newZone: MockDeliveryZone = {
+  const newZone: DeliveryZone = {
     id: `zone-${Date.now()}`,
     zone: data.zone,
     deliveryFee: data.deliveryFee,
@@ -275,11 +229,8 @@ export async function mockSaveDeliveryZone(data: {
   return newZone;
 }
 
-export async function mockUpdateDeliveryZone(
-  id: string,
-  data: { zone: string; deliveryFee: number; restaurantSlug: string }
-): Promise<MockDeliveryZone> {
-  await new Promise((r) => setTimeout(r, 150));
+export async function mockUpdateDeliveryZone(id: string, data: DeliveryZonePayload): Promise<DeliveryZone> {
+  await new Promise((r) => setTimeout(r, 120));
   const zones = getStoredZones();
   const idx = zones.findIndex((z) => z.id === id);
   if (idx !== -1) {
@@ -296,8 +247,7 @@ export async function mockUpdateDeliveryZone(
 }
 
 export async function mockDeleteDeliveryZone(id: string): Promise<void> {
-  await new Promise((r) => setTimeout(r, 150));
+  await new Promise((r) => setTimeout(r, 120));
   const zones = getStoredZones().filter((z) => z.id !== id);
   saveZones(zones);
 }
-

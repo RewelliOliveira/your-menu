@@ -1,20 +1,15 @@
+import { DeliveryZone, DeliveryZonePayload } from "@/core/types/delivery-zone-types";
 import {
+  mockDeleteDeliveryZone,
   mockGetDeliveryZones,
   mockSaveDeliveryZone,
   mockUpdateDeliveryZone,
-  mockDeleteDeliveryZone,
-} from "@/mocks/restaurant";
-
-export interface DeliveryZoneRequest {
-  zone: string;
-  deliveryFee: number;
-  restaurantSlug: string;
-}
+} from "../mocks/restaurant-mock";
 
 export async function saveDeliveryZone(
-  data: DeliveryZoneRequest,
+  data: DeliveryZonePayload,
   _token?: string
-) {
+): Promise<{ data: DeliveryZone }> {
   const newZone = await mockSaveDeliveryZone(data);
   return { data: newZone };
 }
@@ -22,16 +17,15 @@ export async function saveDeliveryZone(
 export async function getDeliveryZones(
   restaurantSlug?: string,
   _token?: string
-) {
-  const zones = await mockGetDeliveryZones(restaurantSlug);
-  return zones;
+): Promise<DeliveryZone[]> {
+  return await mockGetDeliveryZones(restaurantSlug);
 }
 
 export async function updateDeliveryZone(
   id: string,
-  data: DeliveryZoneRequest,
+  data: DeliveryZonePayload,
   _token?: string
-) {
+): Promise<{ data: DeliveryZone }> {
   const updated = await mockUpdateDeliveryZone(id, data);
   return { data: updated };
 }
@@ -39,7 +33,7 @@ export async function updateDeliveryZone(
 export async function deleteDeliveryZone(
   id: string,
   _token?: string
-) {
+): Promise<{ data: { success: boolean } }> {
   await mockDeleteDeliveryZone(id);
   return { data: { success: true } };
 }

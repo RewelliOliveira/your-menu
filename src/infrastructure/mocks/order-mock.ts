@@ -1,56 +1,11 @@
-export interface MockOrderItem {
-  id: number;
-  dishSizeOptionId: number;
-  dishName: string;
-  foodImg?: string;
-  sizeOption: {
-    id: number;
-    magnitude: string | null;
-    measureUnit: string;
-    abbreviation: string;
-  };
-  quantity: number;
-  price: number;
-}
+import { CreateOrderPayload, OrderEntity, OrderItemSummary, OrderStatus } from "@/core/types/order-types";
 
-export interface MockOrderAddress {
-  id: number;
-  deliveryZone: {
-    id: number;
-    zone: string;
-    deliveryFee: number;
-  };
-  cep: number;
-  street: string;
-  number: string;
-  complement: string;
-  reference: string;
-}
-
-export interface MockOrderClient {
-  firstName: string;
-  lastName?: string;
-  phone: string | number;
-}
-
-export interface MockOrder {
-  id: number;
-  restaurantId: string;
-  dateTime: string;
-  price: number;
-  status: "PENDING" | "CONFIRMED" | "IN_DELIVERY" | "DELIVERED" | "CANCELLED";
-  note: string | null;
-  orderItems: MockOrderItem[];
-  orderAdress: MockOrderAddress;
-  orderClient: MockOrderClient;
-}
-
-export const INITIAL_MOCK_ORDERS: MockOrder[] = [
+export const INITIAL_MOCK_ORDERS: OrderEntity[] = [
   {
     id: 101,
     restaurantId: "rest-mock-123",
     dateTime: new Date(Date.now() - 15 * 60 * 1000).toISOString(),
-    price: 113.70,
+    price: 113.7,
     status: "PENDING",
     note: "Sem cebola no segundo hambúrguer, por favor.",
     orderItems: [
@@ -66,7 +21,7 @@ export const INITIAL_MOCK_ORDERS: MockOrder[] = [
           abbreviation: "Duplo",
         },
         quantity: 2,
-        price: 36.90,
+        price: 36.9,
       },
       {
         id: 2,
@@ -80,7 +35,7 @@ export const INITIAL_MOCK_ORDERS: MockOrder[] = [
           abbreviation: "300g",
         },
         quantity: 1,
-        price: 19.90,
+        price: 19.9,
       },
       {
         id: 3,
@@ -94,7 +49,7 @@ export const INITIAL_MOCK_ORDERS: MockOrder[] = [
           abbreviation: "350ml",
         },
         quantity: 2,
-        price: 6.50,
+        price: 6.5,
       },
     ],
     orderAdress: {
@@ -102,7 +57,7 @@ export const INITIAL_MOCK_ORDERS: MockOrder[] = [
       deliveryZone: {
         id: 1,
         zone: "Centro",
-        deliveryFee: 7.00,
+        deliveryFee: 7.0,
       },
       cep: 1001000,
       street: "Rua das Flores",
@@ -120,7 +75,7 @@ export const INITIAL_MOCK_ORDERS: MockOrder[] = [
     id: 102,
     restaurantId: "rest-mock-123",
     dateTime: new Date(Date.now() - 35 * 60 * 1000).toISOString(),
-    price: 80.40,
+    price: 80.4,
     status: "CONFIRMED",
     note: "Enviar talheres descartáveis.",
     orderItems: [
@@ -136,7 +91,7 @@ export const INITIAL_MOCK_ORDERS: MockOrder[] = [
           abbreviation: "Combo c/ Fritas",
         },
         quantity: 1,
-        price: 44.90,
+        price: 44.9,
       },
       {
         id: 5,
@@ -150,7 +105,7 @@ export const INITIAL_MOCK_ORDERS: MockOrder[] = [
           abbreviation: "Fatia",
         },
         quantity: 1,
-        price: 21.00,
+        price: 21.0,
       },
       {
         id: 6,
@@ -164,7 +119,7 @@ export const INITIAL_MOCK_ORDERS: MockOrder[] = [
           abbreviation: "2L",
         },
         quantity: 1,
-        price: 14.50,
+        price: 14.5,
       },
     ],
     orderAdress: {
@@ -172,7 +127,7 @@ export const INITIAL_MOCK_ORDERS: MockOrder[] = [
       deliveryZone: {
         id: 2,
         zone: "Bela Vista",
-        deliveryFee: 7.00,
+        deliveryFee: 7.0,
       },
       cep: 1311200,
       street: "Av. Paulista",
@@ -190,7 +145,7 @@ export const INITIAL_MOCK_ORDERS: MockOrder[] = [
     id: 103,
     restaurantId: "rest-mock-123",
     dateTime: new Date(Date.now() - 55 * 60 * 1000).toISOString(),
-    price: 93.00,
+    price: 93.0,
     status: "IN_DELIVERY",
     note: "Tocar o interfone número 302.",
     orderItems: [
@@ -206,7 +161,7 @@ export const INITIAL_MOCK_ORDERS: MockOrder[] = [
           abbreviation: "G (8 fatias)",
         },
         quantity: 1,
-        price: 62.00,
+        price: 62.0,
       },
       {
         id: 8,
@@ -220,7 +175,7 @@ export const INITIAL_MOCK_ORDERS: MockOrder[] = [
           abbreviation: "250g",
         },
         quantity: 1,
-        price: 22.00,
+        price: 22.0,
       },
     ],
     orderAdress: {
@@ -228,7 +183,7 @@ export const INITIAL_MOCK_ORDERS: MockOrder[] = [
       deliveryZone: {
         id: 3,
         zone: "Jardins",
-        deliveryFee: 9.00,
+        deliveryFee: 9.0,
       },
       cep: 1426001,
       street: "Rua Oscar Freire",
@@ -246,7 +201,7 @@ export const INITIAL_MOCK_ORDERS: MockOrder[] = [
     id: 104,
     restaurantId: "rest-mock-123",
     dateTime: new Date(Date.now() - 90 * 60 * 1000).toISOString(),
-    price: 126.00,
+    price: 126.0,
     status: "DELIVERED",
     note: null,
     orderItems: [
@@ -262,7 +217,7 @@ export const INITIAL_MOCK_ORDERS: MockOrder[] = [
           abbreviation: "IND",
         },
         quantity: 2,
-        price: 42.00,
+        price: 42.0,
       },
       {
         id: 10,
@@ -276,7 +231,7 @@ export const INITIAL_MOCK_ORDERS: MockOrder[] = [
           abbreviation: "Fatia",
         },
         quantity: 2,
-        price: 18.50,
+        price: 18.5,
       },
     ],
     orderAdress: {
@@ -284,7 +239,7 @@ export const INITIAL_MOCK_ORDERS: MockOrder[] = [
       deliveryZone: {
         id: 1,
         zone: "Centro",
-        deliveryFee: 5.00,
+        deliveryFee: 5.0,
       },
       cep: 1304000,
       street: "Rua Augusta",
@@ -302,7 +257,7 @@ export const INITIAL_MOCK_ORDERS: MockOrder[] = [
     id: 105,
     restaurantId: "rest-mock-123",
     dateTime: new Date(Date.now() - 130 * 60 * 1000).toISOString(),
-    price: 80.80,
+    price: 80.8,
     status: "DELIVERED",
     note: null,
     orderItems: [
@@ -318,7 +273,7 @@ export const INITIAL_MOCK_ORDERS: MockOrder[] = [
           abbreviation: "M (6 fatias)",
         },
         quantity: 1,
-        price: 54.00,
+        price: 54.0,
       },
       {
         id: 12,
@@ -332,7 +287,7 @@ export const INITIAL_MOCK_ORDERS: MockOrder[] = [
           abbreviation: "Copo 400ml",
         },
         quantity: 2,
-        price: 9.90,
+        price: 9.9,
       },
     ],
     orderAdress: {
@@ -340,7 +295,7 @@ export const INITIAL_MOCK_ORDERS: MockOrder[] = [
       deliveryZone: {
         id: 2,
         zone: "Bela Vista",
-        deliveryFee: 7.00,
+        deliveryFee: 7.0,
       },
       cep: 1418100,
       street: "Alameda Santos",
@@ -358,7 +313,7 @@ export const INITIAL_MOCK_ORDERS: MockOrder[] = [
     id: 106,
     restaurantId: "rest-mock-123",
     dateTime: new Date(Date.now() - 180 * 60 * 1000).toISOString(),
-    price: 34.90,
+    price: 34.9,
     status: "CANCELLED",
     note: "Cancelado pelo cliente por mudança de planos.",
     orderItems: [
@@ -374,7 +329,7 @@ export const INITIAL_MOCK_ORDERS: MockOrder[] = [
           abbreviation: "IND",
         },
         quantity: 1,
-        price: 28.90,
+        price: 28.9,
       },
     ],
     orderAdress: {
@@ -382,7 +337,7 @@ export const INITIAL_MOCK_ORDERS: MockOrder[] = [
       deliveryZone: {
         id: 1,
         zone: "Centro",
-        deliveryFee: 6.00,
+        deliveryFee: 6.0,
       },
       cep: 1307000,
       street: "Rua Frei Caneca",
@@ -400,40 +355,37 @@ export const INITIAL_MOCK_ORDERS: MockOrder[] = [
 
 const ORDERS_KEY = "your_menu_mock_orders";
 
-function getStoredOrders(): MockOrder[] {
+function getStoredOrders(): OrderEntity[] {
   try {
     const raw = localStorage.getItem(ORDERS_KEY);
     if (raw) return JSON.parse(raw);
-  } catch (e) {
-    console.warn("Erro ao ler pedidos do localStorage:", e);
+  } catch {
+    void 0;
   }
   return INITIAL_MOCK_ORDERS;
 }
 
-function saveOrders(orders: MockOrder[]) {
+function saveOrders(orders: OrderEntity[]): void {
   try {
     localStorage.setItem(ORDERS_KEY, JSON.stringify(orders));
-  } catch (e) {
-    console.warn("Erro ao salvar pedidos no localStorage:", e);
+  } catch {
+    void 0;
   }
 }
 
-export async function mockGetOrders(): Promise<MockOrder[]> {
-  await new Promise((r) => setTimeout(r, 150));
+export async function mockGetOrders(): Promise<OrderEntity[]> {
+  await new Promise((r) => setTimeout(r, 120));
   return getStoredOrders();
 }
 
-export async function mockGetOrderById(orderId: number): Promise<MockOrder | null> {
-  await new Promise((r) => setTimeout(r, 150));
+export async function mockGetOrderById(orderId: number): Promise<OrderEntity | null> {
+  await new Promise((r) => setTimeout(r, 100));
   const orders = getStoredOrders();
   return orders.find((o) => o.id === orderId) || null;
 }
 
-export async function mockUpdateOrderStatus(
-  orderId: number,
-  status: MockOrder["status"]
-): Promise<void> {
-  await new Promise((r) => setTimeout(r, 150));
+export async function mockUpdateOrderStatus(orderId: number, status: OrderStatus): Promise<void> {
+  await new Promise((r) => setTimeout(r, 120));
   const orders = getStoredOrders();
   const order = orders.find((o) => o.id === orderId);
   if (order) {
@@ -442,51 +394,22 @@ export async function mockUpdateOrderStatus(
   }
 }
 
-export interface CreateOrderPayloadInput {
-  dateTime: string;
-  status: "PENDING" | "CONFIRMED" | "DELIVERED" | "CANCELLED";
-  restaurantId: string;
-  orderItems: Array<{
-    dishSizeOptionId: number;
-    quantity: number;
-    dishName?: string;
-    foodImg?: string;
-    price?: number;
-    sizeOption?: {
-      id: number;
-      magnitude: string | null;
-      measureUnit: string;
-      abbreviation: string;
-    };
-  }>;
-  orderAdress: {
-    deliveryZoneId: number;
-    street: string;
-    number: string;
-    complement: string;
-    cep: string;
-    reference: string;
-  };
-  orderClient: {
-    name: string;
-    phone: string;
-  };
-}
-
-export async function mockCreateOrder(payload: CreateOrderPayloadInput): Promise<{ orderId: number }> {
-  await new Promise((r) => setTimeout(r, 200));
+export async function mockCreateOrder(payload: CreateOrderPayload): Promise<{ orderId: number }> {
+  await new Promise((r) => setTimeout(r, 180));
   const orders = getStoredOrders();
   const nextId = orders.length ? Math.max(...orders.map((o) => o.id)) + 1 : 101;
 
-  const names = payload.orderClient.name.split(" ");
+  const names = payload.orderClient.name.trim().split(" ");
   const firstName = names[0] || "Cliente";
   const lastName = names.slice(1).join(" ") || "";
 
-  const items: MockOrderItem[] = payload.orderItems.map((item, idx) => ({
+  const items: OrderItemSummary[] = payload.orderItems.map((item, idx) => ({
     id: nextId * 10 + idx,
     dishSizeOptionId: item.dishSizeOptionId,
     dishName: item.dishName || "Prato Selecionado",
-    foodImg: item.foodImg || "https://images.unsplash.com/photo-1546069901-ba9599a7e63c?w=600&auto=format&fit=crop&q=80",
+    foodImg:
+      item.foodImg ||
+      "https://images.unsplash.com/photo-1546069901-ba9599a7e63c?w=600&auto=format&fit=crop&q=80",
     sizeOption: item.sizeOption || {
       id: item.dishSizeOptionId,
       magnitude: "1",
@@ -494,12 +417,12 @@ export async function mockCreateOrder(payload: CreateOrderPayloadInput): Promise
       abbreviation: "UN",
     },
     quantity: item.quantity,
-    price: item.price || 30.00,
+    price: item.price || 30.0,
   }));
 
-  const totalPrice = items.reduce((acc, item) => acc + item.price * item.quantity, 0) + 7.00;
+  const totalPrice = items.reduce((acc, item) => acc + item.price * item.quantity, 0) + 7.0;
 
-  const newOrder: MockOrder = {
+  const newOrder: OrderEntity = {
     id: nextId,
     restaurantId: payload.restaurantId || "rest-mock-123",
     dateTime: payload.dateTime || new Date().toISOString(),
@@ -512,7 +435,7 @@ export async function mockCreateOrder(payload: CreateOrderPayloadInput): Promise
       deliveryZone: {
         id: payload.orderAdress.deliveryZoneId,
         zone: "Zona Selecionada",
-        deliveryFee: 7.00,
+        deliveryFee: 7.0,
       },
       cep: parseInt(payload.orderAdress.cep.replace(/\D/g, "")) || 1000000,
       street: payload.orderAdress.street,
@@ -531,4 +454,3 @@ export async function mockCreateOrder(payload: CreateOrderPayloadInput): Promise
   saveOrders(orders);
   return { orderId: nextId };
 }
-
