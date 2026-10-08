@@ -1,6 +1,6 @@
-import { Input } from "@/components/ui/input";
+import { Input } from "@/app/components/ui/Input";
 
-interface TimerPickerProps {
+export interface TimerPickerProps {
   label?: string;
   valueStart: string;
   valueEnd: string;
@@ -16,23 +16,23 @@ export function TimerPicker({
   onChangeEnd,
 }: TimerPickerProps) {
   return (
-    <div className="flex flex-col gap-1.5">
-      {label && <label>{label}</label>}
-      <div className="flex items-center justify-between gap-5">
-        <div className="flex flex-col w-full">
+    <div className="flex flex-col gap-1.5 w-full">
+      {label && <span className="text-sm font-semibold text-gray-800">{label}</span>}
+      <div className="flex items-center gap-4">
+        <div className="flex-1">
           <Input
             id="abertura"
             type="time"
-            className="w-full"
+            label="Abertura"
             value={valueStart}
             onChange={(e) => onChangeStart(e.target.value)}
           />
         </div>
-        <div className="flex flex-col w-full">
+        <div className="flex-1">
           <Input
             id="fechamento"
             type="time"
-            className="w-full"
+            label="Fechamento"
             value={valueEnd}
             onChange={(e) => onChangeEnd(e.target.value)}
           />

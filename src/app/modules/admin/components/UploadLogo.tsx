@@ -1,13 +1,20 @@
-import { useRef, useState, useEffect } from "react";
+import React, { useRef, useState, useEffect } from "react";
+import { cn } from "@/core/utils/utils";
 
-interface UploadLogoProps {
+export interface UploadLogoProps {
   className?: string;
   imageUrl?: string | null;
   setImageFile: React.Dispatch<React.SetStateAction<File | null>>;
+  ariaLabel?: string;
 }
 
-export function UploadLogo({ className, imageUrl, setImageFile }: UploadLogoProps) {
-  const [preview, setPreview] = useState<string | null>(null);
+export function UploadLogo({
+  className,
+  imageUrl,
+  setImageFile,
+  ariaLabel = "Fazer upload de imagem",
+}: UploadLogoProps) {
+  const [preview, setPreview] = useState<string>("/placeholder.svg");
   const inputRef = useRef<HTMLInputElement>(null);
   const previewUrlRef = useRef<string | null>(null);
 
@@ -47,17 +54,26 @@ export function UploadLogo({ className, imageUrl, setImageFile }: UploadLogoProp
 
   return (
     <div
-      className={
-        className ||
-        "w-24 h-24 rounded-full bg-gray-200 flex items-center justify-center overflow-hidden cursor-pointer"
-      }
+      className={cn(
+        "relative rounded-full bg-gray-200 flex items-center justify-center overflow-hidden cursor-pointer group transition-transform hover:scale-105",
+        className || "w-24 h-24"
+      )}
       onClick={triggerFileInput}
+      role="button"
+      tabIndex={0}
+      onKeyDown={(e) => {
+        if (e.key === "Enter" || e.key === " ") triggerFileInput();
+      }}
+      aria-label={ariaLabel}
     >
       <img
-        src={preview || "/placeholder.svg"}
-        alt="Logo"
+        src={preview}
+        alt="Foto de perfil ou logo"
         className="w-full h-full object-cover"
       />
+      <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 flex items-center justify-center transition-opacity text-white text-xs font-medium">
+        Alterar
+      </div>
       <input
         ref={inputRef}
         type="file"
