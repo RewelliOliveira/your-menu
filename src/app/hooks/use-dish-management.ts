@@ -1,46 +1,47 @@
-import { useState, useEffect, useCallback } from 'react';
-import { toast } from 'react-toastify';
-import { getSizeOptionsApi, SizeOptionApi } from '@/services/size-opition-api';
-import { getCategoriesApi, CategoryApi, createCategoryApi } from '@/services/category-api';
-import { DishSizeOption } from '@/services/create-dish';
+import { useState, useEffect, useCallback } from "react";
+import { toast } from "react-toastify";
+import { getSizeOptionsApi } from "@/infrastructure/services/dish-service";
+import { getCategoriesApi, createCategoryApi } from "@/infrastructure/services/category-service";
+import { DishSizeInput } from "@/core/types/dish-types";
+import { parseCurrencyToNumber } from "@/core/utils/utils";
 
-type SelectOption = {
+export interface SelectOption {
   label: string;
   value: string;
-};
+}
 
 export function useDishManagement(token: string, restaurantId: string) {
   const [isLoading, setIsLoading] = useState(false);
   const [sizeOptions, setSizeOptions] = useState<SelectOption[]>([]);
   const [categoryOptions, setCategoryOptions] = useState<SelectOption[]>([]);
-  const [selectedCategoryId, setSelectedCategoryId] = useState('');
-  const [selectedSizeId, setSelectedSizeId] = useState('');
-  const [price, setPrice] = useState('');
-  const [sizeOptionsPrices, setSizeOptionsPrices] = useState<DishSizeOption[]>([]);
+  const [selectedCategoryId, setSelectedCategoryId] = useState("");
+  const [selectedSizeId, setSelectedSizeId] = useState("");
+  const [price, setPrice] = useState("");
+  const [sizeOptionsPrices, setSizeOptionsPrices] = useState<DishSizeInput[]>([]);
 
   const fetchSizeOptions = useCallback(async () => {
     try {
-      const data: SizeOptionApi[] = await getSizeOptionsApi(token);
+      const data = await getSizeOptionsApi(token);
       const options = data.map((size) => ({
-        label: `${size.magnitude ?? ''} ${size.abbreviation}`.trim(),
+        label: `${size.magnitude ?? ""} ${size.abbreviation}`.trim(),
         value: size.id.toString(),
       }));
       setSizeOptions(options);
     } catch {
-      toast.error('Erro ao carregar opções de tamanho');
+      toast.error("Erro ao carregar opções de tamanho");
     }
   }, [token]);
 
   const fetchCategories = useCallback(async () => {
     try {
-      const data: CategoryApi[] = await getCategoriesApi(restaurantId, token);
+      const data = await getCategoriesApi(restaurantId, token);
       const options = data.map((cat) => ({
         label: cat.name,
-        value: cat.Id.toString(),
+        value: cat.id.toString(),
       }));
       setCategoryOptions(options);
     } catch {
-      toast.error('Erro ao carregar categorias');
+      toast.error("Erro ao carregar categorias");
     }
   }, [restaurantId, token]);
 
@@ -52,7 +53,7 @@ export function useDishManagement(token: string, restaurantId: string) {
       try {
         await Promise.all([fetchSizeOptions(), fetchCategories()]);
       } catch {
-        toast.error('Erro ao carregar dados iniciais');
+        toast.error("Erro ao carregar dados iniciais");
       } finally {
         setIsLoading(false);
       }
@@ -60,23 +61,18 @@ export function useDishManagement(token: string, restaurantId: string) {
     fetchInitialData();
   }, [token, restaurantId, fetchSizeOptions, fetchCategories]);
 
-  async function addNewCategory(categoryName: string) {
-    if (!categoryName.trim()) return;
+  async function addNewCategory(categoryName: string): Promise<boolean> {
+    if (!categoryName.trim()) return false;
 
     try {
       setIsLoading(true);
       const newCategory = await createCategoryApi(restaurantId, categoryName, token);
-
-      // Atualiza a lista de categorias
       await fetchCategories();
-
-      // Seleciona automaticamente a nova categoria
-      setSelectedCategoryId(newCategory.Id.toString());
-
-      toast.success('Categoria adicionada com sucesso!');
+      setSelectedCategoryId(newCategory.id.toString());
+      toast.success("Categoria adicionada com sucesso!");
       return true;
     } catch {
-      toast.error('Erro ao adicionar categoria');
+      toast.error("Erro ao adicionar categoria");
       return false;
     } finally {
       setIsLoading(false);
@@ -85,32 +81,31 @@ export function useDishManagement(token: string, restaurantId: string) {
 
   function handleAddSizeOptionPrice() {
     if (!selectedSizeId || !price) {
-      toast.warn('Selecione um tamanho e informe o preço');
+      toast.warn("Selecione um tamanho e informe o preço");
       return;
     }
 
     const sizeOptionIdNum = Number(selectedSizeId);
+    const priceNum = parseCurrencyToNumber(price);
 
-    const priceNum = parseFloat(price.replace(',', '.'));
-
-    if (isNaN(priceNum)) {
-      toast.warn('Informe um preço válido');
+    if (isNaN(priceNum) || priceNum <= 0) {
+      toast.warn("Informe um preço válido maior que zero");
       return;
     }
 
     if (sizeOptionsPrices.some((item) => item.sizeOptionId === sizeOptionIdNum)) {
-      toast.warn('Esse tamanho já foi adicionado');
+      toast.warn("Esse tamanho já foi adicionado");
       return;
     }
 
-    const newEntry: DishSizeOption = {
+    const newEntry: DishSizeInput = {
       sizeOptionId: sizeOptionIdNum,
       price: priceNum,
     };
 
     setSizeOptionsPrices((old) => [...old, newEntry]);
-    setSelectedSizeId('');
-    setPrice('');
+    setSelectedSizeId("");
+    setPrice("");
   }
 
   return {

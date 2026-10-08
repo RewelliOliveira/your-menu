@@ -4,7 +4,7 @@ interface LogoProps extends SVGProps<SVGSVGElement> {
   className?: string;
 }
 
-export const LogoYourMenu = ({ className, ...props }: LogoProps) => {
+export function LogoYourMenu({ className, ...props }: LogoProps) {
   return (
     <svg
       width="308"
@@ -42,4 +42,4 @@ export const LogoYourMenu = ({ className, ...props }: LogoProps) => {
       />
     </svg>
   );
-};
+}

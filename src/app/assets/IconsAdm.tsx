@@ -5,7 +5,7 @@ interface IconProps extends SVGProps<SVGSVGElement> {
   className?: string;
 }
 
-export const ArrowLeft = ({ color, className, ...props }: IconProps) => {
+export function ArrowLeft({ color, className, ...props }: IconProps) {
   return (
     <svg
       className={className}
@@ -26,9 +26,9 @@ export const ArrowLeft = ({ color, className, ...props }: IconProps) => {
       />
     </svg>
   );
-};
+}
 
-export const DropMenu = ({ color, className, ...props }: IconProps) => {
+export function DropMenu({ color, className, ...props }: IconProps) {
   return (
     <svg
       width="57"
@@ -53,4 +53,4 @@ export const DropMenu = ({ color, className, ...props }: IconProps) => {
       />
     </svg>
   );
-};
+}

@@ -1,12 +1,17 @@
 import { useState } from "react";
-import { createCategoryApi } from "@/services/category-api";
+import { createCategoryApi } from "@/infrastructure/services/category-service";
 import { toast } from "react-toastify";
+
+export interface CategoryOption {
+  label: string;
+  value: string;
+}
 
 export function useAddOrder(restaurantId: string, token: string) {
   const [itemName, setItemName] = useState("");
   const [itemDescription, setItemDescription] = useState("");
   const [isAvailable, setIsAvailable] = useState(true);
-  const [categories, setCategories] = useState<{ label: string; value: string }[]>([]);
+  const [categories, setCategories] = useState<CategoryOption[]>([]);
   const [newCategory, setNewCategory] = useState("");
   const [showInput, setShowInput] = useState(false);
 
@@ -40,7 +45,6 @@ export function useAddOrder(restaurantId: string, token: string) {
         setNewCategory("");
         setShowInput(false);
         toast.success("Categoria adicionada com sucesso!");
-        window.location.reload();
       } catch {
         toast.error("Erro ao adicionar categoria. Tente novamente.");
       }

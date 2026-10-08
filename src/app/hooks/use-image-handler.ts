@@ -1,4 +1,4 @@
-import { useState, ChangeEvent } from 'react';
+import { useState, ChangeEvent } from "react";
 
 export function useImageHandler() {
   const [imgFile, setImgFile] = useState<File | null>(null);

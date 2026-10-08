@@ -1,7 +1,8 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { X } from "lucide-react";
+import { cn } from "@/core/utils/utils";
 
-export type TabbedSectionsProps<T extends string = string, D = unknown> = {
+export interface TabbedSectionsProps<T extends string = string, D = unknown> {
   title: string;
   onlyTitle?: boolean;
   data: D[];
@@ -10,7 +11,7 @@ export type TabbedSectionsProps<T extends string = string, D = unknown> = {
   renderAfterItems?: () => React.ReactNode;
   categoriesOrder?: T[];
   onDeleteCategory?: (category: T) => void;
-};
+}
 
 export function TabbedSections<T extends string = string, D = unknown>({
   title,
@@ -35,13 +36,13 @@ export function TabbedSections<T extends string = string, D = unknown>({
   const [selectedTab, setSelectedTab] = useState<T>(categories[0] ?? ("" as T));
   const [isSticky, setIsSticky] = useState(false);
 
-  const sectionRefs = useRef<Record<T, HTMLDivElement | null>>({} as Record<T, HTMLDivElement | null>);
+  const sectionRefs = useRef<Record<string, HTMLDivElement | null>>({});
   const tabsRef = useRef<HTMLDivElement>(null);
 
   function handleTabClick(tab: T) {
     setSelectedTab(tab);
     const el = sectionRefs.current[tab];
-    const tabsHeight = tabsRef.current?.offsetHeight || 0;
+    const tabsHeight = tabsRef.current?.offsetHeight || 60;
     if (el) {
       window.scrollTo({
         top: el.offsetTop - tabsHeight,
@@ -62,18 +63,14 @@ export function TabbedSections<T extends string = string, D = unknown>({
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
-  function capitalize(word: string) {
-    return word.charAt(0).toUpperCase() + word.slice(1);
-  }
-
   if (onlyTitle) {
     return (
-      <div className="w-full bg-[#f5f5f5] py-6">
-        <div className="max-w-[75%] mx-auto px-4">
-          <h1 className="text-xl font-semibold text-center text-gray-800 mb-4">
+      <div className="w-full bg-[#f5f5f5] py-6 border-b border-gray-200">
+        <div className="max-w-6xl mx-auto px-4">
+          <h1 className="text-xl md:text-2xl font-bold text-center text-gray-800 mb-3">
             {title}
           </h1>
-          <div className="w-full h-1 bg-orange-500 rounded-full mb-6" />
+          <div className="w-24 h-1 bg-orange-500 rounded-full mx-auto" />
         </div>
       </div>
     );
@@ -81,33 +78,34 @@ export function TabbedSections<T extends string = string, D = unknown>({
 
   return (
     <div className="w-full bg-[#f5f5f5] py-6">
-      <div className="max-w-[75%] mx-auto px-4">
-        <h1 className="text-xl font-semibold text-center text-gray-800 mb-4">
+      <div className="max-w-6xl mx-auto px-4">
+        <h1 className="text-xl md:text-2xl font-bold text-center text-gray-800 mb-6">
           {title}
         </h1>
 
-        <div ref={tabsRef} className="sticky top-0 bg-[#f5f5f5] z-10 mb-6">
-          <div className="flex justify-between">
-            {categories.map((tab) => {
-              const isSelected = selectedTab === tab;
-              return (
-                <div key={tab} className="flex-1">
-                  <div className="relative">
+        {categories.length > 0 && (
+          <div
+            ref={tabsRef}
+            className={cn(
+              "sticky top-0 bg-[#f5f5f5] z-30 mb-8 border-b border-gray-200",
+              isSticky && "shadow-xs bg-white/95 backdrop-blur-md"
+            )}
+          >
+            <div className="flex overflow-x-auto scrollbar-none gap-2 py-2">
+              {categories.map((tab) => {
+                const isSelected = selectedTab === tab;
+                return (
+                  <div key={tab} className="relative flex-shrink-0">
                     <button
                       onClick={() => handleTabClick(tab)}
-                      className={`w-full text-center py-2 font-medium transition-colors duration-200 text-black
-                        ${
-                          isSticky
-                            ? isSelected
-                              ? "border-b-4 border-orange-500"
-                              : "border-b-2 border-black"
-                            : isSelected
-                            ? "border-t-4 border-orange-500"
-                            : "border-t-2 border-black"
-                        }
-                      `}
+                      className={cn(
+                        "px-4 py-2 text-sm font-semibold rounded-lg transition-all cursor-pointer",
+                        isSelected
+                          ? "bg-orange-600 text-white shadow-xs"
+                          : "text-gray-700 hover:bg-gray-200"
+                      )}
                     >
-                      {capitalize(tab)}
+                      {tab}
                     </button>
                     {onDeleteCategory && (
                       <button
@@ -115,18 +113,19 @@ export function TabbedSections<T extends string = string, D = unknown>({
                           e.stopPropagation();
                           onDeleteCategory(tab);
                         }}
-                        className="absolute top-1 right-1 p-1 rounded-full hover:bg-red-100 transition"
+                        className="ml-1 p-1 text-gray-400 hover:text-red-500 rounded-full transition-colors cursor-pointer"
                         title="Excluir categoria"
+                        aria-label={`Excluir categoria ${tab}`}
                       >
-                        <X className="w-4 h-4 text-red-500 hover:text-red-600" />
+                        <X className="w-3.5 h-3.5" />
                       </button>
                     )}
                   </div>
-                </div>
-              );
-            })}
+                );
+              })}
+            </div>
           </div>
-        </div>
+        )}
 
         {categories.map((tab) => {
           const filteredItems = data.filter((item) => getCategory(item) === tab);
@@ -136,17 +135,24 @@ export function TabbedSections<T extends string = string, D = unknown>({
               ref={(el) => {
                 sectionRefs.current[tab] = el;
               }}
-              className="mb-12"
+              className="mb-12 scroll-mt-24"
             >
-              <h2 className="text-lg font-semibold mb-4">{capitalize(tab)}</h2>
-              <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+              <div className="flex items-center gap-3 mb-5 border-b border-gray-200 pb-2">
+                <h2 className="text-xl font-bold text-gray-800">{tab}</h2>
+                <span className="text-xs bg-gray-200 text-gray-600 px-2 py-0.5 rounded-full font-medium">
+                  {filteredItems.length}
+                </span>
+              </div>
+
+              <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
                 {filteredItems.map((item, index) => (
                   <div key={index}>{renderItem(item)}</div>
                 ))}
                 {renderAfterItems && <div>{renderAfterItems()}</div>}
               </div>
+
               {filteredItems.length === 0 && !renderAfterItems && (
-                <p className="text-black-600">Nenhum item nesta seção.</p>
+                <p className="text-gray-500 text-sm py-4">Nenhum item nesta seção.</p>
               )}
             </div>
           );
