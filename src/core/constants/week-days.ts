@@ -1,4 +1,9 @@
-export const WeekDays = [
+export interface WeekDayOption {
+  value: string;
+  label: string;
+}
+
+export const WEEK_DAYS: WeekDayOption[] = [
   { value: "SUNDAY", label: "Domingo" },
   { value: "MONDAY", label: "Segunda" },
   { value: "TUESDAY", label: "Terça" },
