@@ -1,13 +1,12 @@
-import "./App.css";
 import { BrowserRouter } from "react-router-dom";
-import { Router } from "./router/router";
+import { AppRouter } from "./app/routes/AppRouter";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
 export function App() {
   return (
     <BrowserRouter>
-      <Router />
+      <AppRouter />
       <ToastContainer />
     </BrowserRouter>
   );

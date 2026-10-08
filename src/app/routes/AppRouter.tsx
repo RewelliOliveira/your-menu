@@ -1,9 +1,9 @@
 import { useEffect } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
-import AdminRoutes from "./adm-router";
-import ClientRoutes from "./client-router";
+import { AdminRoutes } from "./AdminRoutes";
+import { ClientRoutes } from "./ClientRoutes";
 
-export function Router() {
+export function AppRouter() {
   const location = useLocation();
   const navigate = useNavigate();
   const isAdmin = location.pathname.startsWith("/adm");
