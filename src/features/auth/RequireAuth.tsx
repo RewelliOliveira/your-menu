@@ -12,5 +12,8 @@ export function RequireAuth() {
 
 export function RedirectIfAuthenticated() {
   const { session } = useAuth();
-  return session ? <Navigate to="/admin" replace /> : <Outlet />;
+  const location = useLocation();
+  const from = (location.state as { from?: string } | null)?.from;
+  if (!session) return <Outlet />;
+  return <Navigate to={from?.startsWith("/admin") ? from : "/admin"} replace />;
 }
