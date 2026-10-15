@@ -1,4 +1,4 @@
-const PREFIX = "yourmenu:v2:";
+const PREFIX = "yourmenu:v3:";
 
 export function readStorage<T>(key: string, isValid: (value: unknown) => value is T): T | null {
   try {

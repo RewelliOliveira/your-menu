@@ -213,9 +213,9 @@ function seedOrder(
   };
 }
 
-export function createSeedOrders(): Order[] {
+export function createRecentOrders(firstId: number): Order[] {
   return [
-    seedOrder(106, {
+    seedOrder(firstId + 5, {
       status: "PENDING",
       createdAt: minutesAgo(4),
       customer: { name: "Carlos Eduardo Silva", phone: "11987654321" },
@@ -237,7 +237,7 @@ export function createSeedOrders(): Order[] {
         ["dish-coke", "var-coke-lata", 2],
       ],
     }),
-    seedOrder(105, {
+    seedOrder(firstId + 4, {
       status: "CONFIRMED",
       createdAt: minutesAgo(18),
       customer: { name: "Mariana Souza", phone: "11976543210" },
@@ -258,7 +258,7 @@ export function createSeedOrders(): Order[] {
         ["dish-cheesecake", "var-cheesecake-1", 1],
       ],
     }),
-    seedOrder(104, {
+    seedOrder(firstId + 3, {
       status: "CONFIRMED",
       createdAt: minutesAgo(25),
       customer: { name: "Pedro Henrique", phone: "11991234567" },
@@ -268,7 +268,7 @@ export function createSeedOrders(): Order[] {
       note: "",
       items: [["dish-margherita", "var-margherita-g", 1]],
     }),
-    seedOrder(103, {
+    seedOrder(firstId + 2, {
       status: "IN_DELIVERY",
       createdAt: minutesAgo(41),
       customer: { name: "Lucas Mendes", phone: "11965432109" },
@@ -289,7 +289,7 @@ export function createSeedOrders(): Order[] {
         ["dish-orange", "var-orange-1", 2],
       ],
     }),
-    seedOrder(102, {
+    seedOrder(firstId + 1, {
       status: "DELIVERED",
       createdAt: minutesAgo(95),
       customer: { name: "Beatriz Lima", phone: "11954321098" },
@@ -310,7 +310,7 @@ export function createSeedOrders(): Order[] {
         ["dish-brownie", "var-brownie-1", 2],
       ],
     }),
-    seedOrder(101, {
+    seedOrder(firstId, {
       status: "CANCELLED",
       createdAt: minutesAgo(180),
       customer: { name: "Fernanda Rocha", phone: "11932109876" },
