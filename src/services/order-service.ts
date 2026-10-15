@@ -8,6 +8,7 @@ import type {
   OrderStatus,
 } from "@/types/order";
 import { ApiError, db, delay, requireAuth, requireRestaurant } from "./mock/db";
+import { receiveSimulatedOrders } from "./mock/demo-simulator";
 
 const MAX_ITEMS = 50;
 const MAX_QUANTITY = 99;
@@ -139,6 +140,7 @@ const RECENT_ORDERS_WINDOW_MS = 7 * 24 * 60 * 60 * 1000;
 export async function getOrders() {
   requireAuth();
   await delay(200);
+  receiveSimulatedOrders();
   const since = new Date(Date.now() - RECENT_ORDERS_WINDOW_MS).toISOString();
   return db.orders
     .get()

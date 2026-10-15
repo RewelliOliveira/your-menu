@@ -27,6 +27,16 @@ export function removeStorage(key: string) {
   }
 }
 
+export function clearStorage(keep: string[] = []) {
+  try {
+    Object.keys(localStorage)
+      .filter((key) => key.startsWith(PREFIX) && !keep.includes(key.slice(PREFIX.length)))
+      .forEach((key) => localStorage.removeItem(key));
+  } catch {
+    void 0;
+  }
+}
+
 export const isArray = (value: unknown): value is unknown[] => Array.isArray(value);
 
 export const isObject = (value: unknown): value is Record<string, unknown> =>

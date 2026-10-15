@@ -5,6 +5,7 @@ import {
   SEED_DISHES,
   SEED_RESTAURANT,
   SEED_ZONES,
+  DEMO_STREETS,
   createRecentOrders,
 } from "./seed";
 
@@ -23,7 +24,7 @@ const PAYMENT_WEIGHTS: Array<[PaymentMethod, number]> = [
   ["CARD", 36],
   ["CASH", 14],
 ];
-const FIRST_NAMES = [
+export const FIRST_NAMES = [
   "Ana",
   "Bruno",
   "Carla",
@@ -43,7 +44,7 @@ const FIRST_NAMES = [
   "Sofia",
   "Tiago",
 ];
-const LAST_NAMES = [
+export const LAST_NAMES = [
   "Silva",
   "Souza",
   "Oliveira",
@@ -54,15 +55,6 @@ const LAST_NAMES = [
   "Ferreira",
   "Ribeiro",
   "Martins",
-];
-const STREETS = [
-  "Rua Augusta",
-  "Rua da Consolação",
-  "Alameda Santos",
-  "Rua Haddock Lobo",
-  "Rua Frei Caneca",
-  "Rua Bela Cintra",
-  "Av. Brigadeiro Luís Antônio",
 ];
 
 function mulberry32(seed: number) {
@@ -164,7 +156,7 @@ export function createSeedHistory(): {
               zoneId: zone.id,
               zoneName: zone.name,
               cep: "01310100",
-              street: pick(STREETS),
+              street: pick(DEMO_STREETS),
               number: String(Math.floor(between(10, 1900))),
               complement: "",
               reference: "",

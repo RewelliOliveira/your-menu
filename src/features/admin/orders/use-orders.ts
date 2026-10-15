@@ -27,12 +27,6 @@ export function useOrders() {
     knownIds.current = new Set(orders.map((order) => order.id));
   }, [orders]);
 
-  useEffect(() => {
-    const onStorage = () => reload(true);
-    window.addEventListener("storage", onStorage);
-    return () => window.removeEventListener("storage", onStorage);
-  }, [reload]);
-
   const changeStatus = useCallback(
     async (order: Order, status: OrderStatus) => {
       const updated = await updateOrderStatus(order.id, status);

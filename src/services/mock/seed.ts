@@ -5,6 +5,11 @@ import type { BusinessHours, DeliveryZone, Restaurant, RestaurantAddress } from 
 const img = (id: string, width = 600) =>
   `https://images.unsplash.com/${id}?w=${width}&auto=format&fit=crop&q=80`;
 
+export const DEMO_ACCOUNT = {
+  email: "demo@yourburger.com.br",
+  password: "demonstracao",
+};
+
 export const SEED_RESTAURANT: Restaurant = {
   id: "rest-1",
   slug: "your-burger",
@@ -130,7 +135,7 @@ export const SEED_DISHES: Dish[] = [
     categoryId: "cat-sides",
     name: "Onion Rings",
     description: "Anéis de cebola empanados em massa de cerveja. Acompanha barbecue artesanal.",
-    imageUrl: img("photo-1639024471285-0afc3831652c"),
+    imageUrl: img("photo-1639024471283-03518883512d"),
     isAvailable: false,
     variants: [{ id: "var-onion-1", label: "Porção 250g", price: 22 }],
   },
@@ -177,11 +182,14 @@ export const SEED_DISHES: Dish[] = [
 
 const minutesAgo = (minutes: number) => new Date(Date.now() - minutes * 60_000).toISOString();
 
-function seedOrder(
+export type SeedItem = [dishId: string, variantId: string, quantity: number];
+
+export function seedOrder(
   id: number,
   partial: Pick<Order, "status" | "createdAt" | "customer" | "fulfillment" | "address" | "paymentMethod" | "note"> & {
-    items: Array<[dishId: string, variantId: string, quantity: number]>;
+    items: SeedItem[];
   },
+  trackingCode = `seed-${id}`,
 ): Order {
   const items = partial.items.map(([dishId, variantId, quantity]) => {
     const dish = SEED_DISHES.find((d) => d.id === dishId)!;
@@ -203,7 +211,7 @@ function seedOrder(
   return {
     ...partial,
     id,
-    trackingCode: `seed-${id}`,
+    trackingCode,
     restaurantId: SEED_RESTAURANT.id,
     changeFor: null,
     items,
@@ -213,9 +221,77 @@ function seedOrder(
   };
 }
 
+export const DEMO_STREETS = [
+  "Rua Haddock Lobo",
+  "Alameda Santos",
+  "Rua Bela Cintra",
+  "Rua Teodoro Sampaio",
+  "Rua da Consolação",
+  "Rua Augusta",
+  "Alameda Lorena",
+];
+
+export function seedAddress(zone: Pick<DeliveryZone, "id" | "name">, index: number): NonNullable<Order["address"]> {
+  return {
+    zoneId: zone.id,
+    zoneName: zone.name,
+    cep: "01310100",
+    street: DEMO_STREETS[index % DEMO_STREETS.length],
+    number: String(120 + ((index * 37) % 1800)),
+    complement: "",
+    reference: "",
+  };
+}
+
+type EarlierOrder = [
+  minutes: number,
+  name: string,
+  zoneId: string | null,
+  paymentMethod: Order["paymentMethod"],
+  items: SeedItem[],
+];
+
+const EARLIER_TODAY: EarlierOrder[] = [
+  [170, "Rafael Antunes", "zone-pinheiros", "CARD", [["dish-pepperoni", "var-pepperoni-g", 1], ["dish-coke", "var-coke-2l", 1]]],
+  [155, "Camila Ferreira", "zone-jardins", "PIX", [["dish-smash", "var-smash-1", 2], ["dish-fries", "var-fries-1", 1]]],
+  [140, "Thiago Moreira", null, "CASH", [["dish-bacon", "var-bacon-1", 1], ["dish-coke", "var-coke-lata", 1]]],
+  [128, "Larissa Prado", "zone-consolacao", "PIX", [["dish-margherita", "var-margherita-m", 1], ["dish-brownie", "var-brownie-1", 1]]],
+  [117, "Gustavo Ribeiro", "zone-bela-vista", "CARD", [["dish-truffle", "var-truffle-1", 1], ["dish-orange", "var-orange-1", 1]]],
+  [104, "Patrícia Gomes", "zone-centro", "PIX", [["dish-bacon", "var-bacon-2", 2]]],
+  [72, "Diego Carvalho", "zone-jardins", "CARD", [["dish-smash", "var-smash-2", 1], ["dish-cheesecake", "var-cheesecake-1", 1]]],
+];
+
 export function createRecentOrders(firstId: number): Order[] {
+  const earlier = EARLIER_TODAY.map(([minutes, name, zoneId, paymentMethod, items], index) =>
+    seedOrder(firstId + index, {
+      status: "DELIVERED",
+      createdAt: minutesAgo(minutes),
+      customer: { name, phone: `119${81_000_000 + index * 731_337}` },
+      fulfillment: zoneId ? "DELIVERY" : "PICKUP",
+      address: zoneId ? seedAddress(SEED_ZONES.find((zone) => zone.id === zoneId)!, index) : null,
+      paymentMethod,
+      note: "",
+      items,
+    }),
+  );
+  const base = firstId + earlier.length;
+
   return [
-    seedOrder(firstId + 5, {
+    ...earlier,
+    seedOrder(base + 6, {
+      status: "PENDING",
+      createdAt: minutesAgo(1),
+      customer: { name: "Juliana Costa", phone: "11943218765" },
+      fulfillment: "PICKUP",
+      address: null,
+      paymentMethod: "CARD",
+      note: "",
+      items: [
+        ["dish-pepperoni", "var-pepperoni-m", 1],
+        ["dish-orange", "var-orange-1", 1],
+      ],
+    }),
+    seedOrder(base + 5, {
       status: "PENDING",
       createdAt: minutesAgo(4),
       customer: { name: "Carlos Eduardo Silva", phone: "11987654321" },
@@ -237,7 +313,7 @@ export function createRecentOrders(firstId: number): Order[] {
         ["dish-coke", "var-coke-lata", 2],
       ],
     }),
-    seedOrder(firstId + 4, {
+    seedOrder(base + 4, {
       status: "CONFIRMED",
       createdAt: minutesAgo(18),
       customer: { name: "Mariana Souza", phone: "11976543210" },
@@ -258,7 +334,7 @@ export function createRecentOrders(firstId: number): Order[] {
         ["dish-cheesecake", "var-cheesecake-1", 1],
       ],
     }),
-    seedOrder(firstId + 3, {
+    seedOrder(base + 3, {
       status: "CONFIRMED",
       createdAt: minutesAgo(25),
       customer: { name: "Pedro Henrique", phone: "11991234567" },
@@ -268,7 +344,7 @@ export function createRecentOrders(firstId: number): Order[] {
       note: "",
       items: [["dish-margherita", "var-margherita-g", 1]],
     }),
-    seedOrder(firstId + 2, {
+    seedOrder(base + 2, {
       status: "IN_DELIVERY",
       createdAt: minutesAgo(41),
       customer: { name: "Lucas Mendes", phone: "11965432109" },
@@ -289,7 +365,7 @@ export function createRecentOrders(firstId: number): Order[] {
         ["dish-orange", "var-orange-1", 2],
       ],
     }),
-    seedOrder(firstId + 1, {
+    seedOrder(base + 1, {
       status: "DELIVERED",
       createdAt: minutesAgo(95),
       customer: { name: "Beatriz Lima", phone: "11954321098" },
@@ -310,7 +386,7 @@ export function createRecentOrders(firstId: number): Order[] {
         ["dish-brownie", "var-brownie-1", 2],
       ],
     }),
-    seedOrder(firstId, {
+    seedOrder(base, {
       status: "CANCELLED",
       createdAt: minutesAgo(180),
       customer: { name: "Fernanda Rocha", phone: "11932109876" },

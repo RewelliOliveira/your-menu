@@ -38,7 +38,12 @@ export function useAsync<T>(fetcher: () => Promise<T>, options: { pollInterval?:
     const interval = setInterval(() => {
       if (document.visibilityState === "visible") load(true);
     }, pollInterval);
-    return () => clearInterval(interval);
+    const onStorage = () => load(true);
+    window.addEventListener("storage", onStorage);
+    return () => {
+      clearInterval(interval);
+      window.removeEventListener("storage", onStorage);
+    };
   }, [load, pollInterval]);
 
   const setData = useCallback((updater: (current: T | undefined) => T | undefined) => {

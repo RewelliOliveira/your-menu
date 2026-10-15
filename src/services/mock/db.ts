@@ -1,4 +1,4 @@
-import { isArray, isObject, readStorage, writeStorage } from "@/lib/storage";
+import { clearStorage, isArray, isObject, readStorage, writeStorage } from "@/lib/storage";
 import type { Session } from "@/types/auth";
 import type { Transaction } from "@/types/finance";
 import type { Order } from "@/types/order";
@@ -89,6 +89,10 @@ export function requireRestaurant(slug: string) {
   if (restaurant.slug !== slug)
     throw new ApiError("Restaurante não encontrado.", 404);
   return restaurant;
+}
+
+export function resetDatabase() {
+  clearStorage([SESSION_KEY]);
 }
 
 export function delay(ms = 250) {
