@@ -1,0 +1,105 @@
+import { useState, type FormEvent } from "react";
+import { Link } from "react-router-dom";
+import { ArrowUpRight } from "lucide-react";
+
+import { Field } from "@/components/shared/Field";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { getErrorMessage } from "@/lib/utils";
+import { DEMO_ACCOUNT } from "@/services/demo-service";
+import type { LoginInput } from "@/types/auth";
+import { useAuth } from "./auth-context";
+import { AuthLayout } from "./AuthLayout";
+import { PasswordInput } from "./PasswordInput";
+
+export function LoginPage() {
+  const { login } = useAuth();
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [error, setError] = useState("");
+  const [loading, setLoading] = useState(false);
+
+  async function signIn(credentials: LoginInput) {
+    setError("");
+    setLoading(true);
+    try {
+      await login(credentials);
+    } catch (err) {
+      setError(getErrorMessage(err));
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  function handleSubmit(event: FormEvent) {
+    event.preventDefault();
+    signIn({ email, password });
+  }
+
+  function signInWithDemo() {
+    setEmail(DEMO_ACCOUNT.email);
+    setPassword(DEMO_ACCOUNT.password);
+    signIn(DEMO_ACCOUNT);
+  }
+
+  return (
+    <AuthLayout title="Entrar no painel" description="Acesse os pedidos, o cardápio e o financeiro da sua loja.">
+      <div className="space-y-3 rounded-lg border p-4">
+        <div className="text-sm">
+          <p className="font-semibold">Conta de demonstração</p>
+          <p className="mt-1 text-muted-foreground">
+            Os dados ficam salvos só neste navegador. Qualquer e-mail válido com senha de 8+ caracteres também funciona.
+          </p>
+        </div>
+        <div className="flex flex-col gap-2 sm:flex-row">
+          <Button type="button" variant="secondary" className="sm:flex-1" onClick={signInWithDemo} disabled={loading}>
+            Entrar com a conta demo
+          </Button>
+          <Button type="button" variant="ghost" className="sm:flex-1" asChild>
+            <Link to="/your-burger" target="_blank">
+              Ver loja do cliente <ArrowUpRight />
+            </Link>
+          </Button>
+        </div>
+      </div>
+
+      <form onSubmit={handleSubmit} className="space-y-5" noValidate>
+        <Field label="E-mail" htmlFor="email">
+          <Input
+            id="email"
+            type="email"
+            autoComplete="email"
+            placeholder="voce@restaurante.com"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            maxLength={120}
+            required
+          />
+        </Field>
+
+        <Field label="Senha" htmlFor="password" error={error}>
+          <PasswordInput
+            id="password"
+            autoComplete="current-password"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            aria-invalid={!!error}
+            maxLength={128}
+            required
+          />
+        </Field>
+
+        <Button type="submit" size="lg" className="w-full" loading={loading}>
+          Entrar
+        </Button>
+
+        <p className="text-center text-sm text-muted-foreground">
+          Ainda não tem conta?{" "}
+          <Link to="/admin/register" className="font-semibold text-foreground underline-offset-4 hover:underline">
+            Cadastre seu restaurante
+          </Link>
+        </p>
+      </form>
+    </AuthLayout>
+  );
+}

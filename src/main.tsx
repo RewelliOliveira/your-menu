@@ -1,17 +1,11 @@
-import { StrictMode } from 'react';
-import { createRoot } from 'react-dom/client';
+import { StrictMode } from "react";
+import { createRoot } from "react-dom/client";
 
-import './index.css';
-import { AuthProvider } from './contexts/auth-context';
-import { RestaurantProvider } from './contexts/restaurant-context';
-import { App } from './App';
+import { App } from "./app/App";
+import "./index.css";
 
-createRoot(document.getElementById('root')!).render(
+createRoot(document.getElementById("root")!).render(
   <StrictMode>
-    <AuthProvider>
-      <RestaurantProvider>
-        <App />
-      </RestaurantProvider>
-    </AuthProvider>
-  </StrictMode>
+    <App />
+  </StrictMode>,
 );

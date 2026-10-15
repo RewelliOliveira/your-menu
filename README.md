@@ -1,36 +1,69 @@
-Your-Menu
+# Your Menu
 
-Plataforma web de pedidos para pequenos restaurantes, permitindo que cada um crie e gerencie seu próprio site.
-Oferece painel para editar cardápio, controlar pedidos e acompanhar entregas. Foco em simplicidade e autonomia, ideal para negócios que buscam digitalização acessível.
+Plataforma web de pedidos para pequenos restaurantes: cada restaurante tem seu cardápio digital
+(vitrine pública) e um painel para acompanhar pedidos em tempo real, editar o cardápio e configurar a loja.
 
-🚀 Visão Geral
-O Your-Menu é uma plataforma que ajuda pequenos restaurantes a se digitalizarem de forma simples e eficiente.
-A ideia é oferecer autonomia para que cada restaurante gerencie seu cardápio, pedidos e entregas, proporcionando uma experiência prática tanto para o administrador quanto para o cliente.
+## Funcionalidades
 
-🧩 Principais Funcionalidades
+**Vitrine do cliente** (`/:slug`)
+- Cardápio por categorias, com busca, navegação fixa e destaque da seção visível
+- Detalhes do prato com opções (tamanhos), quantidade e observação
+- Sacola persistente com múltiplos itens
+- Checkout em uma página: entrega ou retirada, CEP com preenchimento automático, Pix, cartão ou dinheiro (com troco)
+- Acompanhamento do pedido em tempo real e QR Code Pix gerado localmente
 
-🍽️ Gestão de cardápio: adicione, edite ou remova pratos e categorias.
+**Painel do restaurante** (`/admin`)
+- Quadro de pedidos (Novo → Em preparo → Em entrega), métricas do dia e histórico
+- Aviso de novos pedidos e atualização automática
+- Cardápio: categorias, pratos, opções de preço e pausa rápida de itens
+- Ajustes: perfil, logo e capa, horários por dia, endereço, bairros atendidos e retirada
+- Botão para abrir e fechar a loja
 
-🛒 Controle de pedidos: acompanhe os pedidos em tempo real.
+## Stack
 
-📦 Gestão de entregas: visualize status e histórico de entregas.
+React 19 · Vite · TypeScript · Tailwind CSS v4 · shadcn/ui (Radix) · Motion · React Router · Sonner
 
-🎨 Interface intuitiva: design limpo e moderno, focado na experiência do usuário.
+## Como rodar
 
-🌐 Personalização do site do restaurante: cada estabelecimento pode ter seu próprio layout e informações de contato.
+```bash
+npm install
+npm run dev      # ambiente de desenvolvimento
+npm run build    # typecheck + build de produção
+npm run lint
+```
 
-🏗️ Tecnologias Utilizadas
-Front-end (Web)
+- Painel: `http://localhost:5173/admin`. Em modo demonstração, entre com qualquer e-mail válido e uma senha de 8+ caracteres.
+- Vitrine: `http://localhost:5173/your-burger`
 
-Linguagem: TypeScript / JavaScript
+## Arquitetura
 
-Framework: React
+```
+src/
+├── app/                 # App, rotas (lazy por página), layout raiz e 404
+├── components/
+│   ├── ui/              # componentes shadcn (button, dialog, sheet, select…)
+│   └── shared/          # componentes de produto reutilizáveis (DishCard, ImageUpload…)
+├── features/
+│   ├── auth/            # sessão, login, cadastro e proteção de rotas
+│   ├── admin/           # layout do painel, pedidos, cardápio e ajustes
+│   └── storefront/      # vitrine, sacola, checkout e acompanhamento
+├── hooks/               # hooks genéricos (useAsync, useNow, useCepAutofill)
+├── lib/                 # utilitários puros (formatação, Pix, imagem, storage…)
+├── services/            # fronteira com a API
+│   └── mock/            # backend simulado (localStorage) e dados de exemplo
+└── types/               # tipos de domínio
+```
 
-Estilização: Tailwind CSS 
+### Integração com o backend
 
-Roteamento: React Router
+Os arquivos em `src/services` são a única camada que conhece a origem dos dados. Hoje eles usam o
+backend simulado em `services/mock`, que já aplica as regras que pertencem ao servidor:
 
-Gerenciamento de estado: React Hooks / Context API
+- rotas do painel exigem sessão válida;
+- **preços, taxa de entrega e total são recalculados a partir do cardápio**, já que o cliente envia só IDs e quantidades;
+- transições de status de pedido são validadas;
+- o acompanhamento de pedidos usa um código aleatório (não o número sequencial).
 
-💡 Impacto e Objetivo
-O Your-Menu busca facilitar a digitalização de pequenos restaurantes, tornando o gerenciamento de pedidos e cardápio acessível, intuitivo e eficiente, sem complicações técnicas.
+Para integrar a API real, substitua o corpo das funções dos serviços por chamadas HTTP, mantendo as
+assinaturas. O backend deve repetir essas validações e emitir a sessão como cookie
+`HttpOnly; Secure; SameSite`.
