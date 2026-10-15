@@ -51,6 +51,11 @@
   --accent: #fff1eb;
   --accent-foreground: #b2330b;
 
+  --chart-income: #2a78d6;
+  --chart-expense: #eb6834;
+  --chart-loss: #1baf7a;
+  --chart-negative: #e34948;
+
   --destructive: #dc2626;
   --success: #059669;
   --border: #e7e7ea;
