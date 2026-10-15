@@ -1,7 +1,10 @@
 import { Navigate, createBrowserRouter } from "react-router-dom";
 
 import { PageLoader } from "@/components/shared/PageLoader";
-import { RedirectIfAuthenticated, RequireAuth } from "@/features/auth/RequireAuth";
+import {
+  RedirectIfAuthenticated,
+  RequireAuth,
+} from "@/features/auth/RequireAuth";
 import { NotFoundPage } from "./NotFoundPage";
 import { RootLayout, RouteError } from "./RootLayout";
 
@@ -20,11 +23,17 @@ export const router = createBrowserRouter([
             children: [
               {
                 path: "login",
-                lazy: () => import("@/features/auth/LoginPage").then((m) => ({ Component: m.LoginPage })),
+                lazy: () =>
+                  import("@/features/auth/LoginPage").then((m) => ({
+                    Component: m.LoginPage,
+                  })),
               },
               {
                 path: "register",
-                lazy: () => import("@/features/auth/RegisterPage").then((m) => ({ Component: m.RegisterPage })),
+                lazy: () =>
+                  import("@/features/auth/RegisterPage").then((m) => ({
+                    Component: m.RegisterPage,
+                  })),
               },
             ],
           },
@@ -32,51 +41,84 @@ export const router = createBrowserRouter([
             element: <RequireAuth />,
             children: [
               {
-                lazy: () => import("@/features/admin/AdminLayout").then((m) => ({ Component: m.AdminLayout })),
+                lazy: () =>
+                  import("@/features/admin/AdminLayout").then((m) => ({
+                    Component: m.AdminLayout,
+                  })),
                 children: [
                   { index: true, element: <Navigate to="orders" replace /> },
                   {
                     path: "orders",
-                    lazy: () => import("@/features/admin/orders/OrdersPage").then((m) => ({ Component: m.OrdersPage })),
+                    lazy: () =>
+                      import("@/features/admin/orders/OrdersPage").then(
+                        (m) => ({ Component: m.OrdersPage }),
+                      ),
                   },
                   {
                     path: "menu",
-                    lazy: () => import("@/features/admin/menu/MenuPage").then((m) => ({ Component: m.MenuPage })),
+                    lazy: () =>
+                      import("@/features/admin/menu/MenuPage").then((m) => ({
+                        Component: m.MenuPage,
+                      })),
                   },
                   {
                     path: "menu/new",
-                    lazy: () => import("@/features/admin/menu/DishFormPage").then((m) => ({ Component: m.DishFormPage })),
+                    lazy: () =>
+                      import("@/features/admin/menu/DishFormPage").then(
+                        (m) => ({ Component: m.DishFormPage }),
+                      ),
                   },
                   {
                     path: "menu/:dishId",
-                    lazy: () => import("@/features/admin/menu/DishFormPage").then((m) => ({ Component: m.DishFormPage })),
+                    lazy: () =>
+                      import("@/features/admin/menu/DishFormPage").then(
+                        (m) => ({ Component: m.DishFormPage }),
+                      ),
+                  },
+                  {
+                    path: "finance",
+                    lazy: () =>
+                      import("@/features/admin/finance/FinancePage").then(
+                        (m) => ({ Component: m.FinancePage }),
+                      ),
                   },
                   {
                     path: "settings",
                     lazy: () =>
-                      import("@/features/admin/settings/SettingsLayout").then((m) => ({ Component: m.SettingsLayout })),
+                      import("@/features/admin/settings/SettingsLayout").then(
+                        (m) => ({ Component: m.SettingsLayout }),
+                      ),
                     children: [
-                      { index: true, element: <Navigate to="profile" replace /> },
+                      {
+                        index: true,
+                        element: <Navigate to="profile" replace />,
+                      },
                       {
                         path: "profile",
                         lazy: () =>
-                          import("@/features/admin/settings/ProfileSettingsPage").then((m) => ({
-                            Component: m.ProfileSettingsPage,
-                          })),
+                          import("@/features/admin/settings/ProfileSettingsPage").then(
+                            (m) => ({
+                              Component: m.ProfileSettingsPage,
+                            }),
+                          ),
                       },
                       {
                         path: "address",
                         lazy: () =>
-                          import("@/features/admin/settings/AddressSettingsPage").then((m) => ({
-                            Component: m.AddressSettingsPage,
-                          })),
+                          import("@/features/admin/settings/AddressSettingsPage").then(
+                            (m) => ({
+                              Component: m.AddressSettingsPage,
+                            }),
+                          ),
                       },
                       {
                         path: "delivery",
                         lazy: () =>
-                          import("@/features/admin/settings/DeliverySettingsPage").then((m) => ({
-                            Component: m.DeliverySettingsPage,
-                          })),
+                          import("@/features/admin/settings/DeliverySettingsPage").then(
+                            (m) => ({
+                              Component: m.DeliverySettingsPage,
+                            }),
+                          ),
                       },
                     ],
                   },
@@ -88,22 +130,33 @@ export const router = createBrowserRouter([
       },
       {
         path: "/:slug",
-        lazy: () => import("@/features/storefront/StorefrontLayout").then((m) => ({ Component: m.StorefrontLayout })),
+        lazy: () =>
+          import("@/features/storefront/StorefrontLayout").then((m) => ({
+            Component: m.StorefrontLayout,
+          })),
         children: [
           {
             index: true,
-            lazy: () => import("@/features/storefront/MenuPage").then((m) => ({ Component: m.MenuPage })),
+            lazy: () =>
+              import("@/features/storefront/MenuPage").then((m) => ({
+                Component: m.MenuPage,
+              })),
           },
           {
             path: "checkout",
-            lazy: () => import("@/features/storefront/checkout/CheckoutPage").then((m) => ({ Component: m.CheckoutPage })),
+            lazy: () =>
+              import("@/features/storefront/checkout/CheckoutPage").then(
+                (m) => ({ Component: m.CheckoutPage }),
+              ),
           },
           {
             path: "pedido/:trackingCode",
             lazy: () =>
-              import("@/features/storefront/order-tracking/OrderTrackingPage").then((m) => ({
-                Component: m.OrderTrackingPage,
-              })),
+              import("@/features/storefront/order-tracking/OrderTrackingPage").then(
+                (m) => ({
+                  Component: m.OrderTrackingPage,
+                }),
+              ),
           },
         ],
       },
