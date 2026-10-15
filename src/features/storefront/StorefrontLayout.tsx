@@ -9,6 +9,7 @@ import { getPublicMenu } from "@/services/menu-service";
 import { getStorefront } from "@/services/restaurant-service";
 import { NotFoundPage } from "@/app/NotFoundPage";
 import { CartProvider } from "./cart/CartProvider";
+import { DemoBanner } from "./DemoBanner";
 import { StorefrontContext } from "./storefront-context";
 
 const REFRESH_INTERVAL = 60_000;
@@ -34,6 +35,7 @@ export function StorefrontLayout() {
   return (
     <StorefrontContext.Provider value={value}>
       <CartProvider key={slug} slug={slug} menu={value.menu}>
+        <DemoBanner />
         <Outlet />
       </CartProvider>
     </StorefrontContext.Provider>
