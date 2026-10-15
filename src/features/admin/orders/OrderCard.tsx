@@ -54,18 +54,30 @@ export function OrderCard({ order, now, onOpen, onAdvance, onCancel }: OrderCard
     >
       <button type="button" onClick={() => onOpen(order)} className="flex cursor-pointer flex-col gap-3 text-left">
         <div className="flex items-start justify-between gap-2">
-          <div>
+          <div className="min-w-0 flex-1">
             <p className="text-lg font-extrabold tracking-tight">#{order.id}</p>
-            <p className="truncate text-sm font-medium text-muted-foreground">{order.customer.name}</p>
+            <p className="truncate text-sm font-medium text-muted-foreground" title={order.customer.name}>
+              {order.customer.name}
+            </p>
           </div>
-          <div className="flex flex-col items-end gap-1.5 text-xs font-semibold">
-            <span className={isLate ? "flex items-center gap-1 text-red-600" : "flex items-center gap-1 text-muted-foreground"}>
-              <Clock className="size-3.5" />
+          <div className="flex max-w-[55%] shrink-0 flex-col items-end gap-1.5 text-xs font-semibold">
+            <span
+              className={
+                isLate
+                  ? "flex items-center gap-1 whitespace-nowrap text-red-600"
+                  : "flex items-center gap-1 whitespace-nowrap text-muted-foreground"
+              }
+            >
+              <Clock className="size-3.5 shrink-0" />
               {formatRelative(order.createdAt, now)}
             </span>
-            <span className="flex items-center gap-1 rounded-full bg-muted px-2 py-0.5 text-muted-foreground">
-              {order.fulfillment === "DELIVERY" ? <Bike className="size-3.5" /> : <ShoppingBag className="size-3.5" />}
-              {order.fulfillment === "DELIVERY" ? order.address?.zoneName : "Retirada"}
+            <span className="flex max-w-full items-center gap-1 rounded-full bg-muted px-2 py-0.5 text-muted-foreground">
+              {order.fulfillment === "DELIVERY" ? (
+                <Bike className="size-3.5 shrink-0" />
+              ) : (
+                <ShoppingBag className="size-3.5 shrink-0" />
+              )}
+              <span className="truncate">{order.fulfillment === "DELIVERY" ? order.address?.zoneName : "Retirada"}</span>
             </span>
           </div>
         </div>

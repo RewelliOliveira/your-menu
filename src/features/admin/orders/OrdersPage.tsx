@@ -203,7 +203,7 @@ function HistoryList({ orders, onOpen }: { orders: Order[]; onOpen: (order: Orde
               </span>
             </span>
             <OrderStatusBadge status={order.status} className="hidden sm:inline-flex" />
-            <span className="w-24 text-right text-sm font-bold tabular-nums">{formatCurrency(order.total)}</span>
+            <span className="w-24 shrink-0 text-right text-sm font-bold tabular-nums">{formatCurrency(order.total)}</span>
           </button>
         </li>
       ))}
