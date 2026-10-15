@@ -1,16 +1,19 @@
-import { useCallback, useMemo } from "react";
+import { useCallback, useMemo, useState } from "react";
 import { NavLink, Outlet } from "react-router-dom";
 import {
+  ChevronsUpDown,
   ClipboardList,
   ExternalLink,
   LogOut,
   MoreVertical,
+  RotateCcw,
   Settings,
   UtensilsCrossed,
   Wallet,
 } from "lucide-react";
 import { motion } from "motion/react";
 
+import { ConfirmDialog } from "@/components/shared/ConfirmDialog";
 import { ErrorState } from "@/components/shared/ErrorState";
 import { FoodImage } from "@/components/shared/FoodImage";
 import { Logo } from "@/components/shared/Logo";
@@ -26,6 +29,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { useAsync } from "@/hooks/use-async";
 import { cn } from "@/lib/utils";
+import { resetDemoData } from "@/services/demo-service";
 import { getMyRestaurant } from "@/services/restaurant-service";
 import type { Restaurant } from "@/types/restaurant";
 import { useAuth } from "../auth/auth-context";
@@ -63,7 +67,7 @@ export function AdminLayout() {
 
   return (
     <AdminRestaurantContext.Provider value={contextValue}>
-      <div className="min-h-dvh lg:grid lg:grid-cols-[17rem_1fr]">
+      <div className="min-h-dvh lg:grid lg:grid-cols-[16rem_1fr]">
         <Sidebar />
         <MobileHeader />
         <main className="mx-auto w-full max-w-6xl px-4 pt-6 pb-28 sm:px-6 lg:px-10 lg:pt-10 lg:pb-12">
@@ -79,57 +83,77 @@ function getStorefrontUrl(slug: string) {
   return `${window.location.origin}/${slug}`;
 }
 
-function RestaurantIdentity({
+function AccountMenuItems({
   restaurant,
-  size = "md",
+  onReset,
 }: {
   restaurant: Restaurant;
-  size?: "sm" | "md";
+  onReset: () => void;
+}) {
+  const { logout } = useAuth();
+
+  return (
+    <>
+      <DropdownMenuItem asChild>
+        <a
+          href={getStorefrontUrl(restaurant.slug)}
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          <ExternalLink /> Ver cardápio online
+        </a>
+      </DropdownMenuItem>
+      <DropdownMenuItem onSelect={onReset}>
+        <RotateCcw /> Restaurar dados de demonstração
+      </DropdownMenuItem>
+      <DropdownMenuSeparator />
+      <DropdownMenuItem variant="destructive" onSelect={logout}>
+        <LogOut /> Sair
+      </DropdownMenuItem>
+    </>
+  );
+}
+
+function ResetDemoDialog({
+  open,
+  onOpenChange,
+}: {
+  open: boolean;
+  onOpenChange: (open: boolean) => void;
 }) {
   return (
-    <div className="flex min-w-0 items-center gap-3">
-      <FoodImage
-        src={restaurant.logoUrl}
-        alt={restaurant.name}
-        className={cn(
-          "shrink-0 rounded-xl border",
-          size === "sm" ? "size-9" : "size-11",
-        )}
-      />
-      <div className="min-w-0">
-        <p className="truncate text-sm font-bold">{restaurant.name}</p>
-        <p className="truncate text-xs text-muted-foreground">
-          /{restaurant.slug}
-        </p>
-      </div>
-    </div>
+    <ConfirmDialog
+      open={open}
+      onOpenChange={onOpenChange}
+      title="Restaurar dados de demonstração?"
+      description="Pedidos, cardápio, ajustes e movimentações voltam ao estado inicial. Você continua conectado."
+      confirmLabel="Restaurar"
+      destructive
+      onConfirm={resetDemoData}
+    />
   );
 }
 
 function Sidebar() {
-  const { logout } = useAuth();
   const { restaurant } = useAdminRestaurant();
-  const storefrontUrl = getStorefrontUrl(restaurant.slug);
+  const [resetOpen, setResetOpen] = useState(false);
 
   return (
-    <aside className="sticky top-0 hidden h-dvh flex-col gap-6 border-r bg-card p-5 lg:flex">
-      <Logo className="h-7 self-start" />
+    <aside className="sticky top-0 hidden h-dvh flex-col gap-6 border-r bg-card px-4 py-5 lg:flex">
+      <Logo className="ml-2 h-6 self-start" />
 
-      <div className="space-y-3 rounded-2xl bg-muted/60 p-3">
-        <RestaurantIdentity restaurant={restaurant} />
-        <StoreStatusSwitch />
-      </div>
+      <StoreStatusSwitch />
 
-      <nav className="flex flex-col gap-1" aria-label="Navegação do painel">
+      <nav className="flex flex-col gap-0.5" aria-label="Navegação do painel">
         {NAV_ITEMS.map(({ to, label, icon: Icon }) => (
           <NavLink
             key={to}
             to={to}
             className={({ isActive }) =>
               cn(
-                "relative flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-semibold transition-colors",
+                "relative flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium transition-colors",
                 isActive
-                  ? "text-accent-foreground"
+                  ? "text-foreground"
                   : "text-muted-foreground hover:bg-muted hover:text-foreground",
               )
             }
@@ -139,11 +163,13 @@ function Sidebar() {
                 {isActive && (
                   <motion.span
                     layoutId="sidebar-active"
-                    className="absolute inset-0 rounded-xl bg-accent"
+                    className="absolute inset-0 rounded-lg bg-muted"
                     transition={{ type: "spring", stiffness: 500, damping: 40 }}
                   />
                 )}
-                <Icon className="relative size-5" />
+                <Icon
+                  className={cn("relative size-4.5", isActive && "text-primary")}
+                />
                 <span className="relative">{label}</span>
               </>
             )}
@@ -151,36 +177,45 @@ function Sidebar() {
         ))}
       </nav>
 
-      <div className="mt-auto space-y-1">
-        <Button
-          variant="ghost"
-          className="w-full justify-start text-muted-foreground"
-          asChild
-        >
-          <a href={storefrontUrl} target="_blank" rel="noopener noreferrer">
-            <ExternalLink className="size-5" /> Ver cardápio online
-          </a>
-        </Button>
-        <Button
-          variant="ghost"
-          className="w-full justify-start text-muted-foreground"
-          onClick={logout}
-        >
-          <LogOut className="size-5" /> Sair
-        </Button>
-      </div>
+      <DropdownMenu>
+        <DropdownMenuTrigger className="mt-auto flex w-full cursor-pointer items-center gap-3 rounded-lg p-2 text-left transition-colors outline-none hover:bg-muted focus-visible:ring-[3px] focus-visible:ring-ring/50 data-[state=open]:bg-muted">
+          <FoodImage
+            src={restaurant.logoUrl}
+            alt=""
+            className="size-8 shrink-0 rounded-md"
+          />
+          <span className="min-w-0 flex-1 truncate text-sm font-semibold">
+            {restaurant.name}
+          </span>
+          <ChevronsUpDown className="size-4 shrink-0 text-muted-foreground" />
+        </DropdownMenuTrigger>
+        <DropdownMenuContent side="top" align="start" className="w-72">
+          <AccountMenuItems
+            restaurant={restaurant}
+            onReset={() => setResetOpen(true)}
+          />
+        </DropdownMenuContent>
+      </DropdownMenu>
+
+      <ResetDemoDialog open={resetOpen} onOpenChange={setResetOpen} />
     </aside>
   );
 }
 
 function MobileHeader() {
-  const { logout } = useAuth();
   const { restaurant } = useAdminRestaurant();
-  const storefrontUrl = getStorefrontUrl(restaurant.slug);
+  const [resetOpen, setResetOpen] = useState(false);
 
   return (
-    <header className="sticky top-0 z-30 flex items-center justify-between gap-3 border-b bg-card/90 px-4 py-3 backdrop-blur-lg lg:hidden">
-      <RestaurantIdentity restaurant={restaurant} size="sm" />
+    <header className="sticky top-0 z-30 flex items-center justify-between gap-3 border-b bg-card/90 px-4 py-2.5 backdrop-blur-lg lg:hidden">
+      <div className="flex min-w-0 items-center gap-2.5">
+        <FoodImage
+          src={restaurant.logoUrl}
+          alt=""
+          className="size-8 shrink-0 rounded-md"
+        />
+        <p className="truncate text-sm font-semibold">{restaurant.name}</p>
+      </div>
       <div className="flex items-center gap-1">
         <StoreStatusSwitch compact />
         <DropdownMenu>
@@ -189,20 +224,16 @@ function MobileHeader() {
               <MoreVertical />
             </Button>
           </DropdownMenuTrigger>
-          <DropdownMenuContent align="end">
+          <DropdownMenuContent align="end" className="w-72">
             <DropdownMenuLabel>{restaurant.name}</DropdownMenuLabel>
-            <DropdownMenuItem asChild>
-              <a href={storefrontUrl} target="_blank" rel="noopener noreferrer">
-                <ExternalLink /> Ver cardápio online
-              </a>
-            </DropdownMenuItem>
-            <DropdownMenuSeparator />
-            <DropdownMenuItem variant="destructive" onSelect={logout}>
-              <LogOut /> Sair
-            </DropdownMenuItem>
+            <AccountMenuItems
+              restaurant={restaurant}
+              onReset={() => setResetOpen(true)}
+            />
           </DropdownMenuContent>
         </DropdownMenu>
       </div>
+      <ResetDemoDialog open={resetOpen} onOpenChange={setResetOpen} />
     </header>
   );
 }
@@ -219,7 +250,7 @@ function MobileNav() {
           to={to}
           className={({ isActive }) =>
             cn(
-              "relative flex flex-col items-center gap-1 rounded-xl py-1.5 text-[11px] font-semibold transition-colors",
+              "relative flex flex-col items-center gap-1 rounded-lg py-1.5 text-[11px] font-semibold transition-colors",
               isActive ? "text-primary" : "text-muted-foreground",
             )
           }
