@@ -1,6 +1,5 @@
 import { useCallback } from "react";
 import { Link, useParams } from "react-router-dom";
-import { Check, CircleX } from "lucide-react";
 import { motion } from "motion/react";
 
 import { ErrorState } from "@/components/shared/ErrorState";
@@ -34,43 +33,31 @@ export function OrderTrackingPage() {
   const showPix = order.paymentMethod === "PIX" && order.status === "PENDING" && !!restaurant.pixKey;
 
   return (
-    <div className="min-h-dvh bg-linear-to-b from-accent/70 to-background to-40% pb-12">
-      <div className="mx-auto max-w-xl space-y-5 px-4 pt-10">
-        <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} className="space-y-3 text-center">
-          <motion.span
-            initial={{ scale: 0, rotate: -45 }}
-            animate={{ scale: 1, rotate: 0 }}
-            transition={{ type: "spring", stiffness: 260, damping: 16, delay: 0.1 }}
-            className={`mx-auto flex size-16 items-center justify-center rounded-full text-white shadow-lg ${
-              cancelled ? "bg-destructive shadow-red-500/30" : "bg-success shadow-emerald-500/30"
-            }`}
-          >
-            {cancelled ? <CircleX className="size-8" /> : <Check className="size-8" strokeWidth={3} />}
-          </motion.span>
-          <h1 className="text-2xl font-extrabold tracking-tight">
-            {cancelled ? `Pedido #${order.id} cancelado` : `Pedido #${order.id} enviado!`}
-          </h1>
+    <div className="min-h-dvh pb-12">
+      <div className="mx-auto max-w-xl space-y-4 px-4 pt-8 sm:pt-12">
+        <motion.div initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} className="space-y-1 px-1">
           <p className="text-sm text-muted-foreground">
-            {cancelled
-              ? "Entre em contato com o restaurante se tiver dúvidas."
-              : `${restaurant.name} · feito em ${formatDateTime(order.createdAt)}`}
+            {restaurant.name} · {formatDateTime(order.createdAt)}
           </p>
+          <h1 className="text-2xl font-bold">
+            {cancelled ? `Pedido #${order.id} cancelado` : `Pedido #${order.id}`}
+          </h1>
+          {cancelled && (
+            <p className="text-sm text-muted-foreground">Entre em contato com o restaurante se tiver dúvidas.</p>
+          )}
         </motion.div>
 
         {showPix && <PixPaymentCard order={order} restaurant={restaurant} city={city} />}
 
         {!cancelled && (
-          <section className="rounded-3xl border bg-card p-5 shadow-xs">
-            <div className="mb-5 flex items-center justify-between">
-              <h2 className="font-extrabold">Acompanhe seu pedido</h2>
-              <span className="text-xs text-muted-foreground">Atualiza automaticamente</span>
-            </div>
+          <section className="rounded-2xl border bg-card p-5 shadow-xs">
+            <h2 className="mb-5 font-bold">Acompanhe seu pedido</h2>
             <OrderProgress status={order.status} fulfillment={order.fulfillment} />
           </section>
         )}
 
-        <section className="space-y-4 rounded-3xl border bg-card p-5 shadow-xs">
-          <h2 className="font-extrabold">Resumo</h2>
+        <section className="space-y-4 rounded-2xl border bg-card p-5 shadow-xs">
+          <h2 className="font-bold">Resumo</h2>
           <ul className="space-y-3">
             {order.items.map((item) => (
               <li key={`${item.dishId}-${item.variantId}-${item.note}`} className="flex items-center gap-3">
@@ -89,7 +76,7 @@ export function OrderTrackingPage() {
           <dl className="space-y-2 text-sm">
             <Row label="Subtotal" value={formatCurrency(order.subtotal)} />
             <Row label="Taxa de entrega" value={order.deliveryFee ? formatCurrency(order.deliveryFee) : "Grátis"} />
-            <div className="flex justify-between text-base font-extrabold">
+            <div className="flex justify-between text-base font-bold">
               <dt>Total</dt>
               <dd className="tabular-nums">{formatCurrency(order.total)}</dd>
             </div>

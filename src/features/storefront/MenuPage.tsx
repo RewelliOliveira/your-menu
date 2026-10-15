@@ -60,7 +60,7 @@ export function MenuPage() {
         ) : (
           sections.map((section) => (
             <section key={section.id} id={sectionDomId(section.id)} className="scroll-mt-40 md:scroll-mt-24">
-              <h2 className="mb-4 text-xl font-extrabold tracking-tight">{section.name}</h2>
+              <h2 className="mb-4 text-xl font-bold tracking-tight">{section.name}</h2>
               <div className="grid gap-3 md:grid-cols-2 md:gap-4">
                 {section.dishes.map((dish, index) => (
                   <motion.div

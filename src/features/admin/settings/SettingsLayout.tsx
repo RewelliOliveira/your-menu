@@ -13,7 +13,7 @@ const TABS = [
 export function SettingsLayout() {
   return (
     <div className="space-y-6">
-      <PageHeader title="Ajustes" description="Personalize sua loja e defina como você atende." />
+      <PageHeader title="Ajustes" />
 
       <nav className="-mx-4 flex gap-2 overflow-x-auto px-4 scrollbar-none sm:mx-0 sm:px-0" aria-label="Seções de ajustes">
         {TABS.map(({ to, label, icon: Icon }) => (

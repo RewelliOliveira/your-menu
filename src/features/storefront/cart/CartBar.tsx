@@ -28,7 +28,7 @@ export function CartBar({ onOpen }: { onOpen: () => void }) {
                 key={count}
                 initial={{ scale: 1.6 }}
                 animate={{ scale: 1 }}
-                className="absolute -top-2 -right-2 flex size-5 items-center justify-center rounded-full bg-white text-[11px] font-extrabold text-primary"
+                className="absolute -top-2 -right-2 flex size-5 items-center justify-center rounded-full bg-white text-[11px] font-bold text-primary"
               >
                 {count}
               </motion.span>
@@ -37,7 +37,7 @@ export function CartBar({ onOpen }: { onOpen: () => void }) {
               <span className="block text-sm font-bold">Ver sacola</span>
               <span className="block text-xs text-primary-foreground/80">{pluralize(count, "item", "itens")}</span>
             </span>
-            <span className="text-base font-extrabold tabular-nums">{formatCurrency(subtotal)}</span>
+            <span className="text-base font-bold tabular-nums">{formatCurrency(subtotal)}</span>
           </button>
         </motion.div>
       )}

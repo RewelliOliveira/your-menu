@@ -22,14 +22,14 @@ export function DishCard({ dish, onSelect, disabled = false }: DishCardProps) {
       onClick={onSelect}
       disabled={disabled || unavailable || !onSelect}
       className={cn(
-        "group flex w-full gap-4 rounded-2xl border bg-card p-4 text-left shadow-xs transition-all",
-        "enabled:cursor-pointer enabled:hover:-translate-y-0.5 enabled:hover:border-primary/30 enabled:hover:shadow-md",
+        "group flex w-full gap-4 rounded-xl border bg-card p-4 text-left transition-colors",
+        "enabled:cursor-pointer enabled:hover:border-foreground/20",
         "focus-visible:ring-[3px] focus-visible:ring-ring/50 focus-visible:outline-none",
         unavailable && "opacity-60",
       )}
     >
       <div className="flex min-w-0 flex-1 flex-col">
-        <h3 className="line-clamp-2 font-bold">{dish.name || "Nome do prato"}</h3>
+        <h3 className="line-clamp-2 font-semibold">{dish.name || "Nome do prato"}</h3>
         <p className="mt-1 line-clamp-2 text-sm text-muted-foreground">{dish.description}</p>
         <div className="mt-auto flex items-baseline gap-1.5 pt-3">
           {unavailable ? (
@@ -37,7 +37,7 @@ export function DishCard({ dish, onSelect, disabled = false }: DishCardProps) {
           ) : (
             <>
               {dish.variants.length > 1 && <span className="text-xs text-muted-foreground">a partir de</span>}
-              <span className="font-bold text-success tabular-nums">{formatCurrency(price)}</span>
+              <span className="font-semibold tabular-nums">{formatCurrency(price)}</span>
             </>
           )}
         </div>
@@ -46,7 +46,7 @@ export function DishCard({ dish, onSelect, disabled = false }: DishCardProps) {
       <div className="relative shrink-0">
         <FoodImage src={dish.imageUrl} alt={dish.name} className="size-24 rounded-xl sm:size-28" />
         {!unavailable && !disabled && onSelect && (
-          <span className="absolute -right-1.5 -bottom-1.5 flex size-8 items-center justify-center rounded-full bg-card text-primary shadow-md ring-1 ring-border transition-transform group-hover:scale-110">
+          <span className="absolute right-1.5 bottom-1.5 flex size-7 items-center justify-center rounded-full bg-card text-primary shadow-sm">
             <Plus className="size-4" />
           </span>
         )}

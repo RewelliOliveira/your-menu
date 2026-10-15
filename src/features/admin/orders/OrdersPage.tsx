@@ -1,5 +1,5 @@
 import { useMemo, useState } from "react";
-import { BadgeDollarSign, ClipboardList, Flame, Inbox, Receipt, type LucideIcon } from "lucide-react";
+import { Inbox } from "lucide-react";
 import { AnimatePresence, LayoutGroup, motion } from "motion/react";
 
 import { ConfirmDialog } from "@/components/shared/ConfirmDialog";
@@ -32,19 +32,7 @@ export function OrdersPage() {
 
   return (
     <div className="space-y-8">
-      <PageHeader
-        title="Pedidos"
-        description="Acompanhe e atualize os pedidos do dia."
-        actions={
-          <span className="flex items-center gap-2 rounded-full border bg-card px-3 py-1.5 text-xs font-semibold text-muted-foreground">
-            <span className="relative flex size-2">
-              <span className="absolute inline-flex size-full animate-ping rounded-full bg-emerald-400 opacity-75" />
-              <span className="relative inline-flex size-2 rounded-full bg-emerald-500" />
-            </span>
-            Atualizando ao vivo
-          </span>
-        }
-      />
+      <PageHeader title="Pedidos" description={formatToday(now)} />
 
       <Stats orders={orders} loading={loading} />
 
@@ -67,7 +55,7 @@ export function OrdersPage() {
                   return (
                     <section
                       key={status}
-                      className="flex w-[85%] shrink-0 snap-start flex-col gap-3 rounded-3xl bg-muted/70 p-3 sm:w-[48%] lg:w-auto"
+                      className="flex w-[85%] shrink-0 snap-start flex-col gap-3 rounded-2xl bg-muted/70 p-3 sm:w-[48%] lg:w-auto"
                     >
                       <header className="flex items-center justify-between px-1 pt-1">
                         <h2 className="flex items-center gap-2 text-sm font-bold">
@@ -132,9 +120,14 @@ export function OrdersPage() {
   );
 }
 
+function formatToday(now: number) {
+  const label = new Date(now).toLocaleDateString("pt-BR", { weekday: "long", day: "numeric", month: "long" });
+  return label.charAt(0).toUpperCase() + label.slice(1);
+}
+
 function Counter({ value }: { value: number }) {
   return (
-    <span className="min-w-5 rounded-full bg-card px-1.5 py-0.5 text-center text-[11px] font-bold text-foreground tabular-nums shadow-xs">
+    <span className="text-xs font-medium text-muted-foreground tabular-nums">
       {value}
     </span>
   );
@@ -146,31 +139,36 @@ function Stats({ orders, loading }: { orders: Order[]; loading: boolean }) {
     const completed = today.filter((order) => order.status === "DELIVERED");
     const revenue = completed.reduce((sum, order) => sum + order.total, 0);
     return [
-      { label: "Pedidos hoje", value: String(today.length), icon: Receipt },
-      { label: "Em andamento", value: String(today.filter((o) => ACTIVE_STATUSES.includes(o.status)).length), icon: Flame },
-      { label: "Faturamento hoje", value: formatCurrency(revenue), icon: BadgeDollarSign },
-      { label: "Ticket médio", value: formatCurrency(completed.length ? revenue / completed.length : 0), icon: ClipboardList },
-    ] satisfies Array<{ label: string; value: string; icon: LucideIcon }>;
+      { label: "Pedidos hoje", value: String(today.length) },
+      { label: "Em andamento", value: String(today.filter((o) => ACTIVE_STATUSES.includes(o.status)).length) },
+      { label: "Faturamento hoje", value: formatCurrency(revenue) },
+      { label: "Ticket médio", value: formatCurrency(completed.length ? revenue / completed.length : 0) },
+    ];
   }, [orders]);
 
   return (
-    <div className="grid grid-cols-2 gap-3 lg:grid-cols-4 lg:gap-4">
-      {stats.map(({ label, value, icon: Icon }) => (
-        <div key={label} className="flex items-center gap-3 rounded-2xl border bg-card p-4 shadow-xs">
-          <span className="hidden size-10 shrink-0 items-center justify-center rounded-xl bg-accent text-primary sm:flex">
-            <Icon className="size-5" />
-          </span>
-          <div className="min-w-0">
-            <p className="truncate text-xs font-medium text-muted-foreground">{label}</p>
+    <dl className="grid grid-cols-2 overflow-hidden rounded-xl border bg-card lg:grid-cols-4">
+      {stats.map(({ label, value }, index) => (
+        <div
+          key={label}
+          className={cn(
+            "min-w-0 px-4 py-3.5 sm:px-5",
+            index % 2 === 1 && "border-l",
+            index >= 2 && "border-t lg:border-t-0",
+            index === 2 && "lg:border-l",
+          )}
+        >
+          <dt className="truncate text-xs text-muted-foreground">{label}</dt>
+          <dd className="mt-0.5">
             {loading ? (
-              <Skeleton className="mt-1 h-6 w-16" />
+              <Skeleton className="h-7 w-16" />
             ) : (
-              <p className="truncate text-lg font-extrabold tracking-tight tabular-nums sm:text-xl">{value}</p>
+              <span className="block truncate text-xl font-semibold tabular-nums">{value}</span>
             )}
-          </div>
+          </dd>
         </div>
       ))}
-    </div>
+    </dl>
   );
 }
 
@@ -195,7 +193,7 @@ function HistoryList({ orders, onOpen }: { orders: Order[]; onOpen: (order: Orde
             onClick={() => onOpen(order)}
             className="flex w-full cursor-pointer items-center gap-4 px-4 py-3.5 text-left transition-colors hover:bg-muted/60"
           >
-            <span className="w-14 shrink-0 font-extrabold">#{order.id}</span>
+            <span className="w-14 shrink-0 font-bold">#{order.id}</span>
             <span className="min-w-0 flex-1">
               <span className="block truncate text-sm font-semibold">{order.customer.name}</span>
               <span className="block text-xs text-muted-foreground">
@@ -215,7 +213,7 @@ function BoardSkeleton() {
   return (
     <div className="grid gap-4 lg:grid-cols-3">
       {ACTIVE_STATUSES.map((status) => (
-        <div key={status} className="space-y-3 rounded-3xl bg-muted/70 p-3">
+        <div key={status} className="space-y-3 rounded-2xl bg-muted/70 p-3">
           <Skeleton className="h-5 w-28 bg-card" />
           <Skeleton className="h-48 bg-card" />
           <Skeleton className="h-48 bg-card" />

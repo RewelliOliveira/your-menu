@@ -75,7 +75,7 @@ function Tile({ label, value, color, detail, delta }: TileProps) {
         )}
         {label}
       </p>
-      <p className="text-xl font-extrabold tracking-tight sm:text-2xl">
+      <p className="text-xl font-bold tracking-tight sm:text-2xl">
         {value}
       </p>
       <p className="truncate text-xs text-muted-foreground">{detail}</p>
@@ -110,7 +110,7 @@ export function FinanceStats({ report }: { report: FinanceReport }) {
           </p>
           <p
             className={cn(
-              "text-4xl font-extrabold tracking-tight sm:text-5xl",
+              "text-4xl font-bold tracking-tight sm:text-5xl",
               !profitable && "text-red-700",
             )}
           >

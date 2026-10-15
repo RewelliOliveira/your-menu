@@ -53,12 +53,12 @@ function DishDetails({ dish, canOrder, onAdded }: { dish: Dish; canOrder: boolea
 
         <div className="space-y-6 p-5 sm:p-6">
           <div className="space-y-2">
-            <DialogTitle className="text-xl font-extrabold sm:text-2xl">{dish.name}</DialogTitle>
+            <DialogTitle className="text-xl font-bold sm:text-2xl">{dish.name}</DialogTitle>
             {dish.description && (
               <DialogDescription className="leading-relaxed">{dish.description}</DialogDescription>
             )}
             {dish.variants.length === 1 && (
-              <p className="text-lg font-bold text-success tabular-nums">{formatCurrency(dish.variants[0].price)}</p>
+              <p className="text-lg font-semibold tabular-nums">{formatCurrency(dish.variants[0].price)}</p>
             )}
           </div>
 
@@ -74,7 +74,7 @@ function DishDetails({ dish, canOrder, onAdded }: { dish: Dish; canOrder: boolea
                     key={option.id}
                     className={cn(
                       "flex cursor-pointer items-center gap-3 rounded-xl border p-3.5 transition-colors",
-                      option.id === variantId ? "border-primary bg-accent/50" : "hover:bg-muted/60",
+                      option.id === variantId ? "border-foreground ring-1 ring-foreground" : "hover:border-foreground/30",
                     )}
                   >
                     <RadioGroupItem value={option.id} />

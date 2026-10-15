@@ -50,12 +50,12 @@ export function OrderCard({ order, now, onOpen, onAdvance, onCancel }: OrderCard
       animate={{ opacity: 1, scale: 1 }}
       exit={{ opacity: 0, scale: 0.96 }}
       transition={{ type: "spring", stiffness: 400, damping: 34 }}
-      className="group flex flex-col gap-3 rounded-2xl border bg-card p-4 shadow-xs transition-shadow hover:shadow-md"
+      className="group flex flex-col gap-3 rounded-xl border bg-card p-4 transition-colors hover:border-foreground/20"
     >
       <button type="button" onClick={() => onOpen(order)} className="flex cursor-pointer flex-col gap-3 text-left">
         <div className="flex items-start justify-between gap-2">
           <div className="min-w-0 flex-1">
-            <p className="text-lg font-extrabold tracking-tight">#{order.id}</p>
+            <p className="text-lg font-bold tracking-tight">#{order.id}</p>
             <p className="truncate text-sm font-medium text-muted-foreground" title={order.customer.name}>
               {order.customer.name}
             </p>
@@ -103,13 +103,18 @@ export function OrderCard({ order, now, onOpen, onAdvance, onCancel }: OrderCard
 
         <div className="flex items-center justify-between border-t pt-3">
           <span className="text-xs font-medium text-muted-foreground">{PAYMENT_LABEL[order.paymentMethod]}</span>
-          <span className="text-base font-extrabold tabular-nums">{formatCurrency(order.total)}</span>
+          <span className="text-base font-bold tabular-nums">{formatCurrency(order.total)}</span>
         </div>
       </button>
 
       <div className="flex gap-2">
         {nextStep && (
-          <Button className="flex-1" onClick={advance} loading={advancing}>
+          <Button
+            className="flex-1"
+            variant={order.status === "PENDING" ? "default" : "secondary"}
+            onClick={advance}
+            loading={advancing}
+          >
             {nextStep.label}
           </Button>
         )}

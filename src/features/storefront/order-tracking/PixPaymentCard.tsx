@@ -1,5 +1,5 @@
 import { QRCodeSVG } from "qrcode.react";
-import { Copy, QrCode } from "lucide-react";
+import { Copy } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import { formatCurrency } from "@/lib/format";
@@ -18,17 +18,10 @@ export function PixPaymentCard({ order, restaurant, city }: { order: Order; rest
   });
 
   return (
-    <section className="space-y-4 rounded-3xl border bg-card p-5 shadow-xs">
-      <div className="flex items-center gap-3">
-        <span className="flex size-10 items-center justify-center rounded-xl bg-emerald-50 text-emerald-600">
-          <QrCode className="size-5" />
-        </span>
-        <div>
-          <h2 className="font-extrabold">Pague com Pix</h2>
-          <p className="text-sm text-muted-foreground">
-            Valor: <strong className="text-foreground">{formatCurrency(order.total)}</strong>
-          </p>
-        </div>
+    <section className="space-y-4 rounded-2xl border bg-card p-5 shadow-xs">
+      <div className="flex items-baseline justify-between gap-3">
+        <h2 className="font-bold">Pague com Pix</h2>
+        <p className="font-semibold tabular-nums">{formatCurrency(order.total)}</p>
       </div>
 
       <div className="mx-auto w-fit rounded-2xl border bg-white p-4">

@@ -165,7 +165,7 @@ export function CheckoutPage() {
             </Link>
           </Button>
           <div className="min-w-0">
-            <h1 className="font-extrabold">Finalizar pedido</h1>
+            <h1 className="font-bold">Finalizar pedido</h1>
             <p className="truncate text-xs text-muted-foreground">{restaurant.name}</p>
           </div>
         </div>
@@ -377,9 +377,9 @@ export function CheckoutPage() {
           </Step>
         </div>
 
-        <aside className="space-y-4 rounded-3xl border bg-card p-5 shadow-xs lg:sticky lg:top-24">
+        <aside className="space-y-4 rounded-2xl border bg-card p-5 shadow-xs lg:sticky lg:top-24">
           <div className="flex items-center justify-between">
-            <h2 className="font-extrabold">Resumo</h2>
+            <h2 className="font-bold">Resumo</h2>
             <Link to={`/${slug}`} className="text-xs font-semibold text-primary hover:underline">
               Adicionar itens
             </Link>
@@ -404,7 +404,7 @@ export function CheckoutPage() {
               label="Taxa de entrega"
               value={!isDelivery || (zone && zone.fee === 0) ? "Grátis" : zone ? formatCurrency(zone.fee) : "Selecione o bairro"}
             />
-            <div className="flex justify-between pt-1 text-lg font-extrabold">
+            <div className="flex justify-between pt-1 text-lg font-bold">
               <span>Total</span>
               <span className="tabular-nums">{formatCurrency(total)}</span>
             </div>
@@ -445,8 +445,8 @@ function Step({
   children: ReactNode;
 }) {
   return (
-    <section className="rounded-3xl border bg-card p-5 shadow-xs">
-      <h2 className="mb-4 flex items-center gap-3 font-extrabold">
+    <section className="rounded-2xl border bg-card p-5 shadow-xs">
+      <h2 className="mb-4 flex items-center gap-3 font-bold">
         <span className="flex size-7 items-center justify-center rounded-full bg-foreground text-xs text-background">
           {number}
         </span>

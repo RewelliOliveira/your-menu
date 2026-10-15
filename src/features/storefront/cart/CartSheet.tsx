@@ -67,7 +67,7 @@ export function CartSheet({ open, onOpenChange }: { open: boolean; onOpenChange:
             <SheetFooter>
               <div className="flex items-center justify-between text-sm">
                 <span className="text-muted-foreground">Subtotal</span>
-                <span className="text-lg font-extrabold tabular-nums">{formatCurrency(subtotal)}</span>
+                <span className="text-lg font-bold tabular-nums">{formatCurrency(subtotal)}</span>
               </div>
               <p className="text-xs text-muted-foreground">A taxa de entrega é calculada na próxima etapa.</p>
               <Button

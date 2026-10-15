@@ -107,7 +107,7 @@ function OrderDetails({
     <>
       <SheetHeader>
         <div className="flex items-center gap-3">
-          <SheetTitle className="text-2xl font-extrabold">
+          <SheetTitle className="text-2xl font-bold">
             Pedido #{order.id}
           </SheetTitle>
           <OrderStatusBadge status={order.status} />
@@ -256,7 +256,7 @@ function Row({
     <div
       className={
         strong
-          ? "flex justify-between text-base font-extrabold"
+          ? "flex justify-between text-base font-bold"
           : "flex justify-between text-muted-foreground"
       }
     >

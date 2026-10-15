@@ -80,7 +80,6 @@ export function FinancePage() {
     <div className="space-y-6">
       <PageHeader
         title="Financeiro"
-        description="Entradas, saídas, perdas e o resultado do seu restaurante."
         actions={
           <>
             <Button

@@ -47,11 +47,10 @@ export function OrderProgress({ status, fulfillment }: { status: OrderStatus; fu
               className={cn(
                 "relative flex size-10 shrink-0 items-center justify-center rounded-full border-2 transition-colors",
                 done && "border-success bg-success text-white",
-                current && "border-primary bg-accent text-primary",
+                current && "border-primary bg-primary text-primary-foreground",
                 !done && !current && "bg-card text-muted-foreground",
               )}
             >
-              {current && <span className="absolute inset-0 animate-ping rounded-full border-2 border-primary/40" />}
               <Icon className="size-5" />
             </span>
             <span className="pt-2.5">

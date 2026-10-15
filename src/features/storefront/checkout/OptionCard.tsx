@@ -17,23 +17,25 @@ export function OptionCard({ value, selected, icon: Icon, title, description, as
   return (
     <label
       className={cn(
-        "flex cursor-pointer items-center gap-3 rounded-2xl border p-4 transition-all",
-        selected ? "border-primary bg-accent/50 ring-1 ring-primary" : "hover:bg-muted/60",
+        "flex cursor-pointer items-center gap-3.5 rounded-xl border p-4 transition-colors",
+        selected ? "border-foreground ring-1 ring-foreground" : "hover:border-foreground/30",
       )}
     >
-      <span
-        className={cn(
-          "flex size-10 shrink-0 items-center justify-center rounded-xl transition-colors",
-          selected ? "bg-primary text-primary-foreground" : "bg-muted text-muted-foreground",
-        )}
-      >
-        <Icon className="size-5" />
-      </span>
+      <Icon className={cn("size-5 shrink-0", selected ? "text-foreground" : "text-muted-foreground")} />
       <span className="min-w-0 flex-1">
-        <span className="block text-sm font-bold">{title}</span>
+        <span className="block text-sm font-semibold">{title}</span>
         {description && <span className="block text-xs text-muted-foreground">{description}</span>}
       </span>
       {aside}
+      <span
+        aria-hidden
+        className={cn(
+          "flex size-4.5 shrink-0 items-center justify-center rounded-full border-2 transition-colors",
+          selected ? "border-primary" : "border-input",
+        )}
+      >
+        {selected && <span className="size-2 rounded-full bg-primary" />}
+      </span>
       <RadioGroupItem value={value} className="sr-only" />
     </label>
   );
