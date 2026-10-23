@@ -30,6 +30,7 @@ npm install
 npm run dev      # ambiente de desenvolvimento
 npm run build    # typecheck + build de produção
 npm run lint
+npm test         # testes unitários (Vitest)
 ```
 
 - Painel: `http://localhost:5173/admin`. Em modo demonstração, entre com qualquer e-mail válido e uma senha de 8+ caracteres.
