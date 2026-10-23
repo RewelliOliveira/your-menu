@@ -43,26 +43,7 @@ export function LoginPage() {
   }
 
   return (
-    <AuthLayout title="Entrar no painel" description="Acesse os pedidos, o cardápio e o financeiro da sua loja.">
-      <div className="space-y-3 rounded-lg border p-4">
-        <div className="text-sm">
-          <p className="font-semibold">Conta de demonstração</p>
-          <p className="mt-1 text-muted-foreground">
-            Os dados ficam salvos só neste navegador. Qualquer e-mail válido com senha de 8+ caracteres também funciona.
-          </p>
-        </div>
-        <div className="flex flex-col gap-2 sm:flex-row">
-          <Button type="button" variant="secondary" className="sm:flex-1" onClick={signInWithDemo} disabled={loading}>
-            Entrar com a conta demo
-          </Button>
-          <Button type="button" variant="ghost" className="sm:flex-1" asChild>
-            <Link to="/your-burger" target="_blank">
-              Ver loja do cliente <ArrowUpRight />
-            </Link>
-          </Button>
-        </div>
-      </div>
-
+    <AuthLayout title="Bem-vindo de volta" description="Entre para acompanhar os pedidos do seu restaurante.">
       <form onSubmit={handleSubmit} className="space-y-5" noValidate>
         <Field label="E-mail" htmlFor="email">
           <Input
@@ -81,6 +62,7 @@ export function LoginPage() {
           <PasswordInput
             id="password"
             autoComplete="current-password"
+            placeholder="••••••••"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
             aria-invalid={!!error}
@@ -92,14 +74,31 @@ export function LoginPage() {
         <Button type="submit" size="lg" className="w-full" loading={loading}>
           Entrar
         </Button>
-
-        <p className="text-center text-sm text-muted-foreground">
-          Ainda não tem conta?{" "}
-          <Link to="/admin/register" className="font-semibold text-foreground underline-offset-4 hover:underline">
-            Cadastre seu restaurante
-          </Link>
-        </p>
       </form>
+
+      <div className="flex items-center gap-3 text-xs text-muted-foreground">
+        <span className="h-px flex-1 bg-border" />
+        ou
+        <span className="h-px flex-1 bg-border" />
+      </div>
+
+      <div className="space-y-3">
+        <Button type="button" variant="outline" size="lg" className="w-full" onClick={signInWithDemo} disabled={loading}>
+          Entrar com a conta demo
+        </Button>
+        <Button type="button" variant="ghost" className="w-full text-muted-foreground" asChild>
+          <Link to="/your-burger" target="_blank">
+            Ver loja do cliente <ArrowUpRight />
+          </Link>
+        </Button>
+      </div>
+
+      <p className="text-center text-sm text-muted-foreground">
+        Ainda não tem conta?{" "}
+        <Link to="/admin/register" className="font-semibold text-primary hover:underline">
+          Cadastre seu restaurante
+        </Link>
+      </p>
     </AuthLayout>
   );
 }
