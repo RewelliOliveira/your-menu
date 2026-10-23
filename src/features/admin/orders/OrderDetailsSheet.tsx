@@ -112,10 +112,7 @@ function OrderDetails({
           </SheetTitle>
           <OrderStatusBadge status={order.status} />
         </div>
-        <SheetDescription>
-          {formatDateTime(order.createdAt)} ·{" "}
-          {FULFILLMENT_LABEL[order.fulfillment]}
-        </SheetDescription>
+        <SheetDescription>{formatDateTime(order.createdAt)}</SheetDescription>
       </SheetHeader>
 
       <div className="flex-1 space-y-6 overflow-y-auto p-5">

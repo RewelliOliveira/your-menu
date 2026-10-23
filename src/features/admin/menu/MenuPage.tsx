@@ -91,13 +91,11 @@ export function MenuPage() {
     toast.success("Categoria salva");
   }
 
-  const totalDishes = sections?.reduce((sum, section) => sum + section.dishes.length, 0) ?? 0;
 
   return (
     <div className="space-y-6">
       <PageHeader
         title="Cardápio"
-        description={sections ? `${pluralize(sections.length, "categoria")} · ${pluralize(totalDishes, "prato")}` : undefined}
         actions={
           <>
             <Button variant="outline" onClick={() => setCategoryDialog({ open: true, category: null })}>
@@ -149,11 +147,11 @@ export function MenuPage() {
         <div className="space-y-5">
           {filtered.map((section) => (
             <section key={section.id} className="overflow-hidden rounded-2xl border bg-card shadow-xs">
-              <header className="flex items-center justify-between gap-3 border-b bg-muted/40 px-4 py-3">
-                <div>
-                  <h2 className="font-bold">{section.name}</h2>
-                  <p className="text-xs text-muted-foreground">{pluralize(section.dishes.length, "item", "itens")}</p>
-                </div>
+              <header className="flex items-center justify-between gap-3 border-b px-4 py-2.5">
+                <h2 className="flex min-w-0 items-baseline gap-2 font-bold">
+                  <span className="truncate">{section.name}</span>
+                  <span className="text-xs font-medium text-muted-foreground tabular-nums">{section.dishes.length}</span>
+                </h2>
                 <div className="flex items-center gap-1">
                   <Button variant="ghost" size="sm" asChild>
                     <Link to={`/admin/menu/new?category=${section.id}`}>

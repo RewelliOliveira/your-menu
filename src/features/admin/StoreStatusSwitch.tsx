@@ -25,20 +25,10 @@ export function StoreStatusSwitch({ compact = false }: { compact?: boolean }) {
           compact ? "px-1" : "border px-3 py-2.5 hover:bg-muted/60",
         )}
       >
-        {compact ? (
-          <span className="text-xs font-semibold whitespace-nowrap">
-            {restaurant.isOpen ? "Aberta" : "Fechada"}
-          </span>
-        ) : (
-          <span className="min-w-0">
-            <span className="block text-sm font-semibold">
-              {restaurant.isOpen ? "Loja aberta" : "Loja fechada"}
-            </span>
-            <span className="block text-xs text-muted-foreground">
-              {restaurant.isOpen ? "Recebendo pedidos" : "Pedidos pausados"}
-            </span>
-          </span>
-        )}
+        <span className={cn("flex items-center gap-2 font-semibold whitespace-nowrap", compact ? "text-xs" : "text-sm")}>
+          <span className={cn("size-2 rounded-full", restaurant.isOpen ? "bg-success" : "bg-muted-foreground/50")} />
+          {compact ? (restaurant.isOpen ? "Aberta" : "Fechada") : restaurant.isOpen ? "Loja aberta" : "Loja fechada"}
+        </span>
         <Switch
           checked={restaurant.isOpen}
           onCheckedChange={() => setConfirmOpen(true)}
