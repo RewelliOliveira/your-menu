@@ -49,7 +49,7 @@ export function OrdersPage() {
             <BoardSkeleton />
           ) : (
             <LayoutGroup>
-              <div className="-mx-4 flex snap-x snap-mandatory gap-4 overflow-x-auto px-4 pb-2 scrollbar-none sm:-mx-6 sm:px-6 lg:mx-0 lg:grid lg:grid-cols-3 lg:overflow-visible lg:px-0">
+              <div className="-mx-4 flex snap-x snap-mandatory gap-4 overflow-x-auto px-4 pb-2 scrollbar-none sm:-mx-6 sm:px-6 md:-mx-8 md:px-8 lg:mx-0 lg:grid lg:grid-cols-3 lg:overflow-visible lg:px-0">
                 {ACTIVE_STATUSES.map((status) => {
                   const columnOrders = activeOrders.filter((order) => order.status === status);
                   return (
@@ -140,7 +140,7 @@ function Stats({ orders, loading }: { orders: Order[]; loading: boolean }) {
     const revenue = completed.reduce((sum, order) => sum + order.total, 0);
     return [
       { label: "Pedidos hoje", value: String(today.length) },
-      { label: "Faturamento hoje", value: formatCurrency(revenue) },
+      { label: "Vendas hoje", value: formatCurrency(revenue) },
       { label: "Ticket médio", value: formatCurrency(completed.length ? revenue / completed.length : 0) },
     ];
   }, [orders]);

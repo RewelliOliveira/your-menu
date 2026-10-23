@@ -67,10 +67,10 @@ export function AdminLayout() {
 
   return (
     <AdminRestaurantContext.Provider value={contextValue}>
-      <div className="min-h-dvh lg:grid lg:grid-cols-[16rem_1fr]">
+      <div className="min-h-dvh md:grid md:grid-cols-[4.5rem_1fr] lg:grid-cols-[16rem_1fr]">
         <Sidebar />
         <MobileHeader />
-        <main className="mx-auto w-full max-w-6xl px-4 pt-6 pb-28 sm:px-6 lg:px-10 lg:pt-10 lg:pb-12">
+        <main className="mx-auto w-full max-w-6xl min-w-0 px-4 pt-6 pb-28 sm:px-6 md:px-8 md:pt-8 md:pb-12 lg:px-10 lg:pt-10">
           <Outlet />
         </main>
         <MobileNav />
@@ -139,9 +139,12 @@ function Sidebar() {
   const [resetOpen, setResetOpen] = useState(false);
 
   return (
-    <aside className="sticky top-0 hidden h-dvh flex-col gap-6 border-r bg-card px-4 py-5 lg:flex">
-      <div className="flex items-center justify-between pl-2">
-        <Logo className="h-6" />
+    <aside className="sticky top-0 hidden h-dvh flex-col gap-6 border-r bg-card px-3 py-5 md:flex lg:px-4">
+      <div className="flex flex-col items-center gap-3 lg:flex-row lg:justify-between lg:pl-2">
+        <img src="/favicon.svg" alt="Your Menu" className="size-8 lg:hidden" />
+        <div className="hidden lg:block">
+          <Logo className="h-6" />
+        </div>
         <ThemeToggle className="size-8" />
       </div>
 
@@ -152,9 +155,10 @@ function Sidebar() {
           <NavLink
             key={to}
             to={to}
+            title={label}
             className={({ isActive }) =>
               cn(
-                "relative flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium transition-colors",
+                "relative flex items-center justify-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition-colors lg:justify-start lg:py-2",
                 isActive
                   ? "text-foreground"
                   : "text-muted-foreground hover:bg-muted hover:text-foreground",
@@ -173,7 +177,7 @@ function Sidebar() {
                 <Icon
                   className={cn("relative size-4.5", isActive && "text-primary")}
                 />
-                <span className="relative">{label}</span>
+                <span className="relative hidden lg:inline">{label}</span>
               </>
             )}
           </NavLink>
@@ -181,16 +185,19 @@ function Sidebar() {
       </nav>
 
       <DropdownMenu>
-        <DropdownMenuTrigger className="mt-auto flex w-full cursor-pointer items-center gap-3 rounded-lg p-2 text-left transition-colors outline-none hover:bg-muted focus-visible:ring-[3px] focus-visible:ring-ring/50 data-[state=open]:bg-muted">
+        <DropdownMenuTrigger
+          title={restaurant.name}
+          className="mt-auto flex w-full cursor-pointer items-center justify-center gap-3 rounded-lg p-2 text-left transition-colors outline-none hover:bg-muted focus-visible:ring-[3px] focus-visible:ring-ring/50 data-[state=open]:bg-muted lg:justify-start"
+        >
           <FoodImage
             src={restaurant.logoUrl}
             alt=""
             className="size-8 shrink-0 rounded-md"
           />
-          <span className="min-w-0 flex-1 truncate text-sm font-semibold">
+          <span className="hidden min-w-0 flex-1 truncate text-sm font-semibold lg:block">
             {restaurant.name}
           </span>
-          <ChevronsUpDown className="size-4 shrink-0 text-muted-foreground" />
+          <ChevronsUpDown className="hidden size-4 shrink-0 text-muted-foreground lg:block" />
         </DropdownMenuTrigger>
         <DropdownMenuContent side="top" align="start" className="w-72">
           <AccountMenuItems
@@ -210,7 +217,7 @@ function MobileHeader() {
   const [resetOpen, setResetOpen] = useState(false);
 
   return (
-    <header className="sticky top-0 z-30 flex items-center justify-between gap-3 border-b bg-card/90 px-4 py-2.5 backdrop-blur-lg lg:hidden">
+    <header className="sticky top-0 z-30 flex items-center justify-between gap-3 border-b bg-card/90 px-4 py-2.5 backdrop-blur-lg md:hidden">
       <div className="flex min-w-0 items-center gap-2.5">
         <FoodImage
           src={restaurant.logoUrl}
@@ -244,7 +251,7 @@ function MobileHeader() {
 function MobileNav() {
   return (
     <nav
-      className="pb-safe fixed inset-x-0 bottom-0 z-30 grid grid-cols-4 border-t bg-card/95 px-2 pt-2 backdrop-blur-lg lg:hidden"
+      className="pb-safe fixed inset-x-0 bottom-0 z-30 grid grid-cols-4 border-t bg-card/95 px-2 pt-2 backdrop-blur-lg md:hidden"
       aria-label="Navegação do painel"
     >
       {NAV_ITEMS.map(({ to, label, icon: Icon }) => (
