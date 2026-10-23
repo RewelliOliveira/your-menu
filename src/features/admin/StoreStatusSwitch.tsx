@@ -22,23 +22,23 @@ export function StoreStatusSwitch({ compact = false }: { compact?: boolean }) {
       <label
         className={cn(
           "flex cursor-pointer items-center justify-between gap-3 rounded-lg transition-colors",
-          compact ? "px-1" : "border px-3 py-2.5 hover:bg-muted/60",
+          compact
+            ? "px-1"
+            : "border px-3 py-2.5 hover:bg-muted/60 md:max-lg:justify-center md:max-lg:border-0 md:max-lg:p-0 md:max-lg:hover:bg-transparent",
         )}
+        title={restaurant.isOpen ? "Loja aberta" : "Loja fechada"}
       >
-        {compact ? (
-          <span className="text-xs font-semibold whitespace-nowrap">
-            {restaurant.isOpen ? "Aberta" : "Fechada"}
-          </span>
-        ) : (
-          <span className="min-w-0">
-            <span className="block text-sm font-semibold">
-              {restaurant.isOpen ? "Loja aberta" : "Loja fechada"}
-            </span>
-            <span className="block text-xs text-muted-foreground">
-              {restaurant.isOpen ? "Recebendo pedidos" : "Pedidos pausados"}
-            </span>
-          </span>
-        )}
+        <span
+          className={cn(
+            "flex items-center gap-2 font-semibold whitespace-nowrap",
+            compact ? "text-xs" : "text-sm md:max-lg:hidden",
+          )}
+        >
+          {!compact && (
+            <span className={cn("size-2 rounded-full", restaurant.isOpen ? "bg-success" : "bg-muted-foreground/50")} />
+          )}
+          {compact ? (restaurant.isOpen ? "Aberta" : "Fechada") : restaurant.isOpen ? "Loja aberta" : "Loja fechada"}
+        </span>
         <Switch
           checked={restaurant.isOpen}
           onCheckedChange={() => setConfirmOpen(true)}
@@ -52,7 +52,7 @@ export function StoreStatusSwitch({ compact = false }: { compact?: boolean }) {
         title={nextIsOpen ? "Abrir a loja?" : "Fechar a loja?"}
         description={
           nextIsOpen
-            ? "Seu cardápio voltará a aceitar pedidos imediatamente."
+            ? "Seu cardápio voltará a aceitar pedidos dentro do horário de funcionamento."
             : "Clientes ainda verão o cardápio, mas não conseguirão fazer novos pedidos."
         }
         confirmLabel={nextIsOpen ? "Abrir loja" : "Fechar loja"}

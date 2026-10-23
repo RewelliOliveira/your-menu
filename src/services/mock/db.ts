@@ -105,6 +105,7 @@ try {
       (key) =>
         key.startsWith("your_menu_mock_") ||
         key.startsWith("yourmenu:v2:") ||
+        key.startsWith("yourmenu:v3:") ||
         ["token", "restaurantId", "restaurantSlug"].includes(key),
     )
     .forEach((key) => localStorage.removeItem(key));

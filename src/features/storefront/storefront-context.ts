@@ -5,6 +5,7 @@ import type { Storefront } from "@/types/restaurant";
 
 export interface StorefrontContextValue extends Storefront {
   menu: MenuSection[];
+  acceptingOrders: boolean;
 }
 
 export const StorefrontContext = createContext<StorefrontContextValue | null>(null);

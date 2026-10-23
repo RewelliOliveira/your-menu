@@ -51,8 +51,7 @@ export function DishRow({ dish, onToggleAvailability, onDelete }: DishRowProps) 
       </Link>
 
       <div className="flex shrink-0 items-center gap-1 sm:gap-3">
-        <label className="flex cursor-pointer items-center gap-2 text-xs font-semibold text-muted-foreground">
-          <span className="hidden md:inline">{dish.isAvailable ? "Disponível" : "Pausado"}</span>
+        <label className="flex cursor-pointer items-center">
           <Switch
             checked={dish.isAvailable}
             onCheckedChange={(checked) => onToggleAvailability(dish, checked)}

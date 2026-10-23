@@ -35,8 +35,8 @@ function Delta({
         flat
           ? "text-muted-foreground"
           : good
-            ? "text-emerald-700"
-            : "text-red-700",
+            ? "text-success"
+            : "text-destructive",
       )}
     >
       <Icon className="size-3.5" aria-hidden />
@@ -46,7 +46,7 @@ function Delta({
       <span
         className={cn(
           "font-medium text-muted-foreground",
-          compact && "hidden sm:inline",
+          compact && "hidden",
         )}
       >
         vs {label}
@@ -98,7 +98,7 @@ export function FinanceStats({ report }: { report: FinanceReport }) {
 
   return (
     <div className="grid gap-3 lg:grid-cols-[1.15fr_2fr] lg:gap-4">
-      <div className="flex flex-col justify-between gap-4 rounded-2xl border bg-card p-5 shadow-xs">
+      <div className="flex flex-col justify-center rounded-2xl border bg-card p-5 shadow-xs">
         <div className="space-y-1">
           <p className="flex flex-wrap items-center gap-2 text-sm font-semibold text-muted-foreground">
             Lucro líquido
@@ -111,7 +111,7 @@ export function FinanceStats({ report }: { report: FinanceReport }) {
           <p
             className={cn(
               "text-4xl font-bold tracking-tight sm:text-5xl",
-              !profitable && "text-red-700",
+              !profitable && "text-destructive",
             )}
           >
             {formatCurrency(summary.profit)}
@@ -128,38 +128,6 @@ export function FinanceStats({ report }: { report: FinanceReport }) {
             />
           </div>
         </div>
-        <dl className="grid grid-cols-3 gap-2 rounded-xl bg-muted/60 p-3 text-xs">
-          {[
-            {
-              label: "Entradas",
-              value: summary.revenue,
-              color: "var(--chart-income)",
-            },
-            {
-              label: "Saídas",
-              value: summary.expenses,
-              color: "var(--chart-expense)",
-            },
-            {
-              label: "Perdas",
-              value: summary.losses,
-              color: "var(--chart-loss)",
-            },
-          ].map((item) => (
-            <div key={item.label} className="min-w-0">
-              <dt className="flex items-center gap-1.5 text-muted-foreground">
-                <span
-                  className="size-2 rounded-[2px]"
-                  style={{ backgroundColor: item.color }}
-                />
-                {item.label}
-              </dt>
-              <dd className="truncate font-bold">
-                {formatCurrency(item.value)}
-              </dd>
-            </div>
-          ))}
-        </dl>
       </div>
 
       <div className="grid grid-cols-2 gap-3 lg:gap-4">

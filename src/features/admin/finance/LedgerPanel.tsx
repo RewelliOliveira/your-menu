@@ -11,7 +11,6 @@ import {
 } from "lucide-react";
 
 import { EmptyState } from "@/components/shared/EmptyState";
-import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
@@ -36,17 +35,17 @@ const TYPE_STYLE: Record<
 > = {
   INCOME: {
     icon: ArrowDownLeft,
-    className: "bg-blue-50 text-blue-700",
+    className: "bg-chart-income/12 text-chart-income",
     sign: "+",
   },
   EXPENSE: {
     icon: ArrowUpRight,
-    className: "bg-orange-50 text-orange-700",
+    className: "bg-chart-expense/12 text-chart-expense",
     sign: "−",
   },
   LOSS: {
     icon: TrendingDown,
-    className: "bg-teal-50 text-teal-700",
+    className: "bg-chart-loss/12 text-chart-loss",
     sign: "−",
   },
 };
@@ -171,8 +170,8 @@ export function LedgerPanel({ entries, onEdit, onDelete }: LedgerPanelProps) {
                       <span className="text-sm font-bold whitespace-nowrap tabular-nums">
                         {style.sign} {formatCurrency(entry.amount)}
                       </span>
-                      <div className="flex w-8 justify-end sm:w-24">
-                        {entry.source === "MANUAL" ? (
+                      <div className="flex w-8 justify-end">
+                        {entry.source === "MANUAL" && (
                           <DropdownMenu>
                             <DropdownMenuTrigger asChild>
                               <Button
@@ -196,13 +195,6 @@ export function LedgerPanel({ entries, onEdit, onDelete }: LedgerPanelProps) {
                               </DropdownMenuItem>
                             </DropdownMenuContent>
                           </DropdownMenu>
-                        ) : (
-                          <Badge
-                            variant="secondary"
-                            className="hidden sm:inline-flex"
-                          >
-                            Automático
-                          </Badge>
                         )}
                       </div>
                     </li>

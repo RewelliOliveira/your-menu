@@ -39,7 +39,7 @@ export function OrdersPage() {
       <Tabs defaultValue="active">
         <TabsList className="w-full sm:w-fit">
           <TabsTrigger value="active">
-            Em andamento <Counter value={activeOrders.length} />
+            Em andamento
           </TabsTrigger>
           <TabsTrigger value="history">Histórico</TabsTrigger>
         </TabsList>
@@ -49,7 +49,7 @@ export function OrdersPage() {
             <BoardSkeleton />
           ) : (
             <LayoutGroup>
-              <div className="-mx-4 flex snap-x snap-mandatory gap-4 overflow-x-auto px-4 pb-2 scrollbar-none sm:-mx-6 sm:px-6 lg:mx-0 lg:grid lg:grid-cols-3 lg:overflow-visible lg:px-0">
+              <div className="-mx-4 flex snap-x snap-mandatory gap-4 overflow-x-auto px-4 pb-2 scrollbar-none sm:-mx-6 sm:px-6 md:-mx-8 md:px-8 lg:mx-0 lg:grid lg:grid-cols-3 lg:overflow-visible lg:px-0">
                 {ACTIVE_STATUSES.map((status) => {
                   const columnOrders = activeOrders.filter((order) => order.status === status);
                   return (
@@ -140,30 +140,21 @@ function Stats({ orders, loading }: { orders: Order[]; loading: boolean }) {
     const revenue = completed.reduce((sum, order) => sum + order.total, 0);
     return [
       { label: "Pedidos hoje", value: String(today.length) },
-      { label: "Em andamento", value: String(today.filter((o) => ACTIVE_STATUSES.includes(o.status)).length) },
-      { label: "Faturamento hoje", value: formatCurrency(revenue) },
+      { label: "Vendas hoje", value: formatCurrency(revenue) },
       { label: "Ticket médio", value: formatCurrency(completed.length ? revenue / completed.length : 0) },
     ];
   }, [orders]);
 
   return (
-    <dl className="grid grid-cols-2 overflow-hidden rounded-xl border bg-card lg:grid-cols-4">
-      {stats.map(({ label, value }, index) => (
-        <div
-          key={label}
-          className={cn(
-            "min-w-0 px-4 py-3.5 sm:px-5",
-            index % 2 === 1 && "border-l",
-            index >= 2 && "border-t lg:border-t-0",
-            index === 2 && "lg:border-l",
-          )}
-        >
+    <dl className="grid grid-cols-3 divide-x overflow-hidden rounded-2xl border bg-card">
+      {stats.map(({ label, value }) => (
+        <div key={label} className="min-w-0 px-3 py-3.5 sm:px-5">
           <dt className="truncate text-xs text-muted-foreground">{label}</dt>
           <dd className="mt-0.5">
             {loading ? (
               <Skeleton className="h-7 w-16" />
             ) : (
-              <span className="block truncate text-xl font-semibold tabular-nums">{value}</span>
+              <span className="block truncate text-base font-bold tabular-nums sm:text-xl">{value}</span>
             )}
           </dd>
         </div>

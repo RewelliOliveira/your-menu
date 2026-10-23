@@ -18,6 +18,7 @@ import { formatCurrency, maskCep, maskPhone, normalizeText, onlyDigits, parseCur
 import { notifyError } from "@/lib/notify";
 import { createOrder } from "@/services/order-service";
 import type { FulfillmentType, PaymentMethod } from "@/types/order";
+import { ThemeToggle } from "../../theme/ThemeToggle";
 import { useCart } from "../cart/cart-context";
 import { useStorefront } from "../storefront-context";
 import { OptionCard } from "./OptionCard";
@@ -43,7 +44,7 @@ type Errors = Partial<Record<keyof CheckoutForm, string>>;
 export function CheckoutPage() {
   const { slug = "" } = useParams();
   const navigate = useNavigate();
-  const { restaurant, zones } = useStorefront();
+  const { restaurant, zones, acceptingOrders } = useStorefront();
   const { lines, subtotal, clear } = useCart();
   const [submitting, setSubmitting] = useState(false);
   const [errors, setErrors] = useState<Errors>({});
@@ -153,7 +154,7 @@ export function CheckoutPage() {
     }
   }
 
-  const submitLabel = restaurant.isOpen ? `Fazer pedido · ${formatCurrency(total)}` : "Loja fechada no momento";
+  const submitLabel = acceptingOrders ? `Fazer pedido · ${formatCurrency(total)}` : "Loja fechada no momento";
 
   return (
     <div className="min-h-dvh pb-32 lg:pb-12">
@@ -164,10 +165,11 @@ export function CheckoutPage() {
               <ArrowLeft />
             </Link>
           </Button>
-          <div className="min-w-0">
+          <div className="min-w-0 flex-1">
             <h1 className="font-bold">Finalizar pedido</h1>
             <p className="truncate text-xs text-muted-foreground">{restaurant.name}</p>
           </div>
+          <ThemeToggle />
         </div>
       </header>
 
@@ -409,7 +411,7 @@ export function CheckoutPage() {
               <span className="tabular-nums">{formatCurrency(total)}</span>
             </div>
           </div>
-          <Button type="submit" size="lg" className="hidden w-full lg:flex" loading={submitting} disabled={!restaurant.isOpen}>
+          <Button type="submit" size="lg" className="hidden w-full lg:flex" loading={submitting} disabled={!acceptingOrders}>
             {submitLabel}
           </Button>
         </aside>
@@ -422,7 +424,7 @@ export function CheckoutPage() {
           size="lg"
           className="w-full"
           loading={submitting}
-          disabled={!restaurant.isOpen}
+          disabled={!acceptingOrders}
         >
           {submitLabel}
         </Button>

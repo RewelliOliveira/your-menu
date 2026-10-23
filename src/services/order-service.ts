@@ -1,3 +1,4 @@
+import { isAcceptingOrders } from "@/lib/business-hours";
 import { onlyDigits } from "@/lib/format";
 import { canTransition } from "@/lib/order-status";
 import { createId } from "@/lib/utils";
@@ -17,7 +18,7 @@ export async function createOrder(slug: string, input: CreateOrderInput) {
   const restaurant = requireRestaurant(slug);
   await delay(600);
 
-  if (!restaurant.isOpen)
+  if (!isAcceptingOrders(restaurant, db.hours.get()))
     throw new ApiError("O restaurante está fechado no momento.");
   if (input.items.length === 0 || input.items.length > MAX_ITEMS)
     throw new ApiError("Sacola inválida.");

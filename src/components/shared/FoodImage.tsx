@@ -15,7 +15,7 @@ export function FoodImage({ src, alt, className, iconClassName }: FoodImageProps
 
   if (!src || failedSrc === src) {
     return (
-      <div className={cn("flex items-center justify-center bg-linear-to-br from-orange-50 to-amber-100", className)}>
+      <div className={cn("flex items-center justify-center bg-accent", className)}>
         <UtensilsCrossed className={cn("size-1/3 max-h-10 max-w-10 text-primary/40", iconClassName)} aria-hidden />
         <span className="sr-only">{alt}</span>
       </div>

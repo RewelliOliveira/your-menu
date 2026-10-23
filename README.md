@@ -30,6 +30,7 @@ npm install
 npm run dev      # ambiente de desenvolvimento
 npm run build    # typecheck + build de produção
 npm run lint
+npm test         # testes unitários (Vitest)
 ```
 
 - Painel: `http://localhost:5173/admin`. Em modo demonstração, entre com qualquer e-mail válido e uma senha de 8+ caracteres.
@@ -61,6 +62,7 @@ backend simulado em `services/mock`, que já aplica as regras que pertencem ao s
 
 - rotas do painel exigem sessão válida;
 - **preços, taxa de entrega e total são recalculados a partir do cardápio**, já que o cliente envia só IDs e quantidades;
+- pedidos só são aceitos com a loja aberta e dentro do horário de funcionamento (inclusive turnos que passam da meia-noite);
 - transições de status de pedido são validadas;
 - o acompanhamento de pedidos usa um código aleatório (não o número sequencial).
 

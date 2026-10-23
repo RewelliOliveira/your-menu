@@ -1,6 +1,12 @@
 import type { Category, Dish } from "@/types/menu";
 import type { Order } from "@/types/order";
-import type { BusinessHours, DeliveryZone, Restaurant, RestaurantAddress } from "@/types/restaurant";
+import {
+  WEEKDAYS,
+  type BusinessHours,
+  type DeliveryZone,
+  type Restaurant,
+  type RestaurantAddress,
+} from "@/types/restaurant";
 
 const img = (id: string, width = 600) =>
   `https://images.unsplash.com/${id}?w=${width}&auto=format&fit=crop&q=80`;
@@ -24,15 +30,12 @@ export const SEED_RESTAURANT: Restaurant = {
   pixKey: "contato@yourburger.com.br",
 };
 
-export const SEED_HOURS: BusinessHours[] = [
-  { weekday: "SUNDAY", isOpen: true, openingTime: "18:00", closingTime: "23:00" },
-  { weekday: "MONDAY", isOpen: false, openingTime: "18:00", closingTime: "23:30" },
-  { weekday: "TUESDAY", isOpen: true, openingTime: "18:00", closingTime: "23:30" },
-  { weekday: "WEDNESDAY", isOpen: true, openingTime: "18:00", closingTime: "23:30" },
-  { weekday: "THURSDAY", isOpen: true, openingTime: "18:00", closingTime: "23:30" },
-  { weekday: "FRIDAY", isOpen: true, openingTime: "18:00", closingTime: "00:00" },
-  { weekday: "SATURDAY", isOpen: true, openingTime: "18:00", closingTime: "00:00" },
-];
+export const SEED_HOURS: BusinessHours[] = WEEKDAYS.map((weekday) => ({
+  weekday,
+  isOpen: true,
+  openingTime: "00:00",
+  closingTime: "00:00",
+}));
 
 export const SEED_ADDRESS: RestaurantAddress = {
   cep: "01310-100",

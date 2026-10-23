@@ -1,19 +1,22 @@
 import { motion } from "motion/react";
 
 import { FoodImage } from "@/components/shared/FoodImage";
+import { isOpenAllDay } from "@/lib/business-hours";
 import { formatCurrency } from "@/lib/format";
 import { cn } from "@/lib/utils";
 import { WEEKDAYS } from "@/types/restaurant";
+import { ThemeToggle } from "../theme/ThemeToggle";
 import { useStorefront } from "./storefront-context";
 
 function useTodayHours() {
   const { hours } = useStorefront();
   const today = hours.find((day) => day.weekday === WEEKDAYS[new Date().getDay()]);
-  return today?.isOpen ? `Hoje das ${today.openingTime} às ${today.closingTime}` : "Não abre hoje";
+  if (!today?.isOpen) return "Não abre hoje";
+  return isOpenAllDay(today) ? "Aberto 24h" : `Hoje das ${today.openingTime} às ${today.closingTime}`;
 }
 
 export function RestaurantHero() {
-  const { restaurant, zones } = useStorefront();
+  const { restaurant, zones, acceptingOrders } = useStorefront();
   const todayHours = useTodayHours();
   const minFee = zones.length ? Math.min(...zones.map((zone) => zone.fee)) : null;
 
@@ -31,6 +34,7 @@ export function RestaurantHero() {
           />
         )}
         <div className="absolute inset-0 bg-linear-to-t from-black/40 to-transparent" />
+        <ThemeToggle className="absolute top-3 right-3 rounded-full bg-card/80 text-foreground backdrop-blur hover:bg-card" />
       </div>
 
       <div className="mx-auto max-w-5xl px-4">
@@ -54,8 +58,8 @@ export function RestaurantHero() {
 
             <div className="flex flex-col gap-1 text-sm text-muted-foreground sm:flex-row sm:flex-wrap sm:gap-x-2 [&_li]:whitespace-nowrap [&_li+li]:before:mr-2 [&_li+li]:before:content-['·'] [&_ul]:flex [&_ul]:gap-x-2 sm:[&>ul+ul]:before:content-['·']">
               <ul>
-                <li className={cn("font-semibold", restaurant.isOpen ? "text-success" : "text-destructive")}>
-                  {restaurant.isOpen ? "Aberto" : "Fechado"}
+                <li className={cn("font-semibold", acceptingOrders ? "text-success" : "text-destructive")}>
+                  {acceptingOrders ? "Aberto" : "Fechado"}
                 </li>
                 <li>{todayHours}</li>
               </ul>

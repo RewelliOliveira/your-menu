@@ -1,7 +1,7 @@
 import { ShoppingBag } from "lucide-react";
 import { AnimatePresence, motion } from "motion/react";
 
-import { formatCurrency, pluralize } from "@/lib/format";
+import { formatCurrency } from "@/lib/format";
 import { useCart } from "./cart-context";
 
 export function CartBar({ onOpen }: { onOpen: () => void }) {
@@ -33,10 +33,7 @@ export function CartBar({ onOpen }: { onOpen: () => void }) {
                 {count}
               </motion.span>
             </span>
-            <span className="flex-1 text-left">
-              <span className="block text-sm font-bold">Ver sacola</span>
-              <span className="block text-xs text-primary-foreground/80">{pluralize(count, "item", "itens")}</span>
-            </span>
+            <span className="flex-1 text-left text-sm font-bold">Ver sacola</span>
             <span className="text-base font-bold tabular-nums">{formatCurrency(subtotal)}</span>
           </button>
         </motion.div>

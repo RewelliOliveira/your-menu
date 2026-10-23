@@ -135,10 +135,7 @@ function DishForm({ categories, dish, initial }: { categories: Category[]; dish:
             <ArrowLeft />
           </Link>
         </Button>
-        <div>
-          <h1 className="text-2xl font-bold tracking-tight">{dish ? "Editar prato" : "Novo prato"}</h1>
-          <p className="text-sm text-muted-foreground">Capriche na foto e na descrição: é o que faz o cliente pedir.</p>
-        </div>
+        <h1 className="text-2xl font-bold tracking-tight">{dish ? "Editar prato" : "Novo prato"}</h1>
       </div>
 
       <div className="grid items-start gap-6 lg:grid-cols-[1fr_22rem]">

@@ -1,3 +1,4 @@
+import { isAcceptingOrders } from "@/lib/business-hours";
 import { readStorage, writeStorage } from "@/lib/storage";
 import { createId } from "@/lib/utils";
 import type { Order, PaymentMethod } from "@/types/order";
@@ -84,7 +85,7 @@ export function receiveSimulatedOrders(now = Date.now()) {
   scheduleNext(now);
 
   const orders = db.orders.get();
-  if (!db.restaurant.get().isOpen) return;
+  if (!isAcceptingOrders(db.restaurant.get(), db.hours.get(), new Date(now))) return;
   if (orders.filter((order) => order.status === "PENDING").length >= MAX_PENDING) return;
 
   const order = buildOrder(
