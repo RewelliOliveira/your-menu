@@ -46,7 +46,7 @@ function Delta({
       <span
         className={cn(
           "font-medium text-muted-foreground",
-          compact && "hidden sm:inline",
+          compact && "hidden",
         )}
       >
         vs {label}
