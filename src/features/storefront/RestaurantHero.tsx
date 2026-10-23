@@ -4,6 +4,7 @@ import { FoodImage } from "@/components/shared/FoodImage";
 import { formatCurrency } from "@/lib/format";
 import { cn } from "@/lib/utils";
 import { WEEKDAYS } from "@/types/restaurant";
+import { ThemeToggle } from "../theme/ThemeToggle";
 import { useStorefront } from "./storefront-context";
 
 function useTodayHours() {
@@ -31,6 +32,7 @@ export function RestaurantHero() {
           />
         )}
         <div className="absolute inset-0 bg-linear-to-t from-black/40 to-transparent" />
+        <ThemeToggle className="absolute top-3 right-3 rounded-full bg-card/80 text-foreground backdrop-blur hover:bg-card" />
       </div>
 
       <div className="mx-auto max-w-5xl px-4">

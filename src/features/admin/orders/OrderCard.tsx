@@ -64,7 +64,7 @@ export function OrderCard({ order, now, onOpen, onAdvance, onCancel }: OrderCard
             <span
               className={
                 isLate
-                  ? "flex items-center gap-1 whitespace-nowrap text-red-600"
+                  ? "flex items-center gap-1 whitespace-nowrap text-destructive"
                   : "flex items-center gap-1 whitespace-nowrap text-muted-foreground"
               }
             >
@@ -95,7 +95,7 @@ export function OrderCard({ order, now, onOpen, onAdvance, onCancel }: OrderCard
         </ul>
 
         {order.note && (
-          <p className="flex gap-2 rounded-xl bg-amber-50 px-3 py-2 text-xs text-amber-800">
+          <p className="flex gap-2 rounded-xl bg-warning px-3 py-2 text-xs text-warning-foreground">
             <StickyNote className="mt-0.5 size-3.5 shrink-0" />
             <span className="line-clamp-2">{order.note}</span>
           </p>

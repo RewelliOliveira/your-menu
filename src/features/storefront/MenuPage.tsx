@@ -37,7 +37,7 @@ export function MenuPage() {
 
       {!restaurant.isOpen && (
         <div className="mx-auto mt-4 max-w-5xl px-4">
-          <div className="flex items-center gap-3 rounded-2xl border border-amber-200 bg-amber-50 p-4 text-sm text-amber-900">
+          <div className="flex items-center gap-3 rounded-2xl bg-warning p-4 text-sm text-warning-foreground">
             <Moon className="size-5 shrink-0" />
             <p>
               <strong>Estamos fechados agora.</strong> Você pode ver o cardápio, mas os pedidos estão pausados.

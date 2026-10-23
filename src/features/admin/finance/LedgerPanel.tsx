@@ -36,17 +36,17 @@ const TYPE_STYLE: Record<
 > = {
   INCOME: {
     icon: ArrowDownLeft,
-    className: "bg-blue-50 text-blue-700",
+    className: "bg-chart-income/12 text-chart-income",
     sign: "+",
   },
   EXPENSE: {
     icon: ArrowUpRight,
-    className: "bg-orange-50 text-orange-700",
+    className: "bg-chart-expense/12 text-chart-expense",
     sign: "−",
   },
   LOSS: {
     icon: TrendingDown,
-    className: "bg-teal-50 text-teal-700",
+    className: "bg-chart-loss/12 text-chart-loss",
     sign: "−",
   },
 };

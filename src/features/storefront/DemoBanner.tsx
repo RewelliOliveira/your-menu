@@ -16,14 +16,14 @@ export function DemoBanner() {
   }
 
   return (
-    <div className="flex items-center gap-3 bg-zinc-900 py-2 pr-2 pl-4 text-xs text-zinc-300">
+    <div className="flex items-center gap-3 bg-foreground py-2 pr-2 pl-4 text-xs text-background/75">
       <p className="mx-auto">
         Loja de demonstração. Faça um pedido e veja ele chegar no{" "}
         <a
           href="/admin"
           target="_blank"
           rel="noopener noreferrer"
-          className="inline-flex items-center gap-0.5 font-semibold text-white underline-offset-4 hover:underline"
+          className="inline-flex items-center gap-0.5 font-semibold text-background underline-offset-4 hover:underline"
         >
           painel do restaurante
           <ArrowUpRight className="size-3.5" />
@@ -33,7 +33,7 @@ export function DemoBanner() {
         type="button"
         onClick={dismiss}
         aria-label="Fechar aviso"
-        className="flex size-7 shrink-0 cursor-pointer items-center justify-center rounded-md text-zinc-400 transition-colors hover:bg-white/10 hover:text-white"
+        className="flex size-7 shrink-0 cursor-pointer items-center justify-center rounded-md text-background/60 transition-colors hover:bg-background/10 hover:text-background"
       >
         <X className="size-4" />
       </button>

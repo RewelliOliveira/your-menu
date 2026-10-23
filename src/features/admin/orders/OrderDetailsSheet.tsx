@@ -177,7 +177,7 @@ function OrderDetails({
                     {item.variantLabel}
                   </p>
                   {item.note && (
-                    <p className="mt-1 text-xs text-amber-700">
+                    <p className="mt-1 text-xs text-warning-foreground">
                       Obs.: {item.note}
                     </p>
                   )}
@@ -192,7 +192,7 @@ function OrderDetails({
 
         {order.note && (
           <Section icon={StickyNote} title="Observação">
-            <p className="rounded-xl bg-amber-50 p-3 text-amber-900">
+            <p className="rounded-xl bg-warning p-3 text-warning-foreground">
               {order.note}
             </p>
           </Section>

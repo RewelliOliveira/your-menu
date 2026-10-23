@@ -35,8 +35,8 @@ function Delta({
         flat
           ? "text-muted-foreground"
           : good
-            ? "text-emerald-700"
-            : "text-red-700",
+            ? "text-success"
+            : "text-destructive",
       )}
     >
       <Icon className="size-3.5" aria-hidden />
@@ -111,7 +111,7 @@ export function FinanceStats({ report }: { report: FinanceReport }) {
           <p
             className={cn(
               "text-4xl font-bold tracking-tight sm:text-5xl",
-              !profitable && "text-red-700",
+              !profitable && "text-destructive",
             )}
           >
             {formatCurrency(summary.profit)}

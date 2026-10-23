@@ -3,6 +3,7 @@ import { BellRing, Smartphone, UtensilsCrossed } from "lucide-react";
 import { motion } from "motion/react";
 
 import { Logo } from "@/components/shared/Logo";
+import { ThemeToggle } from "../theme/ThemeToggle";
 
 const HIGHLIGHTS = [
   { icon: UtensilsCrossed, text: "Cardápio digital com a sua cara" },
@@ -26,7 +27,7 @@ export function AuthLayout({
         <div className="absolute -bottom-40 -left-24 size-112 rounded-full bg-black/10" aria-hidden />
 
         <div className="relative flex w-fit items-center rounded-2xl bg-white px-4 py-2">
-          <Logo className="h-7" />
+          <Logo className="h-7" forceLight />
         </div>
 
         <div className="relative max-w-md space-y-8">
@@ -55,6 +56,7 @@ export function AuthLayout({
       </aside>
 
       <main className="relative flex items-center justify-center px-4 py-10 sm:px-8">
+        <ThemeToggle className="absolute top-4 right-4" />
         <motion.div
           initial={{ opacity: 0, y: 12 }}
           animate={{ opacity: 1, y: 0 }}

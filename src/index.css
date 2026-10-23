@@ -1,6 +1,8 @@
 @import "tailwindcss";
 @import "tw-animate-css";
 
+@custom-variant dark (&:where(.dark, .dark *));
+
 @theme inline {
   --font-sans: "Plus Jakarta Sans", ui-sans-serif, system-ui, sans-serif;
 
@@ -26,6 +28,11 @@
   --color-accent-foreground: var(--accent-foreground);
   --color-destructive: var(--destructive);
   --color-success: var(--success);
+  --color-warning: var(--warning);
+  --color-warning-foreground: var(--warning-foreground);
+  --color-chart-income: var(--chart-income);
+  --color-chart-expense: var(--chart-expense);
+  --color-chart-loss: var(--chart-loss);
   --color-border: var(--border);
   --color-input: var(--input);
   --color-ring: var(--ring);
@@ -34,20 +41,20 @@
 :root {
   --radius: 0.75rem;
 
-  --background: #f7f7f8;
-  --foreground: #18181b;
+  --background: #f8f7f5;
+  --foreground: #1c1917;
   --card: #ffffff;
-  --card-foreground: #18181b;
+  --card-foreground: #1c1917;
   --popover: #ffffff;
-  --popover-foreground: #18181b;
+  --popover-foreground: #1c1917;
 
   --primary: #db3f0f;
   --primary-foreground: #ffffff;
 
-  --secondary: #f1f1f3;
-  --secondary-foreground: #27272a;
-  --muted: #f1f1f3;
-  --muted-foreground: #6b6b76;
+  --secondary: #f2f0ed;
+  --secondary-foreground: #292524;
+  --muted: #f2f0ed;
+  --muted-foreground: #6f6863;
   --accent: #fff1eb;
   --accent-foreground: #b2330b;
 
@@ -58,8 +65,42 @@
 
   --destructive: #dc2626;
   --success: #059669;
-  --border: #e7e7ea;
-  --input: #e2e2e6;
+  --warning: #fdf6e7;
+  --warning-foreground: #8a4b08;
+  --border: #e9e5e1;
+  --input: #e2ddd8;
+  --ring: #f07a4f;
+}
+
+.dark {
+  --background: #121110;
+  --foreground: #f4f2f0;
+  --card: #1a1817;
+  --card-foreground: #f4f2f0;
+  --popover: #1f1d1b;
+  --popover-foreground: #f4f2f0;
+
+  --primary: #ec5a26;
+  --primary-foreground: #ffffff;
+
+  --secondary: #272422;
+  --secondary-foreground: #ece8e4;
+  --muted: #232120;
+  --muted-foreground: #a39d97;
+  --accent: #33201a;
+  --accent-foreground: #ffb08f;
+
+  --chart-income: #5b9cf0;
+  --chart-expense: #f2834f;
+  --chart-loss: #34c48f;
+  --chart-negative: #f26b69;
+
+  --destructive: #f05555;
+  --success: #3cc68f;
+  --warning: #2c2214;
+  --warning-foreground: #f8c978;
+  --border: #2c2926;
+  --input: #3a3633;
   --ring: #f07a4f;
 }
 

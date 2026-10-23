@@ -33,6 +33,7 @@ import { resetDemoData } from "@/services/demo-service";
 import { getMyRestaurant } from "@/services/restaurant-service";
 import type { Restaurant } from "@/types/restaurant";
 import { useAuth } from "../auth/auth-context";
+import { ThemeToggle } from "../theme/ThemeToggle";
 import {
   AdminRestaurantContext,
   useAdminRestaurant,
@@ -140,7 +141,10 @@ function Sidebar() {
 
   return (
     <aside className="sticky top-0 hidden h-dvh flex-col gap-6 border-r bg-card px-4 py-5 lg:flex">
-      <Logo className="ml-2 h-6 self-start" />
+      <div className="flex items-center justify-between pl-2">
+        <Logo className="h-6" />
+        <ThemeToggle className="size-8" />
+      </div>
 
       <StoreStatusSwitch />
 
@@ -218,6 +222,7 @@ function MobileHeader() {
       </div>
       <div className="flex items-center gap-1">
         <StoreStatusSwitch compact />
+        <ThemeToggle />
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
             <Button variant="ghost" size="icon" aria-label="Mais opções">
