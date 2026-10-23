@@ -10,6 +10,8 @@ import type {
 } from "@/types/restaurant";
 import { ApiError, db, delay, requireAuth, requireRestaurant } from "./mock/db";
 
+const TIME_PATTERN = /^([01]\d|2[0-3]):[0-5]\d$/;
+
 export async function getStorefront(slug: string): Promise<Storefront> {
   await delay();
   return {
@@ -62,7 +64,7 @@ export async function getHours() {
 
 export async function updateHours(hours: BusinessHours[]) {
   requireAuth();
-  if (hours.some((day) => day.isOpen && (!day.openingTime || !day.closingTime))) {
+  if (hours.some((day) => day.isOpen && !(TIME_PATTERN.test(day.openingTime) && TIME_PATTERN.test(day.closingTime)))) {
     throw new ApiError("Informe abertura e fechamento dos dias em funcionamento.");
   }
   await delay();

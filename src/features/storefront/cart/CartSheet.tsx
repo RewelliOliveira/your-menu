@@ -13,7 +13,7 @@ import { useCart } from "./cart-context";
 
 export function CartSheet({ open, onOpenChange }: { open: boolean; onOpenChange: (open: boolean) => void }) {
   const { lines, subtotal, setQuantity, clear } = useCart();
-  const { restaurant } = useStorefront();
+  const { restaurant, acceptingOrders } = useStorefront();
   const { slug } = useParams();
   const navigate = useNavigate();
 
@@ -76,9 +76,9 @@ export function CartSheet({ open, onOpenChange }: { open: boolean; onOpenChange:
                   onOpenChange(false);
                   navigate(`/${slug}/checkout`);
                 }}
-                disabled={!restaurant.isOpen}
+                disabled={!acceptingOrders}
               >
-                {restaurant.isOpen ? "Continuar" : "Loja fechada no momento"}
+                {acceptingOrders ? "Continuar" : "Loja fechada no momento"}
               </Button>
               <Button variant="ghost" size="sm" className="text-muted-foreground" onClick={clear}>
                 Esvaziar sacola

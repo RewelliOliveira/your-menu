@@ -15,7 +15,7 @@ import { RestaurantHero } from "./RestaurantHero";
 import { useStorefront } from "./storefront-context";
 
 export function MenuPage() {
-  const { restaurant, menu } = useStorefront();
+  const { acceptingOrders, menu } = useStorefront();
   const [query, setQuery] = useState("");
   const [selectedDish, setSelectedDish] = useState<Dish | null>(null);
   const [cartOpen, setCartOpen] = useState(false);
@@ -35,7 +35,7 @@ export function MenuPage() {
     <div className="min-h-dvh pb-32">
       <RestaurantHero />
 
-      {!restaurant.isOpen && (
+      {!acceptingOrders && (
         <div className="mx-auto mt-4 max-w-5xl px-4">
           <div className="flex items-center gap-3 rounded-2xl bg-warning p-4 text-sm text-warning-foreground">
             <Moon className="size-5 shrink-0" />
@@ -83,7 +83,7 @@ export function MenuPage() {
         Cardápio digital por <span className="font-bold text-primary">Your Menu</span>
       </footer>
 
-      <DishDialog dish={selectedDish} canOrder={restaurant.isOpen} onClose={() => setSelectedDish(null)} />
+      <DishDialog dish={selectedDish} canOrder={acceptingOrders} onClose={() => setSelectedDish(null)} />
       <CartBar onOpen={() => setCartOpen(true)} />
       <CartSheet open={cartOpen} onOpenChange={setCartOpen} />
     </div>

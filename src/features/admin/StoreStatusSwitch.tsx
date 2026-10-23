@@ -52,7 +52,7 @@ export function StoreStatusSwitch({ compact = false }: { compact?: boolean }) {
         title={nextIsOpen ? "Abrir a loja?" : "Fechar a loja?"}
         description={
           nextIsOpen
-            ? "Seu cardápio voltará a aceitar pedidos imediatamente."
+            ? "Seu cardápio voltará a aceitar pedidos dentro do horário de funcionamento."
             : "Clientes ainda verão o cardápio, mas não conseguirão fazer novos pedidos."
         }
         confirmLabel={nextIsOpen ? "Abrir loja" : "Fechar loja"}

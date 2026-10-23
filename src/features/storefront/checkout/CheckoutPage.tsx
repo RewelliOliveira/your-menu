@@ -44,7 +44,7 @@ type Errors = Partial<Record<keyof CheckoutForm, string>>;
 export function CheckoutPage() {
   const { slug = "" } = useParams();
   const navigate = useNavigate();
-  const { restaurant, zones } = useStorefront();
+  const { restaurant, zones, acceptingOrders } = useStorefront();
   const { lines, subtotal, clear } = useCart();
   const [submitting, setSubmitting] = useState(false);
   const [errors, setErrors] = useState<Errors>({});
@@ -154,7 +154,7 @@ export function CheckoutPage() {
     }
   }
 
-  const submitLabel = restaurant.isOpen ? `Fazer pedido · ${formatCurrency(total)}` : "Loja fechada no momento";
+  const submitLabel = acceptingOrders ? `Fazer pedido · ${formatCurrency(total)}` : "Loja fechada no momento";
 
   return (
     <div className="min-h-dvh pb-32 lg:pb-12">
@@ -411,7 +411,7 @@ export function CheckoutPage() {
               <span className="tabular-nums">{formatCurrency(total)}</span>
             </div>
           </div>
-          <Button type="submit" size="lg" className="hidden w-full lg:flex" loading={submitting} disabled={!restaurant.isOpen}>
+          <Button type="submit" size="lg" className="hidden w-full lg:flex" loading={submitting} disabled={!acceptingOrders}>
             {submitLabel}
           </Button>
         </aside>
@@ -424,7 +424,7 @@ export function CheckoutPage() {
           size="lg"
           className="w-full"
           loading={submitting}
-          disabled={!restaurant.isOpen}
+          disabled={!acceptingOrders}
         >
           {submitLabel}
         </Button>
