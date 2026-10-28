@@ -18,6 +18,7 @@ const schema = z.object({
   APP_TIMEZONE: z.string().default("America/Sao_Paulo"),
   PORT: z.coerce.number().int().positive().default(3333),
   CORS_ORIGIN: z.string().default("http://localhost:5173"),
+  PUBLIC_API_URL: z.url().optional(),
   JWT_SECRET: z.string().min(16),
   JWT_EXPIRES_IN: z.string().default("8h"),
   DB_CLIENT: z.enum(["sqlite", "postgres"]).default("sqlite"),

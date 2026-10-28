@@ -38,6 +38,11 @@ export async function findRestaurantBySlug(slug: string, executor: DB = db) {
   return row && toRestaurant(row);
 }
 
+export async function findRestaurantByOwner(userId: string, executor: DB = db) {
+  const row = await executor.selectFrom("restaurants").selectAll().where("user_id", "=", userId).executeTakeFirst();
+  return row && toRestaurant(row);
+}
+
 export async function slugExists(slug: string, executor: DB = db) {
   const row = await executor.selectFrom("restaurants").select("id").where("slug", "=", slug).executeTakeFirst();
   return !!row;
