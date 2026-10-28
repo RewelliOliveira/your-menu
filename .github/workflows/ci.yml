@@ -12,6 +12,9 @@ concurrency:
 jobs:
   check:
     runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        workspace: [frontend, backend]
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
@@ -19,6 +22,6 @@ jobs:
           node-version: 22
           cache: npm
       - run: npm ci
-      - run: npm run lint
-      - run: npm test
-      - run: npm run build
+      - run: npm run lint -w ${{ matrix.workspace }}
+      - run: npm test -w ${{ matrix.workspace }}
+      - run: npm run build -w ${{ matrix.workspace }}
