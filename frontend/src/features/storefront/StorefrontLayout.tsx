@@ -44,7 +44,7 @@ export function StorefrontLayout() {
   return (
     <StorefrontContext.Provider value={value}>
       <CartProvider key={slug} slug={slug} menu={value.menu}>
-        <DemoBanner />
+        <DemoBanner slug={slug} />
         <Outlet />
       </CartProvider>
     </StorefrontContext.Provider>

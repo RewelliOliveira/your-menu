@@ -6,7 +6,7 @@ import { Field } from "@/components/shared/Field";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { getErrorMessage } from "@/lib/utils";
-import { DEMO_ACCOUNT } from "@/services/demo-service";
+import { demoAccount, env } from "@/config/env";
 import type { LoginInput } from "@/types/auth";
 import { useAuth } from "./auth-context";
 import { AuthLayout } from "./AuthLayout";
@@ -37,9 +37,10 @@ export function LoginPage() {
   }
 
   function signInWithDemo() {
-    setEmail(DEMO_ACCOUNT.email);
-    setPassword(DEMO_ACCOUNT.password);
-    signIn(DEMO_ACCOUNT);
+    if (!demoAccount) return;
+    setEmail(demoAccount.email);
+    setPassword(demoAccount.password);
+    signIn(demoAccount);
   }
 
   return (
@@ -76,22 +77,28 @@ export function LoginPage() {
         </Button>
       </form>
 
-      <div className="flex items-center gap-3 text-xs text-muted-foreground">
-        <span className="h-px flex-1 bg-border" />
-        ou
-        <span className="h-px flex-1 bg-border" />
-      </div>
+      {demoAccount && (
+        <>
+          <div className="flex items-center gap-3 text-xs text-muted-foreground">
+            <span className="h-px flex-1 bg-border" />
+            ou
+            <span className="h-px flex-1 bg-border" />
+          </div>
 
-      <div className="space-y-3">
-        <Button type="button" variant="outline" size="lg" className="w-full" onClick={signInWithDemo} disabled={loading}>
-          Entrar com a conta demo
-        </Button>
-        <Button type="button" variant="ghost" className="w-full text-muted-foreground" asChild>
-          <Link to="/your-burger" target="_blank">
-            Ver loja do cliente <ArrowUpRight />
-          </Link>
-        </Button>
-      </div>
+          <div className="space-y-3">
+            <Button type="button" variant="outline" size="lg" className="w-full" onClick={signInWithDemo} disabled={loading}>
+              Entrar com a conta demo
+            </Button>
+            {env.demoSlug && (
+              <Button type="button" variant="ghost" className="w-full text-muted-foreground" asChild>
+                <Link to={`/${env.demoSlug}`} target="_blank">
+                  Ver loja do cliente <ArrowUpRight />
+                </Link>
+              </Button>
+            )}
+          </div>
+        </>
+      )}
 
       <p className="text-center text-sm text-muted-foreground">
         Ainda não tem conta?{" "}

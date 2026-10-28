@@ -1,14 +1,15 @@
 import { useState } from "react";
 import { ArrowUpRight, X } from "lucide-react";
 
+import { env } from "@/config/env";
 import { readStorage, writeStorage } from "@/lib/storage";
 
 const DISMISSED_KEY = "demo-banner-dismissed";
 const isTrue = (value: unknown): value is true => value === true;
 
-export function DemoBanner() {
+export function DemoBanner({ slug }: { slug: string }) {
   const [visible, setVisible] = useState(() => !readStorage(DISMISSED_KEY, isTrue));
-  if (!visible) return null;
+  if (!visible || !env.demoSlug || slug !== env.demoSlug) return null;
 
   function dismiss() {
     writeStorage(DISMISSED_KEY, true);

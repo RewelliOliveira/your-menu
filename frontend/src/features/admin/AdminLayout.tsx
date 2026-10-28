@@ -1,4 +1,4 @@
-import { useCallback, useMemo, useState } from "react";
+import { useCallback, useMemo } from "react";
 import { NavLink, Outlet } from "react-router-dom";
 import {
   ChevronsUpDown,
@@ -6,14 +6,12 @@ import {
   ExternalLink,
   LogOut,
   MoreVertical,
-  RotateCcw,
   Settings,
   UtensilsCrossed,
   Wallet,
 } from "lucide-react";
 import { motion } from "motion/react";
 
-import { ConfirmDialog } from "@/components/shared/ConfirmDialog";
 import { ErrorState } from "@/components/shared/ErrorState";
 import { FoodImage } from "@/components/shared/FoodImage";
 import { Logo } from "@/components/shared/Logo";
@@ -28,7 +26,6 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { useAsync } from "@/hooks/use-async";
 import { cn } from "@/lib/utils";
-import { resetDemoData } from "@/services/demo-service";
 import { getMyRestaurant } from "@/services/restaurant-service";
 import type { Restaurant } from "@/types/restaurant";
 import { useAuth } from "../auth/auth-context";
@@ -83,13 +80,7 @@ function getStorefrontUrl(slug: string) {
   return `${window.location.origin}/${slug}`;
 }
 
-function AccountMenuItems({
-  restaurant,
-  onReset,
-}: {
-  restaurant: Restaurant;
-  onReset: () => void;
-}) {
+function AccountMenuItems({ restaurant }: { restaurant: Restaurant }) {
   const { logout } = useAuth();
 
   return (
@@ -103,9 +94,6 @@ function AccountMenuItems({
           <ExternalLink /> Ver cardápio online
         </a>
       </DropdownMenuItem>
-      <DropdownMenuItem onSelect={onReset}>
-        <RotateCcw /> Restaurar dados de demonstração
-      </DropdownMenuItem>
       <DropdownMenuSeparator />
       <DropdownMenuItem variant="destructive" onSelect={logout}>
         <LogOut /> Sair
@@ -114,29 +102,8 @@ function AccountMenuItems({
   );
 }
 
-function ResetDemoDialog({
-  open,
-  onOpenChange,
-}: {
-  open: boolean;
-  onOpenChange: (open: boolean) => void;
-}) {
-  return (
-    <ConfirmDialog
-      open={open}
-      onOpenChange={onOpenChange}
-      title="Restaurar dados de demonstração?"
-      description="Pedidos, cardápio, ajustes e movimentações voltam ao estado inicial. Você continua conectado."
-      confirmLabel="Restaurar"
-      destructive
-      onConfirm={resetDemoData}
-    />
-  );
-}
-
 function Sidebar() {
   const { restaurant } = useAdminRestaurant();
-  const [resetOpen, setResetOpen] = useState(false);
 
   return (
     <aside className="sticky top-0 hidden h-dvh flex-col gap-6 border-r bg-card px-3 py-5 md:flex lg:px-4">
@@ -200,21 +167,15 @@ function Sidebar() {
           <ChevronsUpDown className="hidden size-4 shrink-0 text-muted-foreground lg:block" />
         </DropdownMenuTrigger>
         <DropdownMenuContent side="top" align="start" className="w-72">
-          <AccountMenuItems
-            restaurant={restaurant}
-            onReset={() => setResetOpen(true)}
-          />
+          <AccountMenuItems restaurant={restaurant} />
         </DropdownMenuContent>
       </DropdownMenu>
-
-      <ResetDemoDialog open={resetOpen} onOpenChange={setResetOpen} />
     </aside>
   );
 }
 
 function MobileHeader() {
   const { restaurant } = useAdminRestaurant();
-  const [resetOpen, setResetOpen] = useState(false);
 
   return (
     <header className="sticky top-0 z-30 flex items-center justify-between gap-3 border-b bg-card/90 px-4 py-2.5 backdrop-blur-lg md:hidden">
@@ -236,14 +197,10 @@ function MobileHeader() {
             </Button>
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end" className="w-72">
-            <AccountMenuItems
-              restaurant={restaurant}
-              onReset={() => setResetOpen(true)}
-            />
+            <AccountMenuItems restaurant={restaurant} />
           </DropdownMenuContent>
         </DropdownMenu>
       </div>
-      <ResetDemoDialog open={resetOpen} onOpenChange={setResetOpen} />
     </header>
   );
 }

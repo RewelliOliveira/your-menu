@@ -17,5 +17,11 @@ export async function compressImage(file: File, maxSize = 1200, quality = 0.82) 
   canvas.height = Math.round(bitmap.height * scale);
   canvas.getContext("2d")?.drawImage(bitmap, 0, 0, canvas.width, canvas.height);
   bitmap.close();
-  return canvas.toDataURL("image/webp", quality);
+  return new Promise<Blob>((resolve, reject) =>
+    canvas.toBlob(
+      (blob) => (blob ? resolve(blob) : reject(new Error("Não foi possível processar a imagem."))),
+      "image/webp",
+      quality,
+    ),
+  );
 }

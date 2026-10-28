@@ -1,5 +1,3 @@
-import { onlyDigits } from "@/lib/format";
-import { createId } from "@/lib/utils";
 import type {
   BusinessHours,
   DeliveryZone,
@@ -8,114 +6,48 @@ import type {
   RestaurantProfileInput,
   Storefront,
 } from "@/types/restaurant";
-import { ApiError, db, delay, requireAuth, requireRestaurant } from "./mock/db";
+import { http } from "./http-client";
 
-const TIME_PATTERN = /^([01]\d|2[0-3]):[0-5]\d$/;
-
-export async function getStorefront(slug: string): Promise<Storefront> {
-  await delay();
-  return {
-    restaurant: requireRestaurant(slug),
-    hours: db.hours.get(),
-    zones: db.zones.get(),
-    city: db.address.get().city,
-  };
+export function getStorefront(slug: string) {
+  return http.get<Storefront>(`/storefronts/${encodeURIComponent(slug)}`);
 }
 
-export async function getMyRestaurant() {
-  requireAuth();
-  await delay(150);
-  return db.restaurant.get();
+export function getMyRestaurant() {
+  return http.get<Restaurant>("/restaurant");
 }
 
-export async function updateProfile(input: RestaurantProfileInput) {
-  requireAuth();
-  const name = input.name.trim();
-  if (name.length < 2 || name.length > 60) throw new ApiError("O nome deve ter entre 2 e 60 caracteres.");
-  if (input.deliveryTimeMin <= 0 || input.deliveryTimeMax < input.deliveryTimeMin) {
-    throw new ApiError("Confira o tempo de entrega: o máximo deve ser maior que o mínimo.");
-  }
-  await delay();
-
-  const restaurant: Restaurant = {
-    ...db.restaurant.get(),
-    ...input,
-    name,
-    description: input.description.trim().slice(0, 160),
-    pixKey: input.pixKey.trim().slice(0, 77),
-  };
-  db.restaurant.set(restaurant);
-  return restaurant;
+export function updateProfile(input: RestaurantProfileInput) {
+  return http.put<Restaurant>("/restaurant", input);
 }
 
-export async function updateRestaurantFlags(flags: Partial<Pick<Restaurant, "isOpen" | "pickupEnabled">>) {
-  requireAuth();
-  await delay(200);
-  const restaurant = { ...db.restaurant.get(), ...flags };
-  db.restaurant.set(restaurant);
-  return restaurant;
+export function updateRestaurantFlags(flags: Partial<Pick<Restaurant, "isOpen" | "pickupEnabled">>) {
+  return http.patch<Restaurant>("/restaurant/status", flags);
 }
 
-export async function getHours() {
-  requireAuth();
-  await delay(150);
-  return db.hours.get();
+export function getHours() {
+  return http.get<BusinessHours[]>("/restaurant/hours");
 }
 
-export async function updateHours(hours: BusinessHours[]) {
-  requireAuth();
-  if (hours.some((day) => day.isOpen && !(TIME_PATTERN.test(day.openingTime) && TIME_PATTERN.test(day.closingTime)))) {
-    throw new ApiError("Informe abertura e fechamento dos dias em funcionamento.");
-  }
-  await delay();
-  db.hours.set(hours);
-  return hours;
+export function updateHours(hours: BusinessHours[]) {
+  return http.put<BusinessHours[]>("/restaurant/hours", hours);
 }
 
-export async function getAddress() {
-  requireAuth();
-  await delay(150);
-  return db.address.get();
+export function getAddress() {
+  return http.get<RestaurantAddress>("/restaurant/address");
 }
 
-export async function updateAddress(address: RestaurantAddress) {
-  requireAuth();
-  if (onlyDigits(address.cep).length !== 8) throw new ApiError("CEP inválido.");
-  await delay();
-  db.address.set(address);
-  return address;
+export function updateAddress(address: RestaurantAddress) {
+  return http.put<RestaurantAddress>("/restaurant/address", address);
 }
 
-export async function getDeliveryZones() {
-  requireAuth();
-  await delay(150);
-  return db.zones.get();
+export function getDeliveryZones() {
+  return http.get<DeliveryZone[]>("/delivery-zones");
 }
 
-function validateZone(zone: Omit<DeliveryZone, "id">, ignoreId?: string) {
-  const name = zone.name.trim();
-  if (!name) throw new ApiError("Informe o nome do bairro.");
-  if (!Number.isFinite(zone.fee) || zone.fee < 0 || zone.fee > 500) throw new ApiError("Taxa de entrega inválida.");
-  const duplicated = db.zones
-    .get()
-    .some((z) => z.id !== ignoreId && z.name.toLowerCase() === name.toLowerCase());
-  if (duplicated) throw new ApiError("Já existe uma zona com esse nome.");
-  return { name: name.slice(0, 60), fee: Math.round(zone.fee * 100) / 100 };
+export function saveDeliveryZone({ id, ...zone }: Omit<DeliveryZone, "id"> & { id?: string }) {
+  return id ? http.put<DeliveryZone>(`/delivery-zones/${id}`, zone) : http.post<DeliveryZone>("/delivery-zones", zone);
 }
 
-export async function saveDeliveryZone(zone: Omit<DeliveryZone, "id"> & { id?: string }) {
-  requireAuth();
-  const data = validateZone(zone, zone.id);
-  await delay();
-
-  const zones = db.zones.get();
-  const saved: DeliveryZone = { id: zone.id ?? createId(), ...data };
-  db.zones.set(zone.id ? zones.map((z) => (z.id === zone.id ? saved : z)) : [...zones, saved]);
-  return saved;
-}
-
-export async function deleteDeliveryZone(id: string) {
-  requireAuth();
-  await delay();
-  db.zones.set(db.zones.get().filter((z) => z.id !== id));
+export function deleteDeliveryZone(id: string) {
+  return http.delete(`/delivery-zones/${id}`);
 }

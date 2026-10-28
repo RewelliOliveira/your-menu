@@ -13,7 +13,7 @@ import { PasswordInput } from "./PasswordInput";
 export function RegisterPage() {
   const { register } = useAuth();
   const navigate = useNavigate();
-  const [form, setForm] = useState({ name: "", email: "", password: "", confirm: "" });
+  const [form, setForm] = useState({ name: "", restaurantName: "", email: "", password: "", confirm: "" });
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
 
@@ -30,7 +30,12 @@ export function RegisterPage() {
     setError("");
     setLoading(true);
     try {
-      await register({ name: form.name, email: form.email, password: form.password });
+      await register({
+        name: form.name,
+        restaurantName: form.restaurantName,
+        email: form.email,
+        password: form.password,
+      });
       toast.success("Conta criada! Vamos configurar seu restaurante.");
       navigate("/admin/settings/profile", { replace: true });
     } catch (err) {
@@ -45,6 +50,16 @@ export function RegisterPage() {
       <form onSubmit={handleSubmit} className="space-y-4" noValidate>
         <Field label="Nome completo" htmlFor="name">
           <Input id="name" autoComplete="name" placeholder="Maria da Silva" value={form.name} onChange={update("name")} maxLength={80} />
+        </Field>
+        <Field label="Nome do restaurante" htmlFor="restaurantName" hint="Usado também no endereço do seu cardápio.">
+          <Input
+            id="restaurantName"
+            autoComplete="organization"
+            placeholder="Cantina da Maria"
+            value={form.restaurantName}
+            onChange={update("restaurantName")}
+            maxLength={60}
+          />
         </Field>
         <Field label="E-mail" htmlFor="email">
           <Input

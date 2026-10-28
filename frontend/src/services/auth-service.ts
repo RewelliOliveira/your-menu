@@ -1,39 +1,19 @@
-import { createId } from "@/lib/utils";
-import { removeStorage, writeStorage } from "@/lib/storage";
 import type { LoginInput, RegisterInput, Session } from "@/types/auth";
-import { ApiError, SESSION_KEY, db, delay, readSession } from "./mock/db";
+import { http } from "./http-client";
+import { clearSession, readSession, saveSession } from "./session-storage";
 
-const SESSION_TTL_MS = 8 * 60 * 60 * 1000;
-const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
-
-function startSession(email: string, name: string): Session {
-  const session: Session = {
-    token: createId(),
-    expiresAt: Date.now() + SESSION_TTL_MS,
-    restaurantId: db.restaurant.get().id,
-    user: { id: createId(), email, name },
-  };
-  writeStorage(SESSION_KEY, session);
+async function startSession(request: Promise<Session>) {
+  const session = await request;
+  saveSession(session);
   return session;
 }
 
-function validateCredentials({ email, password }: LoginInput) {
-  if (!EMAIL_PATTERN.test(email)) throw new ApiError("Informe um e-mail válido.");
-  if (password.length < 8) throw new ApiError("A senha deve ter pelo menos 8 caracteres.");
+export function login(input: LoginInput) {
+  return startSession(http.post<Session>("/auth/login", input));
 }
 
-export async function login(input: LoginInput) {
-  await delay(400);
-  validateCredentials(input);
-  const email = input.email.trim().toLowerCase();
-  return startSession(email, email.split("@")[0]);
-}
-
-export async function register(input: RegisterInput) {
-  await delay(500);
-  validateCredentials(input);
-  if (input.name.trim().split(/\s+/).length < 2) throw new ApiError("Informe nome e sobrenome.");
-  return startSession(input.email.trim().toLowerCase(), input.name.trim());
+export function register(input: RegisterInput) {
+  return startSession(http.post<Session>("/auth/register", input));
 }
 
 export function getSession() {
@@ -41,5 +21,5 @@ export function getSession() {
 }
 
 export function logout() {
-  removeStorage(SESSION_KEY);
+  clearSession();
 }

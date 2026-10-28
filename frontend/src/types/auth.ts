@@ -18,4 +18,5 @@ export interface LoginInput {
 
 export interface RegisterInput extends LoginInput {
   name: string;
+  restaurantName: string;
 }
