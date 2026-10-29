@@ -8,7 +8,11 @@ import { routes } from "./routes";
 
 export const app = express();
 
-const allowedOrigins = env.CORS_ORIGIN.split(",").map((origin) => origin.trim());
+const allowedOrigins: (string | RegExp)[] = env.CORS_ORIGIN.split(",").map((origin) => origin.trim());
+
+if (env.NODE_ENV === "development") {
+  allowedOrigins.push(/^http:\/\/(localhost|127\.0\.0\.1):\d+$/);
+}
 
 app.set("trust proxy", true);
 app.disable("x-powered-by");
