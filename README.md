@@ -13,59 +13,99 @@ Plataforma web de pedidos para pequenos restaurantes: cada restaurante tem seu c
 - Acompanhamento do pedido em tempo real e QR Code Pix gerado localmente
 
 **Painel do restaurante** (`/admin`)
+- Cadastro cria a conta e a loja (com endereço próprio `/:slug`)
 - Quadro de pedidos (Novo → Em preparo → Em entrega), métricas do dia e histórico
-- Aviso de novos pedidos e atualização automática
-- Cardápio: categorias, pratos, opções de preço e pausa rápida de itens
+- Cardápio: categorias, pratos, opções de preço, fotos e pausa rápida de itens
+- Financeiro: receitas, despesas, perdas, gráficos e exportação do extrato
 - Ajustes: perfil, logo e capa, horários por dia, endereço, bairros atendidos e retirada
-- Botão para abrir e fechar a loja
 
 ## Stack
 
-React 19 · Vite · TypeScript · Tailwind CSS v4 · shadcn/ui (Radix) · Motion · React Router · Sonner
+- **Frontend:** React 19 · Vite · TypeScript · Tailwind CSS v4 · shadcn/ui (Radix) · Motion · React Router · Sonner
+- **Backend:** Node · Express 5 · TypeScript · Kysely · SQLite (better-sqlite3) ou Postgres · Zod · JWT · Multer
 
 ## Como rodar
 
 ```bash
 npm install
-npm run dev      # ambiente de desenvolvimento
-npm run build    # typecheck + build de produção
+cp backend/.env.example backend/.env     # defina JWT_SECRET
+cp frontend/.env.example frontend/.env
+npm run dev      # API em :3333 e Vite em :5173
+npm run build
 npm run lint
-npm test         # testes unitários (Vitest)
+npm test
 ```
 
-- Painel: `http://localhost:5173/admin`. Em modo demonstração, entre com qualquer e-mail válido e uma senha de 8+ caracteres.
-- Vitrine: `http://localhost:5173/your-burger`
+- Painel: `http://localhost:5173/admin` (botão "Entrar com a conta demo" quando `VITE_DEMO_*` estão definidas)
+- Vitrine demo: `http://localhost:5173/your-burger`
+- API: `http://localhost:3333/api/health`
 
-## Arquitetura
+Com `SEED_DEMO=true`, o backend cria no primeiro boot a conta demo com cardápio, pedidos e seis meses de histórico financeiro.
+
+## Estrutura
 
 ```
-src/
-├── app/                 # App, rotas (lazy por página), layout raiz e 404
-├── components/
-│   ├── ui/              # componentes shadcn (button, dialog, sheet, select…)
-│   └── shared/          # componentes de produto reutilizáveis (DishCard, ImageUpload…)
-├── features/
-│   ├── auth/            # sessão, login, cadastro e proteção de rotas
-│   ├── admin/           # layout do painel, pedidos, cardápio e ajustes
-│   └── storefront/      # vitrine, sacola, checkout e acompanhamento
-├── hooks/               # hooks genéricos (useAsync, useNow, useCepAutofill)
-├── lib/                 # utilitários puros (formatação, Pix, imagem, storage…)
-├── services/            # fronteira com a API
-│   └── mock/            # backend simulado (localStorage) e dados de exemplo
-└── types/               # tipos de domínio
+your-menu/
+├── frontend/                  # SPA (Vite)
+│   └── src/
+│       ├── app/               # rotas (lazy por página), layout raiz e 404
+│       ├── components/        # ui (shadcn) e shared (componentes de produto)
+│       ├── config/            # variáveis de ambiente
+│       ├── features/          # auth, admin, storefront, theme
+│       ├── hooks/ · lib/      # hooks e utilitários puros
+│       ├── services/          # http-client + um serviço por recurso da API
+│       └── types/             # contratos da API
+└── backend/                   # API REST (Express)
+    ├── api/index.ts           # entrypoint serverless (Vercel)
+    ├── src/
+    │   ├── config/            # validação das envs
+    │   ├── database/          # conexão, schema, migrations e seed demo
+    │   ├── domain/            # regras puras (horários, status, mês, dinheiro)
+    │   ├── repositories/      # acesso a dados (Kysely) e mapeamento
+    │   ├── services/          # regras de negócio
+    │   ├── controllers/       # entrada/saída HTTP
+    │   ├── routes/            # rotas por recurso, montadas em /api
+    │   ├── middlewares/       # auth, erros, upload, preparo do banco
+    │   ├── validators/        # schemas Zod
+    │   ├── storage/           # provedor de arquivos (imagens)
+    │   └── types/             # DTOs da API
+    └── tests/                 # Vitest + Supertest (SQLite em memória)
 ```
 
-### Integração com o backend
+## API
 
-Os arquivos em `src/services` são a única camada que conhece a origem dos dados. Hoje eles usam o
-backend simulado em `services/mock`, que já aplica as regras que pertencem ao servidor:
+Rotas públicas: `POST /api/auth/register`, `POST /api/auth/login`, `GET /api/storefronts/:slug`,
+`GET /api/storefronts/:slug/menu`, `POST /api/storefronts/:slug/orders`,
+`GET /api/storefronts/:slug/orders/:trackingCode`, `GET /api/uploads/:id`.
 
-- rotas do painel exigem sessão válida;
-- **preços, taxa de entrega e total são recalculados a partir do cardápio**, já que o cliente envia só IDs e quantidades;
-- pedidos só são aceitos com a loja aberta e dentro do horário de funcionamento (inclusive turnos que passam da meia-noite);
-- transições de status de pedido são validadas;
-- o acompanhamento de pedidos usa um código aleatório (não o número sequencial).
+Rotas do painel (`Authorization: Bearer <token>`): `/api/auth/me`, `/api/restaurant` (perfil, `status`, `hours`,
+`address`), `/api/delivery-zones`, `/api/menu`, `/api/categories`, `/api/dishes`, `/api/orders`,
+`/api/finance` (`report`, `ledger`, `transactions`) e `POST /api/uploads`.
 
-Para integrar a API real, substitua o corpo das funções dos serviços por chamadas HTTP, mantendo as
-assinaturas. O backend deve repetir essas validações e emitir a sessão como cookie
-`HttpOnly; Secure; SameSite`.
+Regras aplicadas no servidor: dados sempre escopados ao restaurante do token; preços, taxa e total recalculados
+a partir do cardápio; pedidos só com a loja aberta e dentro do horário (inclusive turnos após a meia-noite);
+transições de status validadas; acompanhamento por código aleatório.
+
+## Banco de dados
+
+Por padrão a API usa SQLite (`DB_CLIENT=sqlite`). Para persistir em Postgres (ex.: Supabase), basta trocar as envs:
+
+```env
+DB_CLIENT=postgres
+DATABASE_URL=postgresql://postgres.<ref>:<senha>@aws-0-sa-east-1.pooler.supabase.com:6543/postgres
+```
+
+As migrations rodam automaticamente na primeira requisição. Valores monetários são guardados em centavos e
+datas em ISO, para o mesmo código funcionar nos dois bancos.
+
+## Deploy na Vercel
+
+Crie dois projetos apontando para este repositório:
+
+| Projeto  | Root Directory | Variáveis |
+| -------- | -------------- | --------- |
+| API      | `backend`      | `JWT_SECRET`, `CORS_ORIGIN=<url do frontend>`, `SEED_DEMO=true`, `DB_CLIENT`, `DATABASE_URL` |
+| Frontend | `frontend`     | `VITE_API_URL=<url da API>/api`, `VITE_DEMO_EMAIL`, `VITE_DEMO_PASSWORD`, `VITE_DEMO_SLUG` |
+
+Com SQLite na Vercel o arquivo fica em `/tmp` da função: os dados são recriados a cada cold start/deploy
+(o seed demo volta ao estado inicial). Para dados permanentes, use Postgres.
